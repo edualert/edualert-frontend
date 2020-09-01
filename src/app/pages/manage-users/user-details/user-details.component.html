@@ -1,0 +1,118 @@
+<div class="animated-page">
+  <app-header>
+    <a id="header-back-button" [routerLink]="['/manage-users']">
+      <div class="arrow left"></div>
+      <div class="blue-text bold column">
+        Gestionare utilizatori
+      </div>
+    </a>
+    <h1 id="header-title">Detalii utilizator</h1>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div *ngIf="userDetails?.is_active" class="text-button red-text" (click)="changeUserStateButtonClicked('deactivate')">Dezactivează</div>
+        <div *ngIf="!userDetails?.is_active" class="text-button green-text" (click)="changeUserStateButtonClicked('activate')">Activare</div>
+        <div class="text-button" [routerLink]="['/manage-users/' + userDetails?.id + '/edit']">Editează</div>
+        <div class="text-button dark-text" (click)="deleteUserButtonClicked()">Șterge</div>
+      </div>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <div class="detail-element-container header blue-text bold">
+      <div class="label-container fixed-width">Nume</div>
+      <div class="value-container">{{ userDetails?.full_name }}</div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Nume utilizator</div>
+      <div class="extra-data margin-right gray-text">{{ userDetails?.use_phone_as_username ? 'Număr de telefon: ' : 'Adresă de email: '}}</div>
+      <div class="value-container bold">{{ userDetails?.use_phone_as_username ? userDetails.phone_number : userDetails?.email }}</div>
+    </div>
+    <hr class="margin-list">
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Rol utilizator</div>
+      <div class="value-container bold">{{ userRoles[userDetails?.user_role] }}</div>
+    </div>
+    <div *ngIf="this.availableFields?.studyClass && userDetails?.class_grade && userDetails?.class_letter" class="detail-element-container">
+      <div class="label-container fixed-width">Clasă</div>
+      <a [routerLink]="['/manage-classes', userDetails.class_id, 'view']" class="value-container bold blue-text arrow-right">{{userDetails?.class_grade + ' ' + userDetails?.class_letter}}</a>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Stare</div>
+      <div class="value-container bold {{userDetails?.is_active ? 'green-text' : 'red-text' }}">{{userDetails?.is_active ? 'Activă' : 'Inactivă'}}</div>
+    </div>
+    <div *ngIf="this.availableFields?.labels" class="detail-element-container">
+      <div class="label-container fixed-width">Etichete</div>
+      <div class="value-container bold {{ getLabelsString() ? '' : 'red-text' }}">{{ getLabelsString().length > 0 ? getLabelsString() : 'Nu există etichete.'}}</div>
+    </div>
+    <hr class="margin-list">
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Număr de telefon</div>
+      <div class="value-container bold">{{ formatPhoneNumber(userDetails?.phone_number) }}</div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Adresă de email</div>
+      <div class="value-container bold">{{ userDetails?.email }}</div>
+    </div>
+    <div *ngIf="availableFields?.address" class="detail-element-container">
+      <div class="label-container fixed-width">Adresă</div>
+      <div class="value-container bold">{{ userDetails?.address }}</div>
+    </div>
+    <div *ngIf="availableFields?.personalNumber" class="detail-element-container">
+      <div class="label-container fixed-width">CNP</div>
+      <div class="value-container bold">{{ userDetails?.personal_id_number }}</div>
+    </div>
+    <div *ngIf="availableFields?.birthDate" class="detail-element-container">
+      <div class="label-container fixed-width">Dată naștere</div>
+      <div class="value-container bold">{{ userDetails?.birth_date }}</div>
+    </div>
+    <div *ngIf="this.availableFields?.parentSection && userDetails.parents.length !== 0">
+      <hr class="margin-list">
+      <div class="detail-element-container subheader">
+        <div class="label-container">Părinți</div>
+      </div>
+      <div class="border-left">
+        <div *ngFor="let item of userDetails?.parents; let i = index">
+          <div class="detail-element-container">
+            <div class="label-container fixed-width">Părinte</div>
+            <div class="value-container bold blue-text arrow-right" (click)="openViewUserModal(item.id)">{{item.full_name}}</div>
+          </div>
+          <hr *ngIf="i + 1 !== userDetails?.parents.length" class="margin-list">
+        </div>
+      </div>
+    </div>
+    <div *ngIf="this.availableFields?.pedagogueSection">
+      <hr class="margin-list">
+      <div class="detail-element-container subheader">
+        <div class="label-container">Pedagog</div>
+      </div>
+      <div class="border-left">
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Nume</div>
+          <div class="value-container bold">{{ userDetails?.educator_full_name }}</div>
+        </div>
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Număr de telefon</div>
+          <div class="value-container bold">{{ formatPhoneNumber(userDetails?.educator_phone_number) }}</div>
+        </div>
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Adresă de email</div>
+          <div class="value-container bold">{{ userDetails?.educator_email }}</div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="this.availableFields?.taughtSubjects && userDetails.taught_subjects.length !== 0">
+      <hr class="margin-list">
+      <div class="detail-element-container subheader">
+        <div class="label-container">Materii Predate</div>
+      </div>
+      <div class="border-left bold">
+        <div *ngFor="let item of userDetails?.taught_subjects">
+          <div class="detail-element-container">
+            <div class="label-container bold">{{item.name}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-view-user-modal #userDetailsModal></app-view-user-modal>

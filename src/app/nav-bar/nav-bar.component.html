@@ -1,0 +1,43 @@
+<div class="bar-wrapper">
+  <div id="nav-bar" [ngClass]="size" [class.open]="isOpen">
+    <div class="upper-bar">
+      <div class="logo icon">
+      </div>
+      <div class="mobile-menu-button" [class.open]="isOpen" (click)="toggleIsOpen($event)">
+      </div>
+    </div>
+    <div class="menu" *ngIf="size !== 'big'">
+      <div *ngIf="account?.user_role === 'PARENT' && account?.children?.length > 1" class="child-switcher">
+        <div class="label">Elev </div>
+        <div class="dropdown-parent">
+          <app-dropdown
+            [list]="children"
+            [identifierProperty]="'id'"
+            [displayedProperty]="'full_name'"
+            [appliedElement]="selectedChild"
+            (elementHasBeenSelected)="selectChild($event)"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+      <div class="links">
+        <a *ngFor="let menuLink of menuLinks[account.user_role]"
+           [routerLink]="menuLink.path"
+           routerLinkActive="active-link"
+           [ngClass]="menuLink.className"
+           class="menu-link text-button">
+          <div class="icon"></div>
+          <div class="text">{{menuLink.text}}</div>
+        </a>
+      </div>
+      <div class="logout-section">
+        <div class="user-name bold blue-text">{{account.full_name}}</div>
+        <div class="user-role">{{userRoles[account.user_role]}}</div>
+        <a class="menu-link text-button logout" (click)="logout()">
+          <div class="icon"></div>
+          <div class="text">Deconectare</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

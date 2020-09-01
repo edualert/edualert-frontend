@@ -1,0 +1,58 @@
+@import "../../../../assets/styles/base";
+
+.modal-container {
+  padding-top: $margin-default;
+  min-width: 600px;
+  @media (max-width: $mobile-screen-width-normal) {
+    min-width: unset;
+  }
+}
+
+.margin-list {
+  margin-top: $margin-small;
+  margin-bottom: $margin-small;
+}
+
+.border-left {
+  border-left: 1px solid $color-separator;
+  padding-left: $margin-big;
+  margin-top: $margin-big;
+}
+
+.modal-body {
+  height: $scrollable-modal-height;
+  overflow-y: scroll;
+}
+
+.subheader_bold {
+  font-size: $font-size-big;
+}
+.risk-alert-container {
+  width: calc(100% - #{$fixed-width-column});
+  @media (max-width: $mobile-screen-width-normal) {
+    width: 100%;
+  }
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  .risk-alert-container-header {
+    padding-left: $margin-default;
+    padding-top: $margin-tiny;
+    padding-bottom: $margin-tiny;
+    height: 20%;
+    background-color: $color-red;
+    color: white;
+    border-radius: $border-radius-normal $border-radius-normal 0 0;
+  }
+  .risk-alert-container-content {
+    background-color: $color-separator;
+    padding: $margin-tiny $margin-default;
+    border-radius: 0 0 $border-radius-normal $border-radius-normal;
+  }
+  .value-container {
+    max-width: calc(100% - #{$fixed-width-column-small});
+  }
+}
+.margin-bottom-default {
+  padding-bottom: $margin-default;
+}

@@ -1,0 +1,22 @@
+@import '../../../assets/styles/base';
+
+.title, .description {
+  color: white;
+}
+.title {
+  white-space: nowrap;
+}
+
+.description {
+  margin-top: 5px;
+}
+
+.text-button + .text-button {
+  margin-left: $margin-big;
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .title {
+    white-space: unset;
+  }
+}

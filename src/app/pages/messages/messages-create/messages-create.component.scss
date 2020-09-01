@@ -1,0 +1,164 @@
+@import "../../../../assets/styles/base";
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  height: 100%;
+  margin-top: $margin-default;
+}
+
+#header-back-button {
+  margin-bottom: $margin-tiny !important;
+
+  .blue-text {
+    font-size: $font-size-small;
+  }
+}
+
+.text-button {
+  margin-right: $margin-small;
+  margin-left: $margin-small;
+}
+
+.text-button + .text-button {
+  margin-right: 0;
+}
+
+.custom-weight {
+  font-weight: $font-weight-regular;
+}
+
+.radio-container {
+  margin-bottom: $margin-tiny;
+
+  &:last-of-type {
+    margin-bottom: $margin-small;
+  }
+}
+
+.margin-list {
+  margin-top: $margin-default;
+  margin-bottom: $margin-default;
+}
+
+.vertical {
+  height: auto;
+  margin-left: $margin-default;
+  margin-right: $margin-default;
+}
+
+.detail-element-container {
+  &.align-start {
+    align-items: flex-start;
+  }
+
+  .radio-container {
+    &:last-of-type {
+      margin-bottom: $margin-xsmall;
+    }
+  }
+}
+
+.value-container {
+  &.multiple-value-elements {
+    display: flex;
+    padding-bottom: $margin-tiny;
+  }
+}
+
+.margin-list {
+  margin-top: $margin-small
+}
+
+.dropdown-container {
+  height: 30px;
+  width: 200px;
+}
+
+textarea {
+  max-height: 313px;
+  height: 100%;
+  width: 100%;
+  resize: none;
+  padding-top: $margin-tiny;
+  padding-bottom: $margin-tiny;
+}
+
+.error-message {
+  color: $color-red;
+  font-size: $font-size-small;
+  margin-top: 3px;
+  animation: appearMessage 0.1s 0s $ease-out 1 backwards;
+
+  @keyframes appearMessage {
+    0% {
+      font-size: 0;
+      opacity: 0;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .text-button {
+    margin-left: unset;
+  }
+}
+
+@media (max-width: $mobile-screen-width-small) {
+  .page-content {
+    font-size: $font-size-small;
+
+    .blue-text {
+      font-size: $font-size-bigish;
+    }
+
+    .detail-element-container {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-top: $margin-default;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
+
+      .label-container {
+        margin-bottom: $margin-tiny;
+      }
+
+      .value-container {
+        &.full-width {
+          width: 100%;
+        }
+      }
+
+      .radio-container {
+        margin-bottom: $margin-small;
+
+        &:last-of-type {
+          margin-bottom: $margin-xsmall;
+        }
+      }
+    }
+  }
+
+  .margin-list {
+    margin-top: $margin-small
+  }
+
+  .radio-button {
+    min-width: 16px;
+  }
+
+  textarea {
+    border-radius: $border-radius-tiny;
+    height: 100px;
+  }
+
+  .dropdown-container {
+    width: unset;
+  }
+}

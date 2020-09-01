@@ -1,0 +1,120 @@
+<script src="home-principal.component.ts"></script>
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Acasă</h1>
+    <h2 id="header-subtitle">Bine ai revenit, <span class="bold">{{ userDetails?.full_name }}</span>!</h2>
+  </app-header>
+  <div class="page-content">
+    <div class="card-table-container card">
+      <div class="card-table-header">
+        <div class="big-text bold card-title-text">Top profile cu risc</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'profiles', bottom_tab: 'academic_programs_at_risk'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="table-container">
+        <app-reports-table [tableColumns]="academicProgramsAtRiskColumns"
+                           [tableData]="academicProgramsAtRiskList">
+        </app-reports-table>
+      </div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'profiles', bottom_tab: 'academic_programs_at_risk'}"
+      >Mai multe rapoarte</div>
+    </div>
+
+    <div class="card-table-container card">
+      <div class="card-table-header">
+        <div class="big-text bold card-title-text">Top clase cu risc</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'classes', bottom_tab: 'study_classes_at_risk'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="table-container">
+        <app-reports-table [tableColumns]="schoolStudyClassesAtRiskColumns"
+                           [tableData]="schoolStudyClassesAtRiskList">
+        </app-reports-table>
+      </div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'classes', bottom_tab: 'study_classes_at_risk'}"
+      >Mai multe rapoarte</div>
+    </div>
+
+    <div class="card-table-container card">
+      <div class="card-table-header">
+        <div class="big-text bold card-title-text">Top profesori inactivi</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'teachers', bottom_tab: 'inactive_teachers'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="table-container">
+        <app-reports-table [tableColumns]="inactiveTeachersTable"
+                           [tableData]="inactiveTeachersList">
+        </app-reports-table>
+      </div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'teachers', bottom_tab: 'inactive_teachers'}"
+      >Mai multe rapoarte</div>
+    </div>
+
+    <div class="card-table-container card">
+      <div class="card-table-header">
+        <div class="big-text bold card-title-text">Top elevi cu risc</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'students', bottom_tab: 'students_at_risk'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="table-container">
+        <app-reports-table [tableColumns]="schoolStudentsAtRiskTable"
+                           [tableData]="schoolStudentsAtRiskList">
+        </app-reports-table>
+      </div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'students', bottom_tab: 'students_at_risk'}"
+      >Mai multe rapoarte</div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">
+        <div class="big-text bold">Evoluție număr elevi cu risc</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'students', bottom_tab: 'students_risk_evolution'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="chart-subtitle blue-text regular">{{ graphSubtitle }}</div>
+      <div class="chart-holder" *ngIf="displayChart">
+        <ngx-charts-line-chart
+          [view]="studentsChartView"
+          [xAxis]="xAxis"
+          [yAxis]="yAxis"
+          [scheme]="colorSchemeRed"
+          [results]="studentsEvolutionList?.chartData"
+          [xAxisTicks]="studentsEvolutionList?.xAxisTicks"
+        >
+
+          <ng-template #seriesTooltipTemplate let-model="model">
+            <div class="tooltip-content">
+              <div class="tooltip-container simple red">
+                <div class="value">
+                  {{model[0].value}}
+                </div>
+                <div class="label">
+                  {{ studentsEvolutionList["chartData"][0]["name"] }}
+                </div>
+                <div class="bottom-tooltip">
+                  <div class="padded">{{ model[0].name }}</div>
+                  <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                </div>
+              </div>
+            </div>
+            <!--<div class="selected-container"></div>-->
+          </ng-template>
+
+        </ngx-charts-line-chart>
+      </div>
+      <div *ngIf="!displayChart" class="big-text bold padded-top info-card">Nu există date disponibile</div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'students', bottom_tab: 'students_risk_evolution'}"
+      >Mai multe rapoarte</div>
+    </div>
+  </div>
+</div>

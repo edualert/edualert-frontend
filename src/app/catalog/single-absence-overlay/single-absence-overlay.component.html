@@ -1,0 +1,30 @@
+<div class="container absence" #root *ngIf="isOpen">
+  <div class="top">
+    <div class="title">Adaugă absență</div>
+    <hr>
+    <div class="select-container">
+      <div class="label">Dată</div>
+      <div class="date-container">
+        <input class="date" (click)="openDatepicker()" [value]="displayDate(selectedDate)">
+        <div class="datepicker-container">
+          <app-datepicker #datepicker
+                          [dateValue]="selectedDate"
+                          [color]="'#0077DB'"
+                          (dateChanged)="selectDate($event)"
+          ></app-datepicker>
+        </div>
+      </div>
+      <div class="checkbox-container" (click)="toggleFounded()">
+        <div class="text label">
+          <span class="desktop-only">Absență motivată</span>
+          <span class="mobile-only">Motivată</span>
+        </div>
+        <div class="checkbox-button" [class.checked]="isFounded"></div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="text-button" (click)="saveClick()">Salvează</div>
+    <div class="text-button dark-text" (click)="close()">Anulează</div>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+@import '../../../assets/styles/base.scss';
+
+.wrapper-tabs {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.tab-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  border-bottom: 1px solid $color-separator;
+  padding-top: $margin-small;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tab-container::-webkit-scrollbar {
+  display: none;
+}
+
+.text-button {
+  font-size: $font-size-bigish;
+  color: $color-text-normal;
+  padding-bottom: $margin-tiny;
+  margin-right: 40px;
+  white-space: nowrap;
+  &.inactive-tab {
+    color: $color-text-light;
+  }
+  &.is-active {
+    border-bottom: 2px solid $color-blue;
+    border-radius: 1px;
+    bottom: -1px;
+  }
+  &:before {
+    content: none;
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .text-button {
+    font-size: $font-size-normal;
+    margin-right: $margin-default;
+  }
+}
+
+@media(max-width: $mobile-screen-width-normal) {
+  .text-button {
+    font-size: $font-size-normal
+  }
+}
+
+.expand {
+  display: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 0 $border-radius-tiny $border-radius-tiny 0;
+  opacity: 0.8;
+  background-color: $color-blue;
+  background-image: url(../../../assets/img/expand-left.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 6px 10px;
+  margin-right: $margin-tiny;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  z-index: 1;
+  left: -25px;
+
+  &.right {
+    border-radius: $border-radius-tiny 0 0 $border-radius-tiny;
+    background-image: url(../../../assets/img/expand-right.svg);
+    right: -25px;
+    left: unset;
+    margin-right: 0;
+  }
+}

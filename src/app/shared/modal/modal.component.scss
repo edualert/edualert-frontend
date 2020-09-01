@@ -1,0 +1,107 @@
+@import '../../../assets/styles/base.scss';
+
+.background-shadow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(#0a0a10, 0.6);
+  z-index: 1000000;
+}
+
+.modal {
+  min-height: 100px;
+  min-width: 200px;
+  height: auto;
+  width: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 5px 30px 0 rgba(#0a0a10, 0.05);
+}
+
+.header {
+  width: auto;
+  min-height: 50px;
+  background-color: $color-background;
+  padding: $margin-big $margin-xbig $margin-default;
+  &.dark {
+    background-color: $color-text-normal;
+  }
+
+  &.blue {
+    background-color: $color-blue;
+  }
+
+  &.red {
+    background-color: $color-red;
+  }
+
+  &.yellow {
+    background-color: $color-yellow;
+  }
+
+  &.border-bottom {
+    border-bottom: 1px solid $color-separator;
+  }
+}
+
+.body {
+  background-color: $color-background;
+  width: auto;
+  min-height: 100px;
+  padding: 0 $margin-xbig;
+}
+
+.footer {
+  background-color: white;
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  justify-content: flex-end;
+  padding: $margin-default $margin-xbig;
+}
+
+
+.top-radius {
+  border-radius: $border-radius-normal $border-radius-normal 0 0;
+}
+
+.bottom-radius {
+  border-radius: 0 0 $border-radius-normal $border-radius-normal;
+}
+
+.top-radius.bottom-radius {
+  border-radius: $border-radius-normal;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .header {
+    padding-left: $margin-default;
+    padding-right: $margin-default;
+  }
+  .body {
+    padding-left: $margin-default;
+    padding-right: $margin-default;
+  }
+
+  .footer {
+    padding-left: $margin-default;
+    padding-right: $margin-default;
+  }
+
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .modal {
+    min-height: 100px;
+    min-width: 200px;
+    width: calc(100% - 40px);
+  }
+}

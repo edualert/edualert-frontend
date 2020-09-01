@@ -1,0 +1,9 @@
+@import "../../../../assets/styles/base";
+
+.export_button {
+  padding-right: $margin-default;
+  background-image: url(../../../../assets/img/export.svg);
+  background-repeat: no-repeat;
+  background-position: right center;
+  max-width: 120px;
+}

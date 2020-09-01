@@ -1,0 +1,19 @@
+<div class="toolbar">
+
+  <div class="buttons">
+    <ng-container *ngFor="let button of buttonsObjList">
+      <div (click)="button.buttonCallbackFn()"
+           class="text-button bold white"
+      >{{button.text}}
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="count-container">
+    <ng-content select="#count-container"></ng-content>
+  </div>
+</div>
+
+<div class="mobile-toolbar">
+
+</div>

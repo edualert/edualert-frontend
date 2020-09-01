@@ -1,0 +1,82 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Rapoarte</h1>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div class="text-button export_button disabled">Exportă rapoarte</div>
+      </div>
+    </div>
+    <div id="tabs-container">
+      <app-tabs
+        [tabsList]="tabs"
+        [activeTab]="activeTab"
+        (tabHasBeenSelected)="changeTab($event)"></app-tabs>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container [ngSwitch]="activeTab">
+      <ng-container *ngSwitchCase="'student_school_activity'">
+        <app-reports-table
+          [tableColumns]="myOwnSchoolActivityTable"
+          [tableData]="this.data[activeTab]"
+        ></app-reports-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'student_subjects_at_risk'">
+        <app-reports-table
+          [tableColumns]="myOwnSubjectsAtRiskTable"
+          [tableData]="this.data[activeTab]"
+        ></app-reports-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'student_absences_evolution'">
+        <app-month-picker (dateChanged)="changeMonth($event)"></app-month-picker>
+        <div class="chart-container">
+          <div class="chart-holder" *ngIf="displayChart">
+            <ngx-charts-line-chart
+              [view]="generalChartView"
+              [xAxis]="true"
+              [yAxis]="true"
+              [scheme]="colorSchemeRedBlue"
+              [results]="[data[activeTab][0]['chartData'][0], data[activeTab][1]['chartData'][0]]"
+              [xAxisTicks]="data[activeTab][0].xAxisTicks"
+            >
+
+              <ng-template #seriesTooltipTemplate let-model="model">
+                <div class="tooltip-content">
+                  <div class="tooltip-container double">
+                    <div class="blue-tooltip">
+                      <div class="value">
+                        {{model[0].value}}
+                      </div>
+                      <div class="label">
+                        {{ data[activeTab][0]['chartData'][0]["name"] }}
+                      </div>
+                    </div>
+                    <div class="red-tooltip">
+                      <div class="value">
+                        {{model[1].value}}
+                      </div>
+                      <div class="label">
+                        {{ data[activeTab][1]['chartData'][0]["name"] }}
+                      </div>
+                    </div>
+                    <div class="bottom-tooltip parent-student">
+                      <div class="padded">{{ model[0].name }}</div>
+                      <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                    </div>
+                  </div>
+                </div>
+                <!--<div class="selected-container"></div>-->
+              </ng-template>
+
+            </ngx-charts-line-chart>
+          </div>
+          <div *ngIf="!displayChart" class="big-text bold padded-top info-card">Nu există date disponibile
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'student_statistics'">
+
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,127 @@
+@import "../../assets/styles/base";
+
+.filter {
+	padding-top: $margin-default;
+	display: flex;
+
+	.filter-label {
+		line-height: 30px;
+	}
+
+	.filter-container {
+	  display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    align-items: center;
+	}
+}
+
+/* MOBILE STYLES */
+
+@media (max-width: $mobile-screen-width-normal) {
+	.filter {
+		align-items: center;
+		flex-direction: column;
+		width: 274px;
+		height: auto;
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		padding: 0;
+		background: #67778A;
+		border-radius: 10px 0 0 0;
+		max-height: 40px;
+		will-change: max-height;
+		transition: max-height 0.2s $ease-in-out;
+
+		&.narrow {
+			width: 115px;
+
+			&.open {
+				width: 274px;
+
+				.filter-label {
+					padding: 0 $margin-default;
+					text-align: unset;
+				}
+			}
+
+			.filter-label {
+				padding: 0 $margin-tiny;
+				text-align: right;
+
+				span {
+					border: none;
+				}
+			}
+		}
+
+		.filter-label {
+		  position: absolute;
+		  right: 0;
+		  bottom: 0;
+		  width: 100%;
+	      line-height: 16px;
+	      font-size: $font-size-small;
+	      padding: 0 $margin-default;
+		  height: 28px;
+		  order: 2;
+		  cursor: pointer;
+
+		  &:before {
+		      transition: transform .2s $ease-in-out;
+		      height: 6px;
+		      width: 10px;
+		      transform: translateX(-100%);
+		      content: '';
+		      background: url(../../assets/img/expand.svg) center center no-repeat;
+		      background-size: cover;
+		      vertical-align: middle;
+		      display: inline-block;
+		      margin-left: $margin-tiny;
+		      margin-top: -3px;
+		  }
+
+		  span {
+		  	border-right: 1px solid rgba(255, 255, 255, 0.3); 
+		  	font-weight: bold;
+		  	color: white;
+		  	padding-right: $margin-small;
+		  }
+		}
+
+		&.open {
+			max-height: 100%;
+			padding-top: $margin-default;
+
+			.filter-container {
+				width: 100%;
+				opacity: 1;
+				pointer-events: unset;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+				transform: translateY(0%);
+			}
+
+			.filter-label {
+				border-right: 1px solid rgba(255, 255, 255, 0.3); 
+				&:before {
+					transform: translateX(-100%) rotate(180deg);
+				}
+			}
+		}
+
+		.filter-container {
+			order: 1;
+			opacity: 0;
+			flex-direction: column;
+			align-self: flex-start;
+			align-items: flex-start;
+			padding: $margin-xsmall $margin-default $margin-default;
+			margin-bottom: calc(57px - #{$margin-default} + #{$margin-xsmall});
+			pointer-events: none;
+			will-change: opacity, transform;
+			transform: translateY(50%);
+			transition: opacity 0.2s $ease-out, transform 0.2s $ease-in-out;
+		}
+	}
+}

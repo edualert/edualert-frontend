@@ -1,0 +1,111 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Gestionare Utilizatori</h1>
+    <div id="header-top-right-container">
+      <button class="action-button" (click)="openAddNewUserModal()">Adaugă un utilizator nou</button>
+    </div>
+    <div id="header-filter">
+      <app-filter>
+        <ng-container *ngIf="!this.requestInProgress; else loadingListCountMobile" id="list-count-mobile">
+          <div class="list-count-mobile">
+            {{users.length}} unități afișate din {{totalCount}}
+          </div>
+        </ng-container>
+        <span class="mobile-title">Filtreaza</span>
+        <app-filter-search
+          [searchString]="filterParams.search"
+          (searchSubmit)="changeSearch($event)"
+        ></app-filter-search>
+        <div class="dropdown-parent">
+          <app-dropdown
+            [error]="''"
+            [list]="filterData.userRoles"
+            [displayedProperty]="'text'"
+            (elementHasBeenSelected)="changeUserRole($event.element)"
+            [appliedElement]="filterParams.userRole"
+            [placeholder]="'Rol utilizator'"
+            [withSearch]="true"
+          ></app-dropdown>
+        </div>
+        <div class="dropdown-parent">
+          <app-dropdown
+            [error]="''"
+            [list]="filterData.userStatuses"
+            [displayedProperty]="'name'"
+            (elementHasBeenSelected)="changeUserStatus($event.element)"
+            [appliedElement]="filterParams.userStatus"
+            [placeholder]="'Stare'"
+            [withSearch]="true"
+          ></app-dropdown>
+        </div>
+      </app-filter>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container *ngIf="!this.requestInProgress; else loadingList">
+      <ng-container *ngIf="this.users?.length; else noResultsText">
+        <div class="list-count">
+          {{users.length}} utilizatori afișați din {{totalCount}}
+        </div>
+        <div class="list">
+          <div class="card list-element-animation" *ngFor="let user of users">
+            <div class="card-left-container">
+              <span class="card-title text-button" [routerLink]="['/manage-users/' + user.id + '/view']">{{user.full_name}}</span>
+              <div class="role">
+                <div class="role-icon {{user.user_role}}"></div>
+                <div class="role-name">{{userRolesEnum[user.user_role]}}</div>
+              </div>
+            </div>
+            <div class="card-right-container">
+              <div class="tags-and-status-container">
+                <div class="tags">
+                  <div class="tag" *ngFor="let tag of user.labels">{{tag}}</div>
+                </div>
+                <div class="user-status"
+                     [ngClass]="user.last_online === null && user.is_active ? 'grey' : user.is_active ? 'green' : 'red'">
+                  <span>{{user.last_online === null && user.is_active ? 'Inactiv' : user.is_active ? 'Activ' : 'Dezactivat'}}</span>
+                  <hr class="vertical">
+                  <span class="bold text-button white"
+                        (click)="openDeActivateUserModal(user)">{{user.is_active ? 'Dezactivează' : 'Reactivează'}}</span>
+                </div>
+              </div>
+              <hr class="vertical visible-on-desktop">
+              <div class="text-button edit" [routerLink]="['/manage-users/' + user.id + '/edit']">Editează</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-template #loadingList>
+      <div class="list-count">
+        Se încarcă datele...
+      </div>
+      <div class="list loading-list">
+        <div *ngFor="let user of (users.length ? users : [0,1])" class="card loading-card loading-list-element">
+          <div class="card-left-container">
+            <div class="card-title"></div>
+            <div class="card-title"></div>
+            <div class="role"></div>
+            <div class="card-title"></div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template #noResultsText>
+      <div class="no-results">
+        Niciun rezultat găsit
+      </div>
+    </ng-template>
+    <ng-template #loadingListCountMobile>
+      <div class="list-count-mobile">
+        Se încarcă datele...
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<app-add-new-user-modal #addNewUserModal></app-add-new-user-modal>
+<app-confirmation-modal #appConfirmationModal></app-confirmation-modal>
+
+

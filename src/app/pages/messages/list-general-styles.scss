@@ -1,0 +1,326 @@
+@import "../../../assets/styles/base";
+
+
+.page-content {
+  position: relative;
+}
+
+.card {
+  margin-top: $margin-default;
+  position: relative;
+  cursor: pointer;
+
+  .card-title {
+    margin-top: -5px;
+    transition: color 0.1s;
+    cursor: pointer;
+    width: auto;
+    font-size: $font-size-big;
+    color: $color-text-normal;
+  }
+
+  .targets {
+    .receiver-info-wrapper {
+      display: inline-block;
+
+      hr.vertical {
+        height: 18px;
+        margin: 0 $margin-default -5px;
+        display: inline-block;
+      }
+
+      .cell {
+        margin-top: $margin-tiny;
+        display: inline-block;
+
+        .title {
+          font-size: $font-size-normal;
+          line-height: 18px;
+          color: $color-text-light;
+          display: inline-block;
+        }
+
+        .text-item {
+          margin-left: $margin-tiny;
+          font-size: $font-size-normal;
+          line-height: 18px;
+        }
+
+        .link-content {
+          cursor: pointer;
+          display: inline-flex !important;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          z-index: 1;
+          position: relative;
+          &:hover {
+            filter: brightness(1.3);
+          }
+        }
+      }
+
+      .blank-cell {
+        min-height: 18px;
+        min-width: 1px;
+      }
+
+      &.column {
+        display: inline-flex;
+        align-items: flex-start;
+
+        .mobile-horizontal {
+          display: none;
+        }
+
+        .mobile {
+          display: none;
+        }
+
+        .desktop {
+          display: inline-block;
+        }
+
+        .cells-wrapper {
+          margin-left: $margin-default;
+          border-left: 1px solid $color-separator;
+          padding-left: $margin-default;
+          display: inline-flex;
+          align-items: flex-start;
+          flex-direction: column;
+
+          &.no-border {
+            margin: 0;
+            padding: 0;
+            border: none;
+
+            .cell {
+              &:first-of-type {
+                margin-top: $margin-tiny;
+              }
+            }
+          }
+
+          .cell {
+            &:first-of-type {
+              margin-top: unset;
+            }
+          }
+        }
+      }
+    }
+
+    .message-platform {
+      position: relative;
+      float: right;
+      color: $color-text-normal;
+      display: inline-block;
+      margin-top: $margin-tiny;
+    }
+  }
+
+  .card-right-container {
+    position: absolute;
+    right: $margin-big;
+    top: $margin-default;
+    height: calc(100% - #{$margin-default * 2});
+    width: auto;
+
+    .message-status {
+      position: relative;
+      max-width: 208px;
+      height: 30px;
+      border-radius: $border-radius-normal 3px 3px $border-radius-normal;
+      background-color: $color-background;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 $margin-small;
+      color: white;
+      transition: background-color 0.2s;
+
+      .read-status {
+        margin-right: $margin-big;
+      }
+
+      &.read {
+        max-width: 267px;
+        background-color: $color-text-light;
+      }
+
+      &.unread {
+        background-color: $color-blue;
+      }
+
+      hr.vertical {
+        background-color: rgba(white, 0.3);
+        margin: 0 $margin-tiny 0 0;
+        position: absolute;
+        height: calc(100% - 18px);
+        top: 9px;
+        right: calc(139px - #{$margin-small});
+      }
+
+      .timestamp {
+        font-weight: 500;
+        letter-spacing: 0;
+        font-size: $font-size-normal;
+        line-height: 18px;
+      }
+    }
+
+    .vertical {
+      margin-left: $margin-default;
+      margin-right: $margin-default;
+    }
+  }
+
+  &:hover {
+    .card-title {
+      color: $color-blue;
+    }
+  }
+}
+
+.card.loading-card {
+  opacity: 0.7;
+  pointer-events: none;
+
+  .card-left-container {
+    width: 50%;
+  }
+
+  .card-title {
+    width: 100%;
+    background-color: #E2E5EA;
+    height: 21px;
+    margin-top: 4px;
+  }
+
+  .cell {
+    width: 50%;
+    background-color: #E2E5EA;
+    height: 13px;
+    margin-top: $margin-small;
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .card:first-of-type {
+    margin-top: 0;
+  }
+
+  .page-content {
+    padding-bottom: $margin-xbig;
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .page-content {
+    padding: $margin-xsmall $margin-default $margin-xbig;
+
+    .card {
+      min-width: unset;
+      margin-top: $margin-tiny;
+      padding: $margin-tiny $margin-small;
+
+      .card-title {
+        font-size: $font-size-bigish;
+        margin-top: unset;
+
+        &.text-button {
+          display: block;
+        }
+      }
+
+      .card-right-container {
+        position: unset;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .message-status {
+          text-align: left;
+          max-width: unset;
+          width: 100%;
+          border-radius: 5px;
+          margin-top: $margin-small;
+          margin-bottom: unset;
+          justify-content: flex-start;
+
+          hr.vertical {
+            right: unset;
+            left: 85px;
+          }
+        }
+      }
+
+      .targets {
+        .receiver-info-wrapper {
+          hr.vertical {
+            display: none;
+          }
+
+          .cell {
+            display: block;
+            font-size: $font-size-small;
+            margin-top: $margin-xsmall;
+          }
+
+          .mobile-horizontal {
+            display: block;
+            margin-top: $margin-tiny;
+            margin-bottom: $margin-tiny;
+          }
+
+          &.column {
+            display: inline-block;
+            align-items: unset;
+            width: 100%;
+
+            .mobile {
+              display: unset;
+
+              .cells-wrapper {
+                &:last-of-type {
+                  border: none;
+                  padding-bottom: 0;
+                  margin-bottom: 0;
+                }
+
+                .cell {
+                  &:first-of-type {
+                    margin-top: $margin-xsmall;
+                  }
+                }
+              }
+            }
+
+            .desktop {
+              display: none;
+            }
+
+            .cells-wrapper {
+              margin-left: unset;
+              border-left: unset;
+              padding-left: unset;
+              padding-bottom: 7px;
+              margin-bottom: 9px;
+              border-bottom: 1px solid $color-separator;
+              display: block;
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+
+    hr.vertical.visible-on-desktop {
+      display: none;
+    }
+    
+    .list-element-animation {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

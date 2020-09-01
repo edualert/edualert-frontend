@@ -1,0 +1,119 @@
+@import '../../assets/styles/base';
+
+
+.menu-link {
+  &.home .icon {
+    background-image: url(../../assets/img/home.svg);
+  }
+
+  &.manage-schools .icon {
+    background-image: url(../../assets/img/manage-schools.svg);
+  }
+
+  &.manage-school-calendar .icon {
+    background-image: url(../../assets/img/calendar.svg);
+    filter: brightness(1.5);
+    opacity: 0.8;
+  }
+
+  &.students-situation .icon {
+    background-image: url(../../assets/img/student.svg);
+  }
+
+  &.reports .icon {
+    background-image: url(../../assets/img/reports.svg);
+  }
+
+  &.manage-users .icon {
+    background-image: url(../../assets/img/users.svg);
+  }
+
+  &.my-account .icon {
+    background-image: url(../../assets/img/user.svg);
+  }
+
+  &.manage-class-profiles .icon {
+    background-image: url(../../assets/img/manage-class-profiles.svg);
+  }
+
+  &.manage-classes .icon {
+    background-image: url(../../assets/img/manage-classes.svg);
+  }
+
+  &.my-classes .icon {
+    background-image: url(../../assets/img/my-classes.svg);
+  }
+
+  &.messages .icon {
+    background-image: url(../../assets/img/message.svg);
+  }
+
+  &.school-situation .icon {
+    background-image: url(../../assets/img/school-situation.svg);
+  }
+
+  &.logout .icon {
+    background-image: url(../../assets/img/logout.svg);
+  }
+}
+
+
+.menu-link.active-link {
+  .icon {
+    filter: none !important;
+  }
+
+  &.home .icon {
+    background-image: url(../../assets/img/home-blue.svg);
+  }
+
+  &.manage-schools .icon {
+    background-image: url(../../assets/img/manage-schools-blue.svg);
+  }
+
+  &.manage-school-calendar .icon {
+    background-image: url(../../assets/img/calendar-blue.svg);
+  }
+
+  &.students-situation .icon {
+    background-image: url(../../assets/img/student-blue.svg);
+    opacity: 1 !important;
+  }
+
+  &.reports .icon {
+    background-image: url(../../assets/img/reports-blue.svg);
+  }
+
+  &.manage-users .icon {
+    background-image: url(../../assets/img/users-blue.svg);
+  }
+
+  &.my-account .icon {
+    background-image: url(../../assets/img/user-blue.svg);
+  }
+
+  &.manage-class-profiles .icon {
+    background-image: url(../../assets/img/manage-class-profiles-blue.svg);
+  }
+
+  &.manage-classes .icon {
+    background-image: url(../../assets/img/manage-classes-blue.svg);
+  }
+
+  &.my-classes .icon {
+    background-image: url(../../assets/img/my-classes-blue.svg);
+  }
+
+  &.messages .icon {
+    background-image: url(../../assets/img/message-blue.svg);
+  }
+
+  &.school-situation .icon {
+    background-image: url(../../assets/img/school-situation-blue.svg);
+  }
+
+  &.logout .icon {
+    background-image: url(../../assets/img/logout-blue.svg);
+  }
+}
+

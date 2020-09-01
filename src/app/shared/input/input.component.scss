@@ -1,0 +1,66 @@
+@import '../../../assets/styles/base.scss';
+
+.root {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+
+  &.header {
+    label, input {
+      font-size: $font-size-big;
+      color: $color-blue;
+    }
+
+    input {
+      height: 40px;
+      font-weight: $font-weight-bold;
+      padding-left: $margin-small;
+    }
+  }
+
+  .column {
+
+    &.fixed-large-column {
+      width: $fixed-width-column-large;
+    }
+  }
+}
+
+.error-message {
+  color: $color-red;
+  font-size: $font-size-small;
+  margin-left: 150px;
+  padding-left: 8px;
+}
+
+label, input {
+  margin-top: $margin-tiny;
+}
+
+label {
+  width: $fixed-width-column;
+}
+
+input {
+  width: calc(100% - #{$fixed-width-column});
+}
+
+
+@media (max-width: $mobile-screen-width-normal) {
+  input {
+    width: 100%;
+    border-radius: 5px;
+  }
+  .error-message {
+    padding-left: 0;
+    margin-left: 0;
+  }
+
+}
+
+.error-message-custom {
+  margin-top: $margin-tiny;
+  padding-left: 8px;
+  margin-left: 150px;
+}

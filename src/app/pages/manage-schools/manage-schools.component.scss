@@ -1,0 +1,210 @@
+@import "../../../assets/styles/base";
+
+.page-content {
+  position: relative;
+}
+
+.dev-warning {
+  color: $color-red;
+  position: absolute;
+  right: 80px;
+  top: $margin-default;
+}
+
+.dropdown-parent {
+  width: 150px;
+  margin-left: $margin-small;
+
+  &.districts {
+    width: 120px;
+  }
+
+  &.school-categories, &.school-profiles {
+    width: 200px;
+  }
+}
+
+.card {
+  margin-top: $margin-default;
+  position: relative;
+  cursor: pointer;
+
+  .card-title {
+    margin-top: -5px;
+    transition: color 0.1s;
+    cursor: pointer;
+    width: auto;
+    font-size: $font-size-big;
+    color: $color-text-normal;
+  }
+
+  .category {
+    margin-top: $margin-tiny;
+  }
+
+  .profile {
+    margin-left: $margin-default;
+  }
+
+  .card-right-container {
+    position: absolute;
+    right: $margin-big;
+    top: $margin-default;
+    height: calc(100% - #{$margin-default * 2});
+    width: auto;
+    display: flex;
+    align-items: center;
+
+    .school-status {
+      position: relative;
+      width: 200px;
+      height: 30px;
+      border-radius: $border-radius-normal 3px 3px $border-radius-normal;
+      background-color: $color-background;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 $margin-small;
+      color: white;
+      transition: background-color 0.2s;
+
+      &.green {
+        .text-button {
+        }
+
+        background-color: $color-green;
+
+        hr.vertical {
+          right: 95px;
+        }
+      }
+
+      &.red {
+        background-color: $color-red;
+      }
+
+      hr.vertical {
+        background-color: rgba(white, 0.5);
+        margin: 0 $margin-tiny 0 0;
+        position: absolute;
+        height: calc(100% - 18px);
+        top: 9px;
+        right: 88px;
+      }
+
+      .text-button {
+        &:before {
+          left: -10px;
+          top: -4px;
+          width: calc(100% + 22px);
+          height: calc(100% + 8px);
+          border-radius: 3px;
+        }
+      }
+    }
+
+    .vertical {
+      margin-left: $margin-default;
+      margin-right: $margin-default;
+    }
+  }
+
+  &:hover {
+    .card-title {
+      color: $color-blue;
+    }
+  }
+}
+
+.card.loading-card {
+  opacity: 0.7;
+  pointer-events: none;
+
+  .card-left-container {
+    width: 50%;
+  }
+
+  .card-title {
+    width: 100%;
+    background-color: #E2E5EA;
+    height: 21px;
+    margin-top: 4px;
+  }
+
+  .category {
+    width: 50%;
+    background-color: #E2E5EA;
+    height: 13px;
+
+    margin-top: $margin-small;
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .card:first-of-type {
+    margin-top: 0;
+  }
+
+  .page-content {
+    padding-bottom: $margin-xbig;
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .page-content {
+    padding: $margin-xsmall $margin-default $margin-xbig;
+
+    hr.vertical.visible-on-desktop {
+      display: none;
+    }
+
+    .card {
+      margin-top: $margin-tiny;
+      padding: $margin-tiny $margin-small;
+
+      .card-title {
+        font-size: $font-size-bigish;
+        margin-top: unset;
+
+        &.text-button {
+          display: block;
+        }
+      }
+
+      .card-right-container {
+        position: unset;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .school-status {
+          width: 100%;
+          border-radius: 5px;
+          margin-top: $margin-small;
+          margin-bottom: $margin-small;
+        }
+
+        .text-button {
+          margin-bottom: $margin-xsmall;
+
+          &:before {
+            top: -2px;
+          }
+        }
+      }
+
+      .categories {
+        margin-top: $margin-tiny;
+
+        .category {
+          font-size: $font-size-small;
+          margin-top: $margin-xsmall;
+        }
+      }
+    }
+
+    .list-element-animation {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

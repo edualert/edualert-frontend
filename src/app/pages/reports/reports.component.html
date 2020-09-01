@@ -1,0 +1,13 @@
+<ng-container [ngSwitch]="accountRole">
+  <app-reports-ors *ngSwitchCase="'ADMINISTRATOR'" [initialQueryParams]="this.initialQueryParams" (changeUrlParamsEvent)="changeUrlParams($event)"></app-reports-ors>
+  <app-reports-teacher *ngSwitchCase="'TEACHER'" [initialQueryParams]="this.initialQueryParams"
+                       (changeUrlParamsEvent)="changeUrlParams($event)"
+                       (changeUserIdForModal)="openUserModal($event)"></app-reports-teacher>
+  <app-reports-principal *ngSwitchCase="'SCHOOL_PRINCIPAL'" [initialQueryParams]="this.initialQueryParams"
+                         (changeUrlParamsEvent)="changeUrlParams($event)"
+                         (changeUserIdForModal)="openUserModal($event)"></app-reports-principal>
+  <app-reports-student-parent *ngSwitchCase="'STUDENT'" [initialQueryParams]="this.initialQueryParams" (changeUrlParamsEvent)="changeUrlParams($event)"></app-reports-student-parent>
+  <app-reports-student-parent *ngSwitchCase="'PARENT'" [initialQueryParams]="this.initialQueryParams" (changeUrlParamsEvent)="changeUrlParams($event)"></app-reports-student-parent>
+</ng-container>
+
+<app-view-user-modal #appViewUserModal></app-view-user-modal>

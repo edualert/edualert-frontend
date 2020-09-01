@@ -1,0 +1,109 @@
+@import "../../../../../assets/styles/base";
+
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  align-items: flex-end;
+  padding-bottom: $margin-default;
+
+  .text-button {
+    margin: 0 10px;
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+}
+
+.cutom-label {
+  width: 100%;
+  display: flex;
+  margin-top: $margin-default;
+
+  .vertical {
+    width: calc(100% - 150px);
+
+    .label-rounded {
+      background-color: #DFE5ED;
+      padding: 5px 30px 5px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-right: $margin-tiny;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $color-separator;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .check-background {
+      background-color: $color-separator;
+      padding: 5px 30px 5px 20px;
+
+      background-size: 10px 10px;
+      background-position: calc(100% - 10px) 50%;
+      background-repeat: no-repeat;
+      background-image: url("../../../../../assets/img/check-blue.svg");
+    }
+  }
+
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .label {
+    width: 150px !important;
+  }
+
+  .width250 {
+    width: 250px !important;
+  }
+
+  .row {
+    &:nth-child(2) {
+      margin-top: $margin-tiny;
+    }
+  }
+}
+
+.margin-list {
+  margin-top: $margin-big;
+  margin-bottom: $margin-small;
+}
+
+.border-left {
+  border-left: 1px solid $color-separator;
+  padding-left: $margin-big;
+  margin-top: $margin-big;
+}
+
+.parent-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  p {
+    width: 150px;
+  }
+
+  .parent-dropdown-container {
+    width: calc(100% - 150px - 75px);
+    padding-right: 30px;
+    border-right: 1px solid $color-separator;
+  }
+
+  .button-container {
+    width: 75px;
+    align-items: center;
+    padding: 0;
+    padding-left: 30px;
+  }
+}
+
+.margin-top-default {
+  margin-top: $margin-default;
+}

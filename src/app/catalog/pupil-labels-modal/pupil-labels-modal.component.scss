@@ -1,0 +1,76 @@
+@import '../../../assets/styles/base';
+@import '../../../assets/styles/buttons';
+
+.title, .description {
+  color: white;
+}
+
+.description {
+  margin-top: 5px;
+}
+
+.body {
+  width: 500px;
+
+  .labels-container {
+    display: flex;
+    padding: 25px 0 35px 0;
+    flex-wrap: wrap;
+  }
+
+  .action-button {
+    display: flex;
+    font-weight: $font-weight-regular;
+    color: $color-text-normal;
+    background-color: white;
+    margin-top: $margin-tiny;
+    margin-right: $margin-default;
+    padding: 6px $margin-small 6px $margin-tiny;
+    cursor: unset;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+
+    .text-content {
+      align-self: center;
+      white-space: nowrap;
+    }
+  }
+}
+
+.text-button {
+  &.disabled {
+    color: $color-text-normal;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .body {
+    width: unset;
+  }
+}
+
+@media (max-width: $mobile-screen-width-small) {
+  .body {
+    max-width: 500px;
+    width: 100%;
+
+    .labels-container {
+      padding-top: $margin-small;
+      padding-bottom: $margin-small;
+      flex-direction: column;
+
+      .action-button {
+        margin-top: $margin-tiny;
+        margin-right: auto;
+        border-radius: $border-radius-tiny;
+
+        &:first-of-type {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+}

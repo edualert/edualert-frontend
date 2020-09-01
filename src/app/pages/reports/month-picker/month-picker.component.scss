@@ -1,0 +1,37 @@
+@import "../../../../assets/styles/base";
+
+.month-picker {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-normal;
+  font-weight: $font-weight-bold;
+  .month {
+    width: 110px;
+    text-align: center;
+    user-select: none;
+  }
+
+  .expand {
+    width: 10px;
+    height: 10px;
+    background-color: $color-blue;
+    -webkit-mask-image: url(../../../../assets/img/expand.svg);
+    mask-image: url(../../../../assets/img/expand.svg);
+    transform: rotate(-90deg);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    margin-right: $margin-tiny;
+    cursor: pointer;
+
+    &.forth {
+      transform: rotate(90deg);
+      margin-right: 0;
+      margin-left: $margin-tiny;
+    }
+
+    &.disable {
+      background-color: darken($color-separator, 10%);
+      pointer-events: none;
+    }
+  }
+}

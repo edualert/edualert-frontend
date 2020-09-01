@@ -1,0 +1,101 @@
+@import '../../../assets/styles/base.scss';
+
+.row {
+  margin-top: $margin-default;
+  margin-bottom: $margin-default;
+  display: flex;
+  justify-content: space-between;
+  width: 630px;
+  position: relative;
+}
+
+.align-end {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-end;
+  width: auto;
+}
+
+.random_class {
+  align-self: flex-end;
+}
+
+.narrow-input {
+  margin-top: 5px;
+}
+
+.text {
+  color: $color-text-light;
+  font-size: $font-size-normal;
+  align-self: center;
+  margin-right: $margin-small;
+
+  &#title {
+    width: 110px;
+    color: $color-text-dark;
+  }
+
+  &.narrow-input {
+    padding-left: $margin-big;
+  }
+
+}
+
+input {
+  align-self: center;
+  text-align: center;
+  width: 150px;
+  height: 30px;
+}
+
+.input-container {
+  position: relative;
+}
+
+.error-message {
+  position: absolute;
+  top: $margin-big + 2px;
+  right: 1px;
+  padding-right: 3px;
+}
+
+.datepicker-container {
+  width: 400px;
+  position: absolute;
+  z-index: 10;
+}
+
+@media screen and (max-width: $mobile-screen-width-small) {
+  .row {
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .align-end {
+    margin-top: 5px;
+  }
+
+  .text {
+    align-self: start;
+    font-size: $font-size-small;
+    margin-right: 0;
+    padding-top: 5px;
+    width: 70px;
+
+    &.narrow-input {
+      padding-top: 5px;
+      padding-left: 0;
+    }
+
+    &#title {
+      padding-bottom: 5px;
+    }
+
+  }
+
+  input, input.date {
+    width: 120px;
+  }
+
+}

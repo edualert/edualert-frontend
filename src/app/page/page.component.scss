@@ -1,0 +1,26 @@
+@import '../../assets/styles/base';
+
+:host {
+  display: flex;
+}
+
+.page {
+  flex: 1;
+  width: calc(100% - #{$nav-bar-width});
+  margin-left: $nav-bar-width;
+
+  @media (max-width: $mobile-screen-width-normal) {
+    margin-top: 10px;
+    margin-left: 0;
+  }
+
+  &.big-nav-bar {
+    width: calc(100% - #{$big-nav-bar-width});
+    margin-left: $big-nav-bar-width;
+
+    @media (max-width: $mobile-screen-width-normal) {
+      padding: 0 $margin-default;
+      margin: 0;
+    }
+  }
+}

@@ -1,0 +1,98 @@
+@import "../../../assets/styles/base";
+
+.page-content {
+  position: relative;
+}
+
+.dropdown-parent {
+  width: 150px;
+  margin-left: $margin-small;
+}
+
+.section {
+  margin-top: $margin-default;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.section-title {
+  font-size: $font-size-small;
+  line-height: 17px;
+  color: $color-text-light;
+}
+
+.card {
+	.card-title {
+	  margin-top: -5px;
+	  transition: color 0.1s;
+	  cursor: pointer;
+	  width: fit-content;
+	  font-size: $font-size-big;
+	  color: $color-text-normal;
+	  line-height: 28px;
+	  display: block;
+	}
+
+	.category {
+	  margin-top: $margin-tiny;
+	}
+
+	.profile {
+	  margin-left: unset;
+	  font-size: $font-size-normal;
+	  line-height: 18px;
+	  font-weight: normal;
+	}
+
+	&:hover {
+	    .card-title {
+	      color: $color-blue;
+	    }
+  	}
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .page-content {
+    padding-bottom: $margin-xbig;
+  }
+
+  .list-count {
+    display: block;
+    margin-top: $margin-tiny;
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+	.page-content {
+		padding: $margin-xsmall $margin-default $margin-xbig;
+
+		.section {
+		  margin-top: $margin-small;
+		  margin-bottom: $margin-xsmall;
+		}
+
+		.card {
+			.card-title {
+			  font-size: $font-size-bigish;
+			  margin-top: unset;
+
+			  &.text-button {
+			    display: block;
+			  }
+			}
+
+			.categories {
+				.category {
+					margin-top: 1px;
+					
+					.profile {
+					  font-size: $font-size-small;
+					}
+				}
+			}
+		}
+	}
+}
+

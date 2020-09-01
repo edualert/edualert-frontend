@@ -1,0 +1,41 @@
+<div class="row {{ styleInput ? styleInput : '' }}">
+  <div class="text align-end {{ styleInput ? styleInput : ''}}" id="title">{{ labelValue }}</div>
+
+  <div class="input-container align-end">
+    <div class="text">Începe</div>
+      <input
+        class="date custom-date {{ messageErrorFrom ? 'error-input' : ''}}"
+        (click)="openPickerFrom()"
+        readOnly
+        value="{{ dateFrom ? dateForInput(dateFrom) : '' }}">
+    <!-- [attr.disabled]="isSemesterDate && !editableDates ? true : null" removed from above for Demo purposes -->
+    <div class="datepicker-container">
+        <app-datepicker
+          color="#0077DB"
+          #datepickerFrom
+          [dateValue]="dateFrom"
+          (dateChanged)="startDateChanged($event)">
+        </app-datepicker>
+      </div>
+    <div class="error-message red-text" *ngIf="messageErrorFrom">{{ messageErrorFrom }}</div>
+  </div>
+
+  <div class="input-container align-end">
+    <div class="text">Se termină</div>
+    <input
+      class="date custom-date {{ messageErrorTo ? 'error-input' : ''}}"
+      (click)="openPickerTo()"
+      readOnly
+      value="{{ dateTo ? dateForInput(dateTo) : ''}}">
+    <!-- [attr.disabled]="isSemesterDate && !editableDates ? true : null" removed from above for Demo purposes -->
+    <div class="datepicker-container">
+      <app-datepicker
+        color="#0077DB"
+        #datepickerTo
+        [dateValue]="dateTo"
+        (dateChanged)="endDateChanged($event)">
+      </app-datepicker>
+    </div>
+    <div class="error-message red-text" *ngIf="messageErrorTo">{{ messageErrorTo }}</div>
+  </div>
+</div>

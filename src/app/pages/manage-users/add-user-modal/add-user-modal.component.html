@@ -1,0 +1,40 @@
+<app-modal [headerColor]="'dark'" #modal>
+  <div id="modal-header">
+    <div class="header">
+      <h2 class="title">Creează un {{userRoles[userRole]?.toLowerCase()}} nou</h2>
+    </div>
+  </div>
+  <div id="modal-body">
+    <div class="modal-body">
+      <app-input
+        label="Nume"
+        type="header"
+        [value]="name"
+        (inputChange)="nameChange"
+      ></app-input>
+      <div class="mail-phone-switch">
+        <div class="label">Nume utilizator*</div>
+        <div class="vertical">
+          <div class="row">
+            <span class="radio-container" (click)="switchUsername('email')">
+              <div class="radio-button" [class.checked]="usernameType === 'email'"></div>
+              <div class="text">Adresă de email</div>
+            </span>
+            <input type="email" *ngIf="usernameType === 'email'" placeholder="Email" [(ngModel)]="email" #usernameInput>
+          </div>
+          <div class="row">
+            <span class="radio-container" (click)="switchUsername('phone')">
+              <div class="radio-button" [class.checked]="usernameType === 'phone'"></div>
+              <div class="text">Număr de telefon</div>
+            </span>
+            <input type="number" *ngIf="usernameType === 'phone'" placeholder="Telefon" [(ngModel)]="phone" #usernameInput>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span class="text-button blue" (click)="confirm()">Salvează</span>
+    <span class="text-button dark-text" (click)="cancel()">Anulează</span>
+  </div>
+</app-modal>

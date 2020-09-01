@@ -1,0 +1,153 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Detalii mesaj</h1>
+    <a id="header-back-button" [routerLink]="['/messages']">
+      <div class="arrow left"></div>
+      <div class="blue-text bold column">
+        Mesaje Trimise
+      </div>
+    </a>
+  </app-header>
+  <div class="page-content">
+    <ng-container [ngSwitch]="sendOrReceivedTemplate">
+      <ng-container *ngSwitchCase="'sent'">
+        <div class="detail-element-container header blue-text bold">
+          <div class="label-container fixed-width">Titlu</div>
+          <div class="value-container">{{message?.title}}</div>
+        </div>
+        <div class="info-wrapper">
+          <div class="label">Pentru:</div>
+          <ng-container [ngSwitch]="message?.receiver_type">
+            <ng-container *ngSwitchCase="'CLASS_STUDENTS'">
+              <div class="cell">
+                <a class="text-item link-content blue-text bold arrow right" [routerLink]="['/my-classes', message.target_study_class.id, 'class-detail']">
+									{{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
+								</a>
+              </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'CLASS_PARENTS'">
+              <div class="cell">
+                <span class="text-item dark-text bold">
+									Părinți
+								</span>
+              </div>
+              <hr class="vertical">
+              <div class="cell">
+                <span class="title">Clasă:</span>
+                <a class="text-item link-content blue-text bold arrow right" [routerLink]="['/my-classes', message.target_study_class.id, 'class-detail']">
+									{{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
+								</a>
+              </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'ONE_STUDENT'">
+              <div class="cell">
+                <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.target_user_through.user_profile)">
+									{{message.target_user_through.user_profile_full_name}}
+								</span>
+              </div>
+              <hr class="vertical">
+              <div class="cell">
+                <span class="title">Elev:</span>
+                <a class="text-item link-content blue-text bold arrow right" [routerLink]="['/my-classes', message.target_study_class.id, 'class-detail']">
+									{{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
+								</a>
+              </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'ONE_PARENT'" class="receiver-info-wrapper">
+              <div class="cell">
+                <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.target_user_through.user_profile)">
+									{{message.target_user_through.user_profile_full_name}}
+								</span>
+              </div>
+              <hr class="vertical">
+              <div class="cell">
+                <span class="title">Părinte elev:</span>
+                <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.target_user_through.children[0].id)">
+									{{message.target_user_through.children[0].full_name}}
+								</span>
+              </div>
+              <hr class="vertical">
+              <div class="cell">
+                <span class="title">Clasă:</span>
+                <a class="text-item link-content blue-text bold arrow right" [routerLink]="['/my-classes', message.target_user_through.children[0].study_class.id, 'class-detail']">
+									{{message.target_user_through.children[0].study_class.class_grade + " " + message.target_user_through.children[0].study_class.class_letter}}
+								</a>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Trimis</div>
+          <div class="value-container bold">{{message?.send_sms ? 'online + SMS' : 'online'}}</div>
+        </div>
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Dată si oră</div>
+          <div class="value-container bold">{{message?.created.format('DD-MM-YYYY hh:mm')}}</div>
+        </div>
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Stare</div>
+          <div class="value-container bold">{{message?.status?.read_by_count > 0
+            ? message?.status.sent_to_count > 1
+              ? 'Citit de ' + message?.status?.read_by_count + ' din ' + message?.status?.sent_to_count
+              : 'Citit'
+            : 'Necitit' }}
+          </div>
+        </div>
+        <hr class="margin-list">
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Conținut mesaj</div>
+          <div class="value-container bold">{{message?.body}}</div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'received'">
+        <div class="detail-element-container header blue-text bold">
+          <div class="label-container fixed-width">Titlu</div>
+          <div class="value-container">{{message?.title}}</div>
+        </div>
+        <div class="info-wrapper">
+          <div class="label">De la:</div>
+          <ng-container [ngSwitch]="message?.from_user_role">
+            <ng-container *ngSwitchCase="'SCHOOL_PRINCIPAL'">
+              <div class="cell">
+              <span class="text-item link-content bold">
+									{{message?.from_user_full_name}}
+              </span>
+              </div>
+              <hr class="vertical">
+              <div class="cell">
+                <span class="title">Director</span>
+              </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'TEACHER'">
+              <div class="cell">
+              <span class="text-item dark-text bold">
+                {{message?.from_user_full_name}}
+              </span>
+              </div>
+              <hr class="vertical">
+              <div class="cell">
+                <span class="title">Profesor:</span>
+                <span class="text-item dark-text bold margin-left">
+                  {{message?.from_user_subjects.join(', ')}}
+                </span>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Dată si oră</div>
+          <div class="value-container bold">{{message?.created.format('DD-MM-YYYY hh:mm')}}</div>
+        </div>
+        <hr class="margin-list">
+        <div class="detail-element-container">
+          <div class="label-container fixed-width">Conținut mesaj</div>
+          <div class="value-container bold">{{message?.body}}</div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'loading'"></ng-container>
+    </ng-container>
+  </div>
+</div>
+
+<app-view-user-modal #userDetailsModal></app-view-user-modal>

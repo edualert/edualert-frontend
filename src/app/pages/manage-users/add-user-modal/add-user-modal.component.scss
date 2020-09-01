@@ -1,0 +1,81 @@
+@import "../../../../assets/styles/base";
+
+h2 {
+  color: white;
+}
+
+.modal-body {
+  padding-top: $margin-tiny;
+  padding-bottom: $margin-default;
+  width: 700px;
+  max-width: calc(100vw - 100px);
+  margin-right: 0;
+}
+
+.label {
+  width: $fixed-width-column;
+}
+
+.mail-phone-switch {
+  display: flex;
+  margin-top: $margin-tiny;
+  width: 100%;
+
+  .label {
+    padding-top: 5px;
+  }
+
+  .vertical {
+    flex: 1;
+  }
+
+  .row {
+    display: flex;
+    height: 30px;
+    width: 100%;
+  }
+
+
+  .radio-container {
+    width: 140px;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+  }
+
+  input {
+    margin-left: $margin-default;
+    flex: 1;
+    animation: fadeIn 0.1s 0.1s linear 1 backwards;
+  }
+}
+
+.text-button + .text-button {
+  margin-left: $margin-big;
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .mail-phone-switch {
+    flex-flow: column;
+    margin-top: $margin-default;
+
+    .row {
+      display: block;
+      height: auto;
+
+      margin-top: $margin-tiny;
+    }
+
+
+    input {
+      height: 30px;
+      margin-left: 0;
+      margin-top: $margin-tiny;
+      width: 100%;
+    }
+  }
+
+}

@@ -1,0 +1,93 @@
+<div class="animated-page">
+  <app-header>
+    <a id="header-back-button" [routerLink]="['/messages']">
+      <div class="arrow left"></div>
+      <div class="blue-text bold column">
+        Mesaje trimise
+      </div>
+    </a>
+    <h1 id="header-title">Creare mesaj</h1>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div class="text-button" (click)="onSubmit()">Trimite mesaj</div>
+        <div class="text-button dark-text" [routerLink]="['/messages']">Anulează</div>
+      </div>
+    </div>
+  </app-header>
+  <div class="page-content">
+
+    <div class="detail-element-container margin-top-small">
+      <h2 class="label-container blue-text fixed-width custom-weight">Titlu*</h2>
+      <div class="value-container full-width" [class.header-input-error]="errors['title']">
+        <div class="big-input-container">
+          <app-input-new [value]="message?.title"
+                         (inputChange)="changeValue($event, 'title')"
+                         [error]="errors?.title"
+                         [maxLength]="100"
+          ></app-input-new>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-element-container margin-top-small align-start">
+      <div class="label-container fixed-width">Pentru*</div>
+      <div class="value-container multiple-value-elements">
+        <div class="radio-buttons-container">
+          <span class="radio-container" (click)="changeValue(receiverClassStudents, 'receiver_type')">
+            <div class="radio-button" [class.checked]="message?.receiver_type === receiverClassStudents"></div>
+            <div class="text">Clasă</div>
+          </span>
+          <span class="radio-container" (click)="changeValue(receiverClassParents, 'receiver_type')">
+            <div class="radio-button" [class.checked]="message?.receiver_type === receiverClassParents"></div>
+            <div class="text">Părinți clasă</div>
+          </span>
+          <span class="radio-container" (click)="changeValue(receiverSingleStudent, 'receiver_type')">
+            <div class="radio-button" [class.checked]="message?.receiver_type === receiverSingleStudent"></div>
+            <div class="text">Elev</div>
+          </span>
+          <span class="radio-container" (click)="changeValue(receiverSingleParent, 'receiver_type')">
+            <div class="radio-button" [class.checked]="message?.receiver_type === receiverSingleParent"></div>
+            <div class="text">Părinte</div>
+          </span>
+        </div>
+        <hr class="vertical">
+        <div class="dropdown-container">
+          <app-dropdown
+            [error]="errors?.target_study_class || errors?.target_user"
+            [placeholder]="''"
+            [list]="dropdownList"
+            [displayedProperty]="'text'"
+            (elementHasBeenSelected)="handleDropdownSelection($event)"
+            [appliedElement]="selectedDropdownElement"
+            [withSearch]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-element-container margin-top-small align-start">
+      <div class="label-container fixed-width">Opțiune de trimitere</div>
+      <div class="value-container full-width">
+        <span class="radio-container" (click)="changeValue(!message.send_sms, 'send_sms')">
+          <div class="radio-button" [class.checked]="message?.send_sms"></div>
+          <div class="text">Trimite și SMS</div>
+        </span>
+      </div>
+    </div>
+    <hr class="margin-list">
+
+    <div class="detail-element-container margin-top-small">
+      <div class="label-container fixed-width">Conținut mesaj*</div>
+      <div class="value-container full-width">
+        <textarea #textBox
+                  cols="30"
+                  rows="10"
+                  (input)="changeValue(textBox.value, 'body')"
+                  [class.error]="errors.body"
+                  [maxLength]="message.send_sms ? '160' : '500'"
+        ></textarea>
+        <div *ngIf="errors.body" class="error-message">{{errors.body}}</div>
+      </div>
+    </div>
+  </div>
+</div>

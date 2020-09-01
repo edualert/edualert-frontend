@@ -1,0 +1,126 @@
+<div class="animated-page" *ngIf="this.requestInProgress; else loadedView">
+	<app-header>
+	   <a id="header-back-button" [routerLink]="['/manage-classes']">
+	     <div class="arrow left"></div>
+	     <div class="blue-text bold column">
+	       Gestionare clase
+	     </div>
+	   </a>
+	   <h1 id="header-title">Detalii clasă</h1>
+	   <h2 id="header-subtitle">Se încarcă datele...</h2>
+	   <div id="header-top-right-container">
+	     <div class="button-container" [class.disabled]="!isEditable">
+	       <div class="text-button" [routerLink]="['/manage-classes']">Editează</div>
+	       <div class="text-button dark-text">Șterge</div>
+	     </div>
+	   </div>
+	 </app-header>
+	<div class="page-content">
+		<div class="main-info no-bottom-padding">
+			<div class="row">
+				<span class="title blue-text large">Nume</span>
+		      	<span class="text-item bold blue-text large">Se încarcă datele...</span>
+	      	</div>
+		</div>
+		<hr>
+		<div class="class-master">
+			<span class="title">Diriginte</span>
+			<span class="text-item link-content blue-text bold">
+				Se încarcă datele...
+			</span>
+		</div>
+		<div class="tabs-section">
+			<div class="tabs-container">
+			  <app-tabs [tabsList]="tabs"
+			            (tabHasBeenSelected)="tabClicked($event)">
+			  </app-tabs>
+			</div>
+			<div class="body">
+				<ng-container *ngIf="activeTab === 'teachers_class_through'; else studentsTab">
+				    Se încarcă datele...
+				</ng-container>
+				<ng-template #studentsTab>
+					Se încarcă datele...
+				</ng-template>
+			</div>
+		</div>
+	</div>
+</div>
+<ng-template #loadedView>
+	<div class="animated-page">
+		<app-header>
+		   <a id="header-back-button" [routerLink]="['/manage-classes']">
+		     <div class="arrow left"></div>
+		     <div class="blue-text bold column">
+		       Gestionare clase
+		     </div>
+		   </a>
+		   <h1 id="header-title">Detalii clasă</h1>
+		   <h2 id="header-subtitle">{{study_class?.academic_year}} - {{study_class?.academic_year + 1}}</h2>
+		   <div id="header-top-right-container">
+		     <div class="button-container" [class.disabled]="!isEditable">
+		       <div class="text-button" [routerLink]="['/manage-classes/' + study_class.id + '/edit']">Editează</div>
+		       <div class="text-button dark-text" [class.disabled]="study_class?.has_previous_catalog_data" (click)="deleteClass($event)">Șterge</div>
+		     </div>
+		   </div>
+		 </app-header>
+		<div class="page-content">
+			<div class="main-info" [class.no-bottom-padding]="!study_class?.academic_program_name">
+				<div class="row">
+					<span class="title blue-text large">Nume</span>
+			      	<span class="text-item bold blue-text large">{{study_class?.class_grade + ' ' + study_class?.class_letter}}</span>
+		      	</div>
+		      	<div class="row" *ngIf="study_class?.academic_program_name">
+					<span class="title">Profil - Specializare / Domeniu</span>
+			      	<span class="text-item bold">{{study_class?.academic_program_name}}</span>
+		      </div>
+			</div>
+			<hr>
+			<div class="class-master">
+				<span class="title">Diriginte</span>
+				<span class="text-item link-content blue-text bold" (click)="openUserModal($event, study_class.class_master.id)">
+					{{study_class?.class_master?.full_name}}
+					<div class="arrow right"></div>
+				</span>
+			</div>
+			<div class="tabs-section">
+				<div class="tabs-container">
+				  <app-tabs [tabsList]="tabs"
+                    [activeTab]="activeTab"
+                    (tabHasBeenSelected)="tabClicked($event)">
+				  </app-tabs>
+				</div>
+				<div class="body">
+					<ng-container *ngIf="activeTab === 'teachers_class_through'; else studentsTab">
+					    <div class="row" *ngFor="let teacherThrough of study_class?.teachers_class_through">
+					    	<div class="sub-row">
+						      	<span class="title">Materie</span>
+						      	<span class="text-item bold">{{teacherThrough.subject_name}}</span>
+						    </div>
+						    <div class="sub-row">
+						      	<span class="title">Nume</span>
+						      	<span class="text-item link-content blue-text bold" (click)="openUserModal($event, teacherThrough.teacher.id)">
+						      		{{teacherThrough.teacher?.full_name}}
+						      		<div class="arrow right"></div>
+						      	</span>
+					      	</div>
+					    	<hr class="margin-list">
+					    </div>
+					</ng-container>
+					<ng-template #studentsTab>
+						<div class="row" *ngFor="let student of study_class?.students">
+					      	<span class="title">Nume</span>
+					      	<span class="text-item link-content blue-text bold" (click)="openUserModal($event, student.id)">
+					      		{{student?.full_name}}
+					      		<div class="arrow right"></div>
+					      	</span>
+					    </div>
+					</ng-template>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<app-confirmation-modal #appConfirmationModal></app-confirmation-modal>
+  <app-view-user-modal #appViewUserModal></app-view-user-modal>
+</ng-template>

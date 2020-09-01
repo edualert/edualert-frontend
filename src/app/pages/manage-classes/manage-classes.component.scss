@@ -1,0 +1,118 @@
+@import "../../../assets/styles/base";
+
+.card {
+  width: 230px;
+  height: auto;
+  margin-top: $margin-default;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-right: $margin-default;
+
+  .card-left-container {
+    height: 100%;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+  }
+
+  &.wide {
+    width: 480px;
+    display: block;
+
+    .card-left-container {
+      display: block;
+    }
+  }
+
+  .card-right-container {
+    position: absolute;
+    right: $margin-big;
+    top: $margin-default;
+    height: calc(100% - #{$margin-default * 2});
+    width: auto;
+    display: flex;
+    align-items: center;
+
+    .buttons {
+      height: 100%;
+      display: flex;
+      flex-flow: column;
+      justify-content: center;
+
+      .text-button {
+        display: inline;
+        width: auto;
+
+
+      }
+
+      .text-button + .text-button {
+        margin-top: $margin-small;
+      }
+    }
+
+    hr {
+      display: none;
+    }
+
+    .vertical {
+      display: block;
+      margin-left: $margin-default;
+      margin-right: $margin-default;
+    }
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .page-content {
+    .card {
+      display: block;
+      width: 280px;
+      height: 87px;
+      margin-top: $margin-tiny;
+      padding: $margin-tiny $margin-small;
+
+      .card-left-container {
+        height: unset;
+      }
+
+      &.wide {
+        width: 280px;
+        height: 113px;
+      }
+
+      .card-right-container {
+        right: $margin-small;
+        top: unset;
+        bottom: 0;
+        height: auto;
+        width: calc(100% - #{$margin-small * 2});
+        display: block;
+
+        .buttons {
+          margin: $margin-small 0;
+          height: unset;
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+
+          .text-button {
+            margin-top: unset;
+            margin-bottom: unset;
+            margin-right: $margin-default;
+          }
+        }
+
+        hr {
+          display: block;
+          min-height: 1px;
+        }
+
+        hr.vertical.visible-on-desktop {
+          display: none;
+        }
+      }
+    }
+  }
+}

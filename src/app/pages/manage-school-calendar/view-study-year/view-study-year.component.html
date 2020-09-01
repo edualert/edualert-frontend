@@ -1,0 +1,235 @@
+<div class="animated-page" *ngIf="this.requestInProgress; else loadedView">
+	<app-header>
+	  <h1 id="header-title">Gestionare calendar an școlar</h1>
+	  <h2 id="header-subtitle">Se încarcă datele...</h2>
+	  <div id="header-top-right-container">
+	    <div class="button-container">  <!---[class.disabled]="!isEditable" - removed for Demo purposes -->
+	      <div class="text-button" [routerLink]="['/manage-school-calendar/edit']">Editează</div>
+	    </div>
+	  </div>
+	</app-header>
+	<div class="page-content">
+		<span class="bold blue-text section-title">
+			Semestrul I
+		</span>
+		<div class="section-details">
+			<div class="heading">
+				<span class="title">Interval</span>
+				<div class="text-item">
+					<span class="key">Începe:</span>
+					<span class="value">Se încarcă datele...</span>
+				</div>
+				<div class="text-item">
+					<span class="key">Se termină:</span>
+					<span class="value">Se încarcă datele...</span>
+				</div>
+			</div>
+			<hr>
+			<div class="event-container">
+				<span class="title">Evenimente</span>
+				<div class="body">
+					Se încarcă datele...
+				</div>
+			</div>
+		</div>
+		<hr>
+		<span class="bold blue-text section-title">
+				Semestrul II
+		</span>
+		<div class="section-details">
+			<div class="heading">
+				<span class="title">Interval</span>
+				<div class="text-item">
+					<span class="key">Începe:</span>
+					<span class="value">Se încarcă datele...</span>
+				</div>
+				<div class="text-item">
+					<span class="key">Se termină:</span>
+					<span class="value">Se încarcă datele...</span>
+				</div>
+			</div>
+			<hr>
+			<div class="event-container">
+				<span class="title">Evenimente</span>
+				<div class="body">
+					Se încarcă datele...
+				</div>
+			</div>
+		</div>
+		<hr>
+		<span class="bold blue-text section-title">
+			Alte evenimente
+		</span>
+		<div class="section-details">
+			<div class="heading">
+				<span class="title">Interval</span>
+				<div class="text-item">
+					<span class="key">Începe:</span>
+					<span class="value">Se încarcă datele...</span>
+				</div>
+				<div class="text-item">
+					<span class="key">Se termină:</span>
+					<span class="value">Se încarcă datele...</span>
+				</div>
+			</div>
+			<hr>
+			<div class="event-container">
+				<span class="title">Evenimente</span>
+				<div class="body">
+					Se încarcă datele...
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<ng-template #loadedView>
+	<div class="animated-page">
+		<app-header>
+		  <h1 id="header-title">Gestionare calendar an școlar</h1>
+		  <h2 id="header-subtitle">{{ currentAcademicYear.academic_year + ' - ' + (currentAcademicYear.academic_year + 1)}}</h2>
+		  <div id="header-top-right-container">
+		    <div class="button-container"> <!---[class.disabled]="!isEditable" - removed for Demo purposes -->
+		      <div class="text-button" [routerLink]="['/manage-school-calendar/edit']">Editează</div>
+		    </div>
+		  </div>
+		</app-header>
+		<div class="page-content">
+			<span class="bold blue-text section-title">
+				Semestrul I
+			</span>
+			<div class="section-details">
+				<div class="heading">
+					<span class="title">Interval</span>
+					<div class="text-item">
+						<span class="key">Începe:</span>
+						<span class="value">{{currentAcademicYear.first_semester.starts_at.split('-').join('.')}}</span>
+					</div>
+					<div class="text-item">
+						<span class="key">Se termină:</span>
+						<span class="value">{{currentAcademicYear.first_semester.ends_at.split('-').join('.')}}</span>
+					</div>
+				</div>
+				<hr>
+				<div class="event-container">
+					<span class="title">Evenimente</span>
+					<div class="body">
+						<div class="event-item" *ngFor="let event of currentAcademicYear.first_semester.events">
+							<div class="event-row">
+								<span class="title">Tip</span>
+								<div class="color-block" 
+									 [ngStyle]="{background: eventCategoryVisualMapping[eventTypeToCategory[event.event_type]].color}">	 	
+							    </div>
+								<span class="name">{{eventTypesNames[event.event_type].name}}</span>
+							</div>
+							<div class="event-row">
+								<span class="title">Interval</span>
+								<div class="text-item">
+									<span class="key">Începe:</span>
+									<span class="value">{{event.starts_at.split('-').join('.')}}</span>
+								</div>
+								<div class="text-item">
+									<span class="key">Se termină:</span>
+									<span class="value">{{event.ends_at.split('-').join('.')}}</span>
+								</div>
+							</div>
+							<hr>
+						</div>
+					</div>
+				</div>
+			</div>
+			<app-calendar [startDate]="currentAcademicYear.first_semester.starts_at" 
+						  [endDate]="currentAcademicYear.first_semester.ends_at" 
+						  [eventTypeMapping]="eventCategoryVisualMapping" 
+						  [eventList]="firstSemesterEventList">
+			</app-calendar>
+			<hr>
+			<span class="bold blue-text section-title">
+				Semestrul II
+			</span>
+			<div class="section-details">
+				<div class="heading">
+					<span class="title">Interval</span>
+					<div class="text-item">
+						<span class="key">Începe:</span>
+						<span class="value">{{currentAcademicYear.second_semester.starts_at.split('-').join('.')}}</span>
+					</div>
+					<div class="text-item">
+						<span class="key">Se termină:</span>
+						<span class="value">{{currentAcademicYear.second_semester.ends_at.split('-').join('.')}}</span>
+					</div>
+				</div>
+				<hr>
+				<div class="event-container">
+					<span class="title">Evenimente</span>
+					<div class="body">
+						<div class="event-item" *ngFor="let event of currentAcademicYear.second_semester.events">
+							<div class="event-row">
+								<span class="title">Tip</span>
+								<div class="color-block" 
+									 [ngStyle]="{background: eventCategoryVisualMapping[eventTypeToCategory[event.event_type]].color}">	 	
+							    </div>
+								<span class="name">{{eventTypesNames[event.event_type].name}}</span>
+							</div>
+							<div class="event-row">
+								<span class="title">Interval</span>
+								<div class="text-item">
+									<span class="key">Începe:</span>
+									<span class="value">{{event.starts_at.split('-').join('.')}}</span>
+								</div>
+								<div class="text-item">
+									<span class="key">Se termină:</span>
+									<span class="value">{{event.ends_at.split('-').join('.')}}</span>
+								</div>
+							</div>
+							<hr>
+						</div>
+					</div>
+				</div>
+			</div>
+			<app-calendar [startDate]="currentAcademicYear.second_semester.starts_at" 
+						  [endDate]="currentAcademicYear.second_semester.ends_at" 
+						  [eventTypeMapping]="eventCategoryVisualMapping" 
+						  [eventList]="secondSemesterEventList">
+			</app-calendar>
+			<hr>
+			<span class="bold blue-text section-title">
+				Alte evenimente
+			</span>
+			<div class="section-details">
+				<div class="event-container">
+					<span class="title">Evenimente</span>
+					<div class="body">
+						<div class="event-item" *ngFor="let event of currentAcademicYear.events">
+							<div class="event-row">
+								<span class="title">Tip</span>
+								<div class="color-block" 
+									 [ngStyle]="{background: extraEventCategoryVisualMapping[eventTypeToCategory[event.event_type]].color}">	 	
+							    </div>
+								<span class="name">{{eventTypesNames[event.event_type].name}}</span>
+							</div>
+							<div class="event-row">
+								<span class="title">Interval</span>
+								<div class="text-item">
+									<span class="key">Începe:</span>
+									<span class="value">{{event.starts_at.split('-').join('.')}}</span>
+								</div>
+								<div class="text-item">
+									<span class="key">Se termină:</span>
+									<span class="value">{{event.ends_at.split('-').join('.')}}</span>
+								</div>
+							</div>
+							<hr>
+						</div>
+					</div>
+				</div>
+			</div>
+			<app-calendar [startDate]="extraEventsStartDate" 
+						  [endDate]="extraEventsEndDate" 
+						  [eventTypeMapping]="extraEventCategoryVisualMapping" 
+						  [eventList]="otherEventList"
+						  ignoreLimitDates="true"
+						  isNarrow="true">
+			</app-calendar>
+		</div>
+	</div>
+</ng-template>

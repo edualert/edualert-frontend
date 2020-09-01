@@ -1,0 +1,112 @@
+@import '../../../assets/styles/base.scss';
+
+$cell-height: 70px;
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex {
+  flex-grow: 1;
+}
+
+.auto-width {
+  width: auto;
+}
+
+.scrollable-container {
+  max-width: 100%;
+  overflow: auto;
+}
+
+.small {
+  min-width: 70px;
+  height: $cell-height;
+  flex-grow: 1;
+
+  &.data {
+    padding-bottom: 0;
+    height: $cell-height;
+  }
+}
+
+.regular {
+  min-width: 227px;
+  height: $cell-height;
+  flex-grow: 1;
+
+  &.data {
+    padding-bottom: 0;
+    height: $cell-height;
+  }
+}
+
+.big {
+  min-width: 230px;
+  height: $cell-height;
+  flex-grow: 1;
+
+  &.data {
+    padding-bottom: 0;
+    height: $cell-height;
+  }
+}
+
+.column-title {
+  height: 56px;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-small;
+}
+
+.subcol-title {
+  display: flex;
+  height: 30px;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: $font-weight-regular;
+  padding-left: $margin-tiny;
+}
+
+.padded-top {
+  padding-top: $margin-small;
+}
+
+.aligned-center-cell {
+  padding-left: $margin-tiny;
+  padding-top: 25px;
+}
+
+.border {
+  &.subcols-border {
+    border-left: 1px solid $color-separator;
+    border-bottom: 1px solid $color-separator;
+  }
+
+  &.columns-border {
+  }
+
+  &.border-right {
+    border-right: 1px solid $color-separator;
+  }
+
+  &.cell-bottom-border {
+    border-bottom: 1px solid $color-separator;
+    width: 100%;
+  }
+
+  &.end-border {
+    border-right: 1px solid $color-separator;
+  }
+
+  &.border-bottom {
+    border-bottom: 1px solid $color-separator;
+    padding-left: $margin-tiny;
+    padding-bottom: $margin-tiny;
+  }
+}

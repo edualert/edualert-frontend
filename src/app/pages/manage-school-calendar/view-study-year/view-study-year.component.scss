@@ -1,0 +1,223 @@
+@import '../../../../assets/styles/base.scss';
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  height: 100%;
+  padding-bottom: $margin-default;
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+.text-button {
+  margin-right: $margin-small;
+  margin-left: $margin-small;
+}
+
+.section-title {
+  display: block;
+  margin-top: $margin-default;
+  font-size: $font-size-big;
+  line-height: 28px;
+}
+
+hr {
+  margin-bottom: $margin-big;
+}
+
+.section-details {
+  display: block;
+  width: 631px;
+  margin-top: $margin-default;
+
+  .heading {
+    display: inline-block;
+    margin-bottom: $margin-big;
+  }
+
+  .title {
+    display: inline-block;
+    margin-right: 61px;
+    font-size: $font-size-normal;
+    line-height: 18px;
+    letter-spacing: 0;
+  }
+
+  .text-item {
+    margin-left: $margin-xbig;
+    letter-spacing: 0;
+    display: inline-block;
+    font-size: $font-size-normal;
+    line-height: 18px;
+
+    .key {
+      color: $color-text-light;
+      margin-right: $margin-tiny;
+    }
+
+    .value {
+      font-weight: bold;
+      color: $color-text-normal;
+    }
+  }
+
+  .event-container {
+    .title {
+      display: block;
+      margin-top: $margin-big;
+      color: $color-text-normal;
+      font-weight: 500;
+      font-size: $font-size-bigish;
+      line-height: 21px;
+    }
+
+    .body {
+      margin-top: $margin-big;
+      padding-left: $margin-big;
+      border-left: 1px solid $color-separator;
+      margin-bottom: 40px;
+
+      .event-item {
+        &:last-of-type {
+          hr {
+            display: none;
+          }
+        }
+
+        hr {
+          margin: $margin-default 0;
+        }
+
+        .event-row {
+          display: flex;
+          align-items: center;
+          margin-bottom: $margin-default;
+
+          .title {
+            min-width: 42px;
+            display: inline-block;
+            margin-top: 0;
+            margin-right: $margin-big;
+            font-size: $font-size-normal;
+            line-height: 18px;
+            font-weight: 300;
+          }
+
+          .color-block {
+            height: 16px;
+            width: 16px;
+            display: inline-block;
+            margin-right: $margin-tiny;
+            margin-left: $margin-xbig;
+            border-radius: 5px;
+          }
+
+          .name {
+            font-size: $font-size-normal;
+            line-height: 18px;
+            font-weight: bold;
+            color: $color-text-normal;
+            letter-spacing: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  hr {
+    margin-bottom: unset;
+    display: none;
+  }
+  .section-details {
+    hr {
+      display: block;
+    }
+  }
+  .button-container {
+    margin-top: $margin-small;
+  }
+  .text-button {
+    margin: unset;
+  }
+}
+
+@media (max-width: $mobile-screen-width-small) {
+  .section-title {
+    font-size: $font-size-bigish;
+  }
+  .page-content {
+    padding-top: 0;
+    margin-top: -5px;
+  }
+  .section-details {
+    margin-top: $margin-tiny;
+    width: 100%;
+    max-width: 280px;
+
+    .heading {
+      margin-bottom: $margin-default;
+    }
+
+    .title {
+      display: block;
+      font-size: $font-size-small;
+    }
+
+    .text-item {
+      margin-left: unset;
+      margin-top: $margin-tiny;
+      display: block;
+      font-size: $font-size-small;
+    }
+
+    .event-container {
+      width: 100%;
+
+      .title {
+        margin-top: $margin-default;
+        font-size: $font-size-normal;
+      }
+
+      .body {
+        margin-top: $margin-default;
+        padding-left: 16px;
+        margin-bottom: $margin-default;
+
+        .event-item {
+          hr {
+            margin: $margin-default 0;
+          }
+
+          .event-row {
+            display: block;
+            margin-bottom: $margin-tiny;
+
+            .title {
+              display: block;
+              margin-right: unset;
+              font-size: $font-size-small;
+            }
+
+            .color-block {
+              margin-top: $margin-tiny;
+              margin-right: $margin-tiny;
+              margin-left: unset;
+            }
+
+            .name {
+              font-size: $font-size-small;
+              overflow-wrap: break-word;
+              white-space: unset;
+            }
+          }
+        }
+      }
+    }
+  }
+}

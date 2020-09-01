@@ -1,0 +1,29 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Situație școlară</h1>
+    <h2 id="header-subtitle">
+      <ng-container *ngIf="!rip">{{student?.full_name}}</ng-container>
+      <ng-container *ngIf="rip">Se încarcă datele...</ng-container>
+    </h2>
+    <div id="header-subsubtitle">
+      <ng-container *ngIf="!rip">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</ng-container>
+      <ng-container *ngIf="rip">...</ng-container>
+    </div>
+    <div id="header-filter">
+      <app-filter>
+        <div class="dropdown-parent">
+          <app-dropdown
+            [list]="filterData.academicYears"
+            [appliedElement]="filterParams.academicYear || defaultAcademicYear"
+            [displayedProperty]="'text'"
+            [placeholder]="'An academic'"
+            (elementHasBeenSelected)="changeAcademicYear($event.element)"
+          ></app-dropdown>
+        </div>
+      </app-filter>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <app-catalog [tableLayout]="'student_own_situation'" [data]="catalog"></app-catalog>
+  </div>
+</div>

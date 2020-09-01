@@ -1,0 +1,118 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Rapoarte</h1>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div class="text-button export_button disabled">Exportă rapoarte</div>
+      </div>
+    </div>
+    <div id="tabs-container">
+      <app-tabs
+        [tabsList]="tabs"
+        [activeTab]="activeTab"
+        (tabHasBeenSelected)="changeTab($event)"></app-tabs>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container [ngSwitch]="activeTab">
+      <ng-container *ngSwitchCase="'enrolled_institutions'">
+        <app-month-picker (dateChanged)="changeMonth($event, 'enrolled_institutions')"></app-month-picker>
+        <div class="chart-container">
+          <div class="chart-holder" *ngIf="institutionsDisplayChart">
+            <ngx-charts-line-chart
+              [view]="generalChartView"
+              [xAxis]="true"
+              [yAxis]="true"
+              [scheme]="colorSchemeYellow"
+              [results]="data[activeTab][month_enrolled_institutions]?.chartData"
+              [xAxisTicks]="data[activeTab][month_enrolled_institutions]?.xAxisTicks"
+            >
+
+              <ng-template #seriesTooltipTemplate let-model="model">
+                <div class="tooltip-content">
+                  <div class="tooltip-container simple">
+                      <div class="value">
+                        {{ model[0].value }}
+                      </div>
+                      <div class="label">
+                        {{ data[activeTab][month_enrolled_institutions]?.chartData[0].name }}
+                      </div>
+                    <div class="bottom-tooltip more-bottom">
+                      <div class="padded">{{ model[0].name }}</div>
+                      <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                    </div>
+                  </div>
+                </div>
+                <!--<div class="selected-container"></div>-->
+              </ng-template>
+
+            </ngx-charts-line-chart>
+          </div>
+          <div *ngIf="!institutionsDisplayChart" class="big-text bold padded-top info-card">Nu există date disponibile
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'institutions_at_risk'">
+        <h1 class="title">Top instituții de învățământ cu risc</h1>
+        <app-reports-table [tableColumns]="institutionsAtRiskTable"
+                           [tableData]="data[activeTab]">
+        </app-reports-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'inactive_institutions'">
+        <h1 class="title">Top instituții de învățământ inactive</h1>
+        <app-reports-table [tableColumns]="inactiveInstitutionsTable"
+                           [tableData]="data[activeTab]">
+        </app-reports-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'institutions_average'">
+        <h1 class="title">Top instituții de învățământ după medii</h1>
+        <app-reports-table [tableColumns]="institutionsAveragesTable"
+                           [tableData]="data[activeTab]">
+        </app-reports-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'institutions_absences'">
+        <h1 class="title">Top instituții de învățământ după absențe</h1>
+        <app-reports-table [tableColumns]="institutionsAbsencesTable"
+                           [tableData]="data[activeTab]">
+        </app-reports-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'students_risk_evolution'">
+        <app-month-picker (dateChanged)="changeMonth($event, 'students_risk_evolution')"></app-month-picker>
+        <div class="chart-container">
+          <div class="chart-holder" *ngIf="studentsDisplayChart">
+            <ngx-charts-line-chart
+              [view]="generalChartView"
+              [xAxis]="true"
+              [yAxis]="true"
+              [scheme]="colorSchemeRed"
+              [results]="data[activeTab][month_students_risk_evolution]?.chartData"
+              [xAxisTicks]="data[activeTab][month_students_risk_evolution]?.xAxisTicks"
+            >
+
+              <ng-template #seriesTooltipTemplate let-model="model">
+                <div class="tooltip-content">
+                  <div class="tooltip-container simple red">
+                    <div class="value">
+                      {{model[0].value}}
+                    </div>
+                    <div class="label">
+                      {{ data[activeTab][month_students_risk_evolution]["chartData"][0].name }}
+                    </div>
+                    <div class="bottom-tooltip more-bottom">
+                      <div class="padded">{{ model[0].name }}</div>
+                      <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                    </div>
+                  </div>
+                </div>
+                <!--<div class="selected-container"></div>-->
+              </ng-template>
+
+            </ngx-charts-line-chart>
+          </div>
+          <div *ngIf="!studentsDisplayChart" class="big-text bold padded-top info-card">Nu există date disponibile
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

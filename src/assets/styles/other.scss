@@ -1,0 +1,263 @@
+@import './base';
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+html {
+  font-family: 'Roboto', sans-serif;
+  font-weight: $font-weight-regular;
+  font-size: $font-size-normal;
+  color: $color-text-normal;
+}
+
+body {
+  background-color: $color-background;
+}
+
+button, a, textarea, input, span, div {
+  outline: none;
+  font-family: 'Roboto', sans-serif;
+}
+
+.card {
+  background-color: white;
+  padding: $margin-default $margin-big;
+  border-radius: $border-radius-normal;
+  box-shadow: 0 5px 13px rgba(black, 0.03);
+  color: $color-text-light;
+
+  &.grey-background {
+    background-color: $color-background;
+  }
+
+  &.clickable {
+    cursor: pointer;
+    transition: box-shadow 0.1s;
+
+    &:hover {
+      box-shadow: 0 5px 13px rgba(black, 0.1);
+    }
+  }
+
+  .card-right-container {
+    .text-button {
+      display: block;
+    }
+  }
+}
+
+hr {
+  border: none;
+  background-color: #D2DCE8;
+  width: 100%;
+  height: 1px;
+  margin: 0;
+
+  &.vertical {
+    background-color: #D2DCE8;
+    width: 1px;
+    height: 100%;
+  }
+
+}
+
+h1 {
+  font-size: $font-size-huge;
+  margin: 0;
+}
+
+h2, .h2 {
+  font-size: $font-size-big;
+  color: $color-text-normal;
+  margin: 0;
+}
+
+
+.icon {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+
+a {
+  text-decoration: none;
+}
+
+.animated-page {
+  @keyframes headerAppear {
+    0% {
+      opacity: 0;
+      background-color: transparent;
+    }
+    50% {
+      opacity: 1;
+      background-color: transparent;
+    }
+
+  }
+
+  #page-header {
+    animation: headerAppear 0.4s linear 1 backwards;
+  }
+}
+
+.page-content {
+  padding: $margin-default 80px;
+
+  @media (max-width: $mobile-screen-width-normal) {
+    padding-left: $margin-default;
+    padding-right: $margin-default;
+  }
+}
+
+.list-count {
+  font-size: $font-size-small;
+  color: $color-text-light;
+
+  @media (max-width: $mobile-screen-width-normal) {
+    display: none;
+  }
+}
+
+.arrow {
+  background: url("src/assets/img/long-arrow.svg") no-repeat center;
+  height: 5px;
+  width: 15px;
+
+  &.left {
+    transform: rotate(180deg);
+    margin-right: 12px;
+  }
+
+  &.right {
+    margin-left: 12px;
+  }
+}
+
+.list-element-animation {
+  @keyframes list-element-animation {
+    0% {
+      opacity: 0.4;
+      transform: scale(0.99);
+    }
+  }
+  animation: list-element-animation 0.4s 0s $small-bouncy-out 1 backwards;
+
+  @for $i from 1 through 10 {
+    &:nth-of-type(#{$i}) {
+      animation-delay: calc(#{0.05s * ($i - 1)});
+    }
+  }
+}
+
+.loading-list-element {
+  opacity: 0.5;
+}
+
+.no-results {
+  position: absolute;
+  left: 50%;
+  top: calc(50vh - 150px);
+  font-size: $font-size-big;
+  color: $color-text-light;
+  font-weight: $font-weight-bold;
+  transform: translateX(-50%);
+}
+
+.tag {
+  width: auto;
+  height: 30px;
+  background: #E2E8EF;
+  border-radius: $border-radius-normal;
+  margin-right: $margin-default;
+  text-align: center;
+  color: $color-text-normal;
+  padding: 6px $margin-small 0;
+  white-space: nowrap;
+}
+
+.bold {
+  font-weight: $font-weight-bold !important;
+}
+
+.medium {
+  font-weight: $font-weight-medium !important;
+}
+
+.light {
+  font-weight: $font-weight-light !important;
+}
+
+.thin {
+  font-weight: $font-weight-thin !important;
+}
+
+.regular {
+  font-weight: $font-weight-regular;
+}
+
+.blue-text {
+  color: $color-blue !important;
+}
+
+.red-text {
+  color: $color-red;
+}
+
+.gray-text {
+  color: $color-text-light
+}
+
+.dark-text {
+  color: $color-text-dark
+}
+
+.yellow-text {
+  color: $color-yellow;
+}
+
+.green-text {
+  color: $color-green;
+}
+
+.big-text {
+  font-size: $font-size-big;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba($color-text-light, 0.8);
+  border-radius: 4px;
+  margin-right: 2px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: $color-text-normal;
+}

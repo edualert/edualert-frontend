@@ -1,0 +1,58 @@
+<div class="scrollable-container" #scrollContainer>
+
+  <!-- HEADER ROWS -->
+  <div class="row header" *ngIf="internalLayout?.headerRow?.length" #tableHeader>
+    <div *ngFor="let layoutCell of internalLayout.headerRow; let i = index;"
+         class="cell {{internalLayout.cellWidths[i]}}"
+         [class.empty]="!layoutCell.label">
+      <span class="label">{{ layoutCell.label }}</span>
+    </div>
+  </div>
+
+  <!-- SUBHEADER ROWS -->
+  <div class="row subheader" *ngIf="internalLayout?.subheaderRow?.length" #tableSubheader>
+    <div *ngFor="let layoutCell of internalLayout.subheaderRow; let i = index;"
+         class="cell {{internalLayout.cellWidths[i]}}">
+      <span class="label">{{ layoutCell.label }}</span>
+    </div>
+  </div>
+
+  <!-- DATA ROWS -->
+  <div *ngIf="internalLayout?.dataRow?.length" class="data-rows">
+
+    <h2 *ngIf="!data || !data.length" class="no-data-text bold gray-text">Nu există date disponibile</h2>
+
+    <div *ngFor="let dataRow of internalData; let rowIndex = index;" class="row data">
+      <div class="horizontal">
+
+        <div *ngFor="let layoutCell of internalLayout.dataRow; let colIndex = index;"
+             class="cell {{internalLayout.cellWidths[colIndex]}} {{layoutCell.identifier}}">
+          <app-table-cell
+            [data]="dataRow[layoutCell.dataKey]"
+            [cellType]="layoutCell.type"
+            [cellIdentifier]="layoutCell.identifier"
+            [isExpandable]="expandableCells && expandableCells[rowIndex] && expandableCells[rowIndex][colIndex]"
+            [isExpanded]="expandedCell?.rowIndex === rowIndex && expandedCell?.colIndex === colIndex"
+            (onLinkClick)="onLinkClick.emit({cellIdentifier: layoutCell.identifier, dataRow: dataRow})"
+            (onExpandCell)="expandCell(rowIndex, colIndex)"
+            (onCloseExpand)="closeExpand()"
+          ></app-table-cell>
+        </div>
+      </div>
+
+      <div class="expanded-row" *ngIf="expandedCell?.rowIndex === rowIndex" #expandedCellElem>
+        <app-expanded-cell
+          [data]="expandedCell?.data"
+          [identifier]="expandedCell?.identifier"
+          [isEditable]="editableCells[expandedCell.rowIndex][expandedCell.colIndex]"
+          (addGrade)="addGrade($event, rowIndex, expandedCell?.identifier)"
+          (addAbsence)="addAbsence($event, rowIndex, expandedCell?.identifier)"
+          (deleteGrade)="deleteGrade.emit($event)"
+          (deleteAbsence)="deleteAbsence.emit($event)"
+          (authorizeAbsence)="authorizeAbsence.emit($event)"
+        ></app-expanded-cell>
+      </div>
+
+    </div>
+  </div>
+</div>

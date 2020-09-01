@@ -1,0 +1,26 @@
+<div class="background-shadow" [class.hidden]="!isOpen">
+  <div class="modal" #root>
+    <div #headerContainer
+         class="{{'header top-radius ' + headerColor}}"
+         [class.hidden]="!hasHeader"
+         [ngClass]="{'bottom-radius' : !hasBody && !hasFooter}">
+      <!-- Do not put any DOM here except the ng-content -->
+      <ng-content select="#modal-header"></ng-content>
+    </div>
+    <div #bodyContainer
+         class="body"
+         [class.hidden]="!hasBody"
+         [ngClass]="{'bottom-radius' : !hasFooter, 'top-radius' : !hasHeader}">
+      <!-- Do not put any DOM here except the ng-content -->
+      <ng-content select="#modal-body"></ng-content>
+
+    </div>
+    <div #footerContainer
+         class="footer bottom-radius"
+         [class.hidden]="!hasFooter"
+         [ngClass]="{'top-radius' : !hasHeader && !hasBody}">
+      <!-- Do not put any DOM here except the ng-content -->
+      <ng-content select="#modal-footer"></ng-content>
+    </div>
+  </div>
+</div>

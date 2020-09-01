@@ -1,0 +1,8 @@
+<div class="input-container" [class.input-error]="error">
+  <input [ngModel]="value"
+         [class.error]="error"
+         (input)="sendValue($event)"
+         [type]="inputType"
+         [maxlength]="maxLength">
+  <div *ngIf="error" class="error-message {{ customErrorClass ? customErrorClass : '' }}">{{error}}</div>
+</div>

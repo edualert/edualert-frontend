@@ -1,0 +1,66 @@
+<div class="animated-page">
+  <app-header>
+    <a id="header-back-button" [routerLink]="['/my-classes']">
+      <div class="arrow left"></div>
+      <div class="blue-text bold">Clasele mele</div>
+    </a>
+    <h1 id="header-title">Clasa {{classDetails?.class_grade}} {{classDetails?.class_letter}}</h1>
+    <h2 id="header-subtitle">{{ activeTab?.name }}</h2>
+    <div id="header-top-right-container">
+      <div class="catalog-top-right">
+        <div class="column">
+          <div class="gray-text label">{{classDetails?.academic_year}} - {{classDetails?.academic_year + 1}}</div>
+          <div class="value bold">{{classDetails?.academic_program_name}}</div>
+        </div>
+        <div class="column">
+          <div class="gray-text label">Diriginte</div>
+          <div class="value bold">{{classDetails?.class_master.full_name}}</div>
+        </div>
+      </div>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <div class="tabs-container">
+      <app-tabs (tabHasBeenSelected)="changeTab($event)"
+                [activeTab]="activeTab?.id"
+                [tabsList]="tabs">
+      </app-tabs>
+    </div>
+    <div [ngSwitch]="activeTab?.id">
+      <ng-container *ngSwitchCase="0">
+        <app-catalog
+          [data]="ownPupilsData"
+          [tableLayout]="activeTab?.tableLayout"
+          (onLinkClick)="onLinkClick($event)"
+        ></app-catalog>
+      </ng-container>
+      <ng-container *ngFor="let subject of classDetails?.taught_subjects">
+        <div *ngSwitchCase="subject.id">
+          <app-catalog [data]="tableData"
+                       [tableLayout]="activeTab?.tableLayout"
+                       (addGradeToStudent)="saveSingleGrade($event)"
+                       (addAbsenceToStudent)="addSingleAbsence($event)"
+                       (deleteGrade)="deleteGrade($event)"
+                       (deleteAbsence)="deleteAbsence($event)"
+                       (authorizeAbsence)="authorizeAbsence($event)"
+                       (onLinkClick)="onLinkClick($event)"
+          ></app-catalog>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<div class="animated-page">
+  <div class="page-content">
+    <app-toolbar [buttonsObjList]="provideButtonsList()" >
+      <ng-container id="count-container">
+        30 elevi afisați din 30
+      </ng-container>
+
+    </app-toolbar>
+  </div>
+</div>
+
+<app-add-grades-bulk-modal #addGradesBulkModal></app-add-grades-bulk-modal>
+<app-add-absences-bulk-modal #addAbsencesBulkModal></app-add-absences-bulk-modal>
+<app-settings-modal #settingsModal></app-settings-modal>

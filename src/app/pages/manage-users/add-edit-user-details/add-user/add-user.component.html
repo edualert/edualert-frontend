@@ -1,0 +1,25 @@
+<div class="animated-page">
+  <app-header>
+    <a id="header-back-button" [routerLink]="['/manage-users']">
+      <div class="arrow left"></div>
+      <div class="blue-text bold column">
+        Gestionare utilizatori
+      </div>
+    </a>
+    <h1 id="header-title">Adăugare utilizator</h1>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div class="text-button" #saveButton>Salvează</div>
+        <div class="text-button dark-text" [routerLink]="['/manage-users']">Anulează</div>
+      </div>
+    </div>
+  </app-header>
+  <app-add-edit-user-details
+    [userDetailsInput]="userDetails"
+    (userDetailChanged)="submitData($event)"
+    (hasModifiedDataOutput)="hasModifiedDataEvent($event)"
+    [saveButton]="saveButton"
+    [backendErrors]="errors"
+    [isEdit]="false"
+  ></app-add-edit-user-details>
+</div>

@@ -1,0 +1,132 @@
+<!--This component will be used only by the user role of ADMINISTRATOR-->
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Gestionare unități de învățământ</h1>
+    <h2 id="header-subtitle">Județul <span class="bold">Cluj</span></h2>
+    <div id="header-subsubtitle">Localitatea <span class="bold">Cluj-Napoca</span></div>
+    <div id="header-top-right-container">
+      <button class="action-button" [routerLink]="['/manage-schools/add']">Adaugă o unitate nouă</button>
+    </div>
+    <div id="header-filter">
+      <app-filter>
+        <ng-container *ngIf="!this.requestInProgress; else loadingListCountMobile" id="list-count-mobile">
+          <div class="list-count-mobile">
+            {{schools.length}} unități afișate din {{totalCount}}
+          </div>
+        </ng-container>
+        <span class="mobile-title">Filtreaza</span>
+        <app-filter-search
+          [searchString]="filterParams.search"
+          (searchSubmit)="changeSearch($event)"
+        ></app-filter-search>
+        <div class="dropdown-parent districts">
+          <app-dropdown
+            [error]="''"
+            [list]="filterData.districts"
+            [displayedProperty]="'text'"
+            (elementHasBeenSelected)="changeDistrict($event.element)"
+            [appliedElement]="filterParams.district"
+            [placeholder]="'Județ'"
+            [withSearch]="true"
+          ></app-dropdown>
+        </div>
+        <div class="dropdown-parent cities">
+          <app-dropdown
+            [error]="''"
+            [list]="filterData.cities"
+            [displayedProperty]="'text'"
+            (elementHasBeenSelected)="changeCity($event.element)"
+            [appliedElement]="filterParams.city"
+            [placeholder]="'Localitate'"
+            [withSearch]="true"
+          ></app-dropdown>
+        </div>
+        <div class="dropdown-parent school-categories">
+          <app-dropdown
+            [error]="''"
+            [list]="filterData.schoolCategories"
+            [displayedProperty]="'name'"
+            (elementHasBeenSelected)="changeSchoolCategory($event.element)"
+            [appliedElement]="filterParams.schoolCategory"
+            [placeholder]="'Categorie'"
+          ></app-dropdown>
+        </div>
+        <div class="dropdown-parent school-profiles">
+          <app-dropdown
+            [list]="filterData.schoolProfiles"
+            [displayedProperty]="'name'"
+            (elementHasBeenSelected)="changeSchoolProfile($event.element)"
+            [appliedElement]="filterParams.schoolProfile"
+            [placeholder]="'Profil'"
+          ></app-dropdown>
+        </div>
+      </app-filter>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container *ngIf="!this.requestInProgress; else loadingList">
+      <ng-container *ngIf="this.schools?.length; else noResultsText">
+        <div class="list-count">
+          {{schools.length}} unități de învățământ afișate din {{totalCount}}
+        </div>
+        <div class="list">
+          <div class="card list-element-animation"
+               *ngFor="let school of schools; let i = index"
+               [routerLink]="['/manage-schools/', school.id, 'view']"
+          >
+            <div class="card-left-container">
+              <span class="card-title text-button"
+                    [routerLink]="['/manage-schools/', school.id, 'view']">{{school.name}}</span>
+              <div class="categories">
+                <div class="category" *ngFor="let category of school.categories; let $index = index">
+                  {{category.name}}
+                  <span class="profile bold" *ngIf="$index === 0 && school.academic_profile">
+                    {{school.academic_profile.name}}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="card-right-container">
+              <div class="school-status" [ngClass]="school.is_active ? 'green' : 'red'">
+                <span>{{school.is_active ? 'Activă' : 'Dezactivată'}}</span>
+                <hr class="vertical">
+                <span class="bold text-button white"
+                      (click)="openDeActivateSchoolModalSchoolModal(school); $event.stopPropagation()">{{school.is_active ? 'Dezactivează' : 'Reactivează'}}</span>
+              </div>
+              <hr class="vertical visible-on-desktop">
+              <div class="text-button edit" [routerLink]="['/manage-schools/' + school.id + '/edit']">Editează</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noResultsText>
+        <div class="no-results">
+          Niciun rezultat găsit
+        </div>
+      </ng-template>
+    </ng-container>
+    <ng-template #loadingListCountMobile>
+      <div class="list-count-mobile">
+        Se încarcă datele...
+      </div>
+    </ng-template>
+    <ng-template #loadingList>
+      <div class="list-count">
+        Se încarcă datele...
+      </div>
+      <div class="list loading-list">
+        <div *ngFor="let card of (schools.length ? schools : [0,1])" class="card loading-card loading-list-element">
+          <div class="card-left-container">
+            <div class="card-title"></div>
+            <div class="categories">
+              <div class="category"></div>
+              <div class="category"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<app-confirmation-modal #appConfirmationModal></app-confirmation-modal>

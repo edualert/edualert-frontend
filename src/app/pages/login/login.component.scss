@@ -1,0 +1,272 @@
+@import '../../../assets/styles/base';
+
+:host {
+  height: 100vh;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 7vw;
+  @keyframes login-appear {
+    0% {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+  }
+
+  animation: login-appear 0.4s 0.1s $ease-out 1 backwards;
+}
+
+
+#title-and-description {
+  margin-bottom: 45px;
+}
+
+h1 {
+  .title-char {
+    @keyframes char-appear {
+      0% {
+        opacity: 0;
+      }
+    }
+    animation: char-appear 0.03s 0s linear 1 backwards;
+
+    @for $i from 1 through 30 {
+      &:nth-of-type(#{$i}) {
+        animation-delay: calc(#{0.1s + $i * 0.009s});
+      }
+    }
+  }
+}
+
+.description {
+  white-space: nowrap;
+  height: auto;
+  margin-top: 3px;
+
+  &.hidden {
+    height: 0;
+    opacity: 0;
+    margin-top: 0;
+    transition: height 0.3s $ease-in-out, margin-top 0.3s $ease-in-out;
+  }
+
+  span.large {
+    display: block;
+    margin-top: -3px;
+    font-size: $font-size-bigish;
+    line-height: 28px;
+  }
+
+  transition: height 0.3s $ease-in-out, margin-top 0.3s $ease-in-out, opacity 0.35s 0.2s;
+}
+
+.dropdown-parent {
+  margin-top: 55px;
+  width: 420px;
+}
+
+.navigation-button {
+  margin-top: $margin-big;
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  &.top {
+    margin-top: unset;
+    margin-bottom: $margin-small;
+  }
+
+  .text-item {
+    font-size: $font-size-small;
+    line-height: 18px;
+  }
+
+  .link-content {
+    cursor: pointer;
+    display: inline-flex !important;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    &:hover {
+      filter: brightness(1.3);
+    }
+  }
+}
+
+form {
+  min-width: 340px;
+  width: 60%;
+  max-width: 600px;
+  transition: margin-bottom 0.3s $ease-in-out;
+
+  &.forgot-password {
+    margin-bottom: 51px;
+  }
+
+  &.reset-password {
+    margin-bottom: -2px;
+  }
+}
+
+label, input, button {
+  display: block;
+}
+
+button.hidden {
+  display: none;
+}
+
+label {
+  height: 55px;
+  margin-bottom: 17px;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
+input {
+  width: 100%;
+  font-weight: $font-weight-bold;
+  margin-top: 7px;
+}
+
+.action-button {
+  padding-left: $margin-big;
+  padding-right: $margin-big;
+}
+
+.horizontal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 50px;
+}
+
+label {
+  transition: height 0.3s $ease-in-out, margin 0.3s $ease-in-out, opacity 0.3s 0.05s;
+
+  &.hidden {
+    overflow: hidden;
+    height: 0;
+    margin: 0 !important;
+    opacity: 0;
+    transition: height 0.3s $ease-in-out, margin 0.3s $ease-in-out, opacity 0.2s;
+  }
+}
+
+.text-button {
+  @keyframes text-button-appear {
+    0% {
+      opacity: 0;
+    }
+  }
+  animation: text-button-appear 0.2s 0.1s linear 1 backwards;
+}
+
+.error-toast {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 100px;
+}
+
+.close-error {
+  align-self: center;
+  background: url('../../../assets/img/x-white.svg');
+  width: 15px;
+  height: 15px;
+  padding-bottom: 16px;
+  padding-right: 10px;
+  margin-left: 10px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.request-error {
+  padding: 10px 0 10px;
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  :host {
+    height: calc(100% - 99px);
+    margin-top: 99px;
+    padding-left: 0;
+  }
+
+  .navigation-button {
+    &.top {
+      margin-top: -50px;
+      margin-bottom: $margin-xsmall;
+    }
+  }
+
+  .dropdown-parent {
+    margin-top: unset;
+  }
+
+  form {
+    min-width: unset;
+    width: 100%;
+    margin: $margin-xbig auto 0;
+
+    #title-and-description {
+      margin-top: -15px;
+      margin-bottom: $margin-big;
+    }
+
+    label {
+      font-size: $font-size-small;
+      line-height: 18px;
+
+      &:last-of-type {
+        margin-bottom: $margin-big;
+      }
+    }
+
+    input {
+      border-radius: 5px;
+    }
+
+    .horizontal {
+      margin-top: 13px;
+    }
+
+    .action-button {
+      min-width: 145px;
+    }
+
+    .description {
+      font-size: $font-size-small;
+      line-height: 16px;
+      white-space: unset;
+      overflow-wrap: break-word;
+
+      span.large {
+        font-size: $font-size-normal;
+        line-height: 18px;
+      }
+    }
+
+    h1 {
+      .title-char {
+        font-size: $font-size-big;
+        line-height: 42px;
+      }
+    }
+  }
+}
+
+@media (max-width: $mobile-screen-width-small) {
+  .dropdown-parent {
+    width: 280px;
+  }
+
+  .error-toast {
+    margin-bottom: 10px;
+  }
+}

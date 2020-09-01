@@ -1,0 +1,5 @@
+<div class="month-picker">
+  <div class="expand" [ngClass]="disableBackArrow ? 'disable' : ''" (click)="changeMonth('back')"></div>
+  <div class="month blue-text">{{ currentMonth?.display }}</div>
+  <div class="expand forth" [ngClass]="disableForthArrow ? 'disable' : ''" (click)="changeMonth('forth')"></div>
+</div>

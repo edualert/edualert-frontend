@@ -1,0 +1,10 @@
+<div #wrapper class="wrapper-tabs">
+  <div #backArrow (click)="arrowClicked('back')" class="expand"></div>
+  <div #tabContainer class="tab-container">
+    <div *ngFor="let tab of tabsList"
+         class="text-button"
+         [ngClass]="activeTab === tab.id ? 'is-active' : 'inactive-tab'"
+         (click)="onTabClicked(tab.id)">{{tab.name}}</div>
+  </div>
+  <div #forthArrow (click)="arrowClicked('forth')" class="expand right"></div>
+</div>

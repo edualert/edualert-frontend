@@ -1,0 +1,76 @@
+<div class="animated-page">
+  <app-header>
+    <a id="header-back-button" [routerLink]="['/manage-schools']">
+      <div class="arrow left"></div>
+      <div class="blue-text bold column">
+        Gestionare unități de învățământ
+      </div>
+    </a>
+    <div id="header-title">
+      <h1>Detalii unitate de învățământ</h1>
+    </div>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div class="text-button {{ school?.is_active ? 'red-text' : 'green-text' }}"
+             (click)="openDeActivateSchoolModalSchoolModal(school)" [routerLink]="['/manage-schools/' + schoolId + '/view']">
+          {{ school?.is_active ? 'Dezactiveaza' : 'Activeaza' }}</div>
+        <div class="text-button" [routerLink]="['/manage-schools/' + schoolId + '/edit']">Editează</div>
+      </div>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Județ</div>
+      <div class="value-container bold">{{ school?.district }}</div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Localitate</div>
+      <div class="value-container bold">{{ school?.city }}</div>
+    </div>
+    <div class="detail-element-container header blue-text">
+      <div class="label-container fixed-width">Nume</div>
+      <div class="value-container">{{ school?.name }}</div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Stare</div>
+      <div class="value-container bold {{school?.is_active ? 'green-text bold' : 'red-text bold' }}">{{school?.is_active ? 'Activă' : 'Inactivă'}}</div>
+    </div>
+    <hr class="margin-list">
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Categorie</div>
+      <div class="categories">
+        <div *ngFor="let categ of school?.categories; let i = index" class="value-container bold">
+          {{(school.categories.length > 0 && i < school.categories.length - 1) ? categ.name + ',' : categ.name}}
+        </div>
+      </div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Profil</div>
+      <div class="value-container bold">{{school?.academic_profile ? school?.academic_profile.name : ''}}</div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Adresă</div>
+      <div class="value-container bold">{{school?.address}}</div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Număr de telefon</div>
+      <div class="value-container bold">{{school?.phone_number}}</div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Adresă de email</div>
+      <div class="value-container bold">{{school?.email}}</div>
+    </div>
+    <hr class="margin-list">
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Director</div>
+      <div class="value-container bold blue-text arrow-right"
+           (click)="openUserModal($event, school?.school_principal.id)">
+        {{school?.school_principal.full_name}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-confirmation-modal #appConfirmationModal></app-confirmation-modal>
+<app-view-user-modal #appViewUserModal></app-view-user-modal>
+

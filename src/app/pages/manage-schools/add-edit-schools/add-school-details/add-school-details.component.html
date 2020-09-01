@@ -1,0 +1,151 @@
+<div class="animated-page">
+  <app-header>
+    <a id="header-back-button" [routerLink]="['/manage-schools']">
+      <div class="arrow left"></div>
+      <div class="blue-text bold">
+        Gestionare unități de învățământ
+      </div>
+    </a>
+    <div id="header-title">
+      <h1 id='header-add-edit-title'>Adăugare unitate de învățământ</h1>
+    </div>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div class="text-button" (click)="onSubmit()">Salvează</div>
+        <div class="text-button dark-text" [routerLink]="['/manage-schools']" (click)="onCancel()">Anulează</div>
+      </div>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <div id="school-crud-general-section">
+      <div class="row">
+        <div class="label">Județ*</div>
+        <div class="dropdown-parent value">
+          <app-dropdown
+            [error]="schoolDetailsError?.district"
+            [errorMessage]="schoolDetailsError?.district"
+            [list]="data.districts"
+            [displayedProperty]="'text'"
+            (elementHasBeenSelected)="handleInputChange($event, 'district')"
+            [appliedElement]="schoolDetails?.district"
+            [withSearch]="true"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+      <div class="row">
+        <div class="label">Localitate*</div>
+        <div class="dropdown-parent value">
+          <app-dropdown
+            [error]="schoolDetailsError?.city"
+            [errorMessage]="schoolDetailsError?.city"
+            [componentDisabled]="!schoolDetails?.district"
+            [list]="data.cities"
+            [displayedProperty]="'text'"
+            (elementHasBeenSelected)="handleInputChange($event, 'city')"
+            [appliedElement]="schoolDetails?.district && schoolDetails?.city ? schoolDetails.city : ''"
+            [withSearch]="true"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+      <div class="row">
+        <div class="label blue-text large">Nume*</div>
+        <div class="dropdown-parent value">
+          <app-dropdown
+            [error]="schoolDetailsError?.name"
+            [errorMessage]="schoolDetailsError?.name"
+            [list]="data.names"
+            [displayedProperty]="'name'"
+            (elementHasBeenSelected)="handleInputChange($event, 'name')"
+            [appliedElement]="schoolDetails?.name"
+            [dropdownStyle]="'medium'"
+            [withSearch]="true"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="label">Categorie*</div>
+        <div class="dropdown-parent value">
+          <app-dropdown
+            [withMultipleSelection]="true"
+            [errorMessage]="schoolDetailsError?.categories ? schoolDetailsError?.categories : ''"
+            [error]="schoolDetailsError?.categories ? schoolDetailsError?.categories : ''"
+            [list]="data.categories ? data.categories : []"
+            [displayedProperty]="'name'"
+            (selectionHasBeenConfirmed)="handleInputChange($event, 'categories')"
+            [appliedSelection]="schoolDetails?.categories"
+            [placeholder]="'-'"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+      <div class="row">
+        <div class="label">Profil*</div>
+        <div class="dropdown-parent value">
+          <app-dropdown
+            [isDisabled]="!schoolDetails.categories[0]"
+            [errorMessage]="schoolDetailsError?.academic_profile"
+            [error]="schoolDetailsError?.academic_profile"
+            [list]="data.academic_profiles"
+            [displayedProperty]="'name'"
+            (elementHasBeenSelected)="handleInputChange($event, 'academic_profile')"
+            [appliedElement]="schoolDetails?.academic_profile"
+            [withSearch]="true"
+            [placeholder]="'-'"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+      <div class="detail-element-container margin-top-small">
+        <div class="label-container fixed-width">Adresă*</div>
+        <div class="value-container full-width">
+          <app-input-new
+            (inputChange)="addInput($event, 'address')"
+            [error]="schoolDetailsError?.address"
+            [value]="schoolDetails?.address"
+          ></app-input-new>
+        </div>
+      </div>
+      <div class="detail-element-container margin-top-small">
+        <div class="label-container fixed-width">Număr de telefon*</div>
+        <div class="value-container full-width">
+          <app-input-new
+            (inputChange)="addInput($event, 'phone_number')"
+            [error]="schoolDetailsError?.phone_number"
+            [value]="schoolDetails?.phone_number"
+          ></app-input-new>
+        </div>
+      </div>
+      <div class="detail-element-container margin-top-small">
+        <div class="label-container fixed-width">Adresă de email*</div>
+        <div class="value-container full-width">
+          <app-input-new
+            (inputChange)="addInput($event, 'email')"
+            [error]="schoolDetailsError?.email"
+            [value]="schoolDetails?.email"
+          ></app-input-new>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="label">Director*</div>
+        <div class="dropdown-parent value">
+          <app-dropdown
+            [error]="schoolDetailsError?.school_principal"
+            [errorMessage]="schoolDetailsError?.school_principal"
+            [list]="data.school_principals"
+            [displayedProperty]="'full_name'"
+            (elementHasBeenSelected)="handleInputChange($event, 'school_principal')"
+            [appliedElement]="schoolDetails?.school_principal"
+            [withSearch]="true"
+            [placeholder]="'-'"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

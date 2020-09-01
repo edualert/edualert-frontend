@@ -1,0 +1,78 @@
+<div class="DevtoolsComponent">
+  <button class="action-button">button.action-button</button>
+  <button class="text-button">button.text-button</button>
+  <hr>
+  <input type="text" placeholder="input">
+  <input type="text" placeholder="input.date" class="with-icon date">
+  <hr>
+  <div class="radio-container" (click)="radioButtonChecked = !radioButtonChecked" tabindex="0">
+    <div class="radio-button" [ngClass]="radioButtonChecked && 'checked'"></div>
+    <div class="text">.radio-container > .radio-button{{radioButtonChecked ? '.checked' : ''}}</div>
+  </div>
+  <div class="checkbox-container" (click)="radioButtonChecked = !radioButtonChecked" tabindex="0">
+    <div class="checkbox-button" [ngClass]="radioButtonChecked && 'checked'"></div>
+    <div class="text">.checkbox-container > .checkbox-button{{radioButtonChecked ? '.checked' : ''}}</div>
+  </div>
+  <div class="card">
+    .card
+    <h1>h1</h1>
+    <h2>h2</h2>
+  </div>
+  <hr>
+  <app-dropdown
+    [list]="dropdownList"
+    [placeholder]="'Single choice'"
+    [appliedElement]="dropdownElement"
+    (elementHasBeenSelected)="dropdownElementClicked($event)"
+  ></app-dropdown>
+  <br>
+  <app-dropdown
+    [list]="dropdownList"
+    [placeholder]="'Single choice - big'"
+    [dropdownStyle]="'big'"
+    [appliedElement]="dropdownElement"
+    (elementHasBeenSelected)="dropdownElementClicked($event)"
+  ></app-dropdown>
+  <br>
+  <app-dropdown
+    [list]="dropdownList"
+    [placeholder]="'Single choice - search'"
+    [appliedElement]="dropdownElement"
+    [withSearch]="true"
+    (elementHasBeenSelected)="dropdownElementClicked($event)"
+  ></app-dropdown>
+  <br>
+  <app-dropdown
+    [list]="dropdownList"
+    [placeholder]="'Multi choice'"
+    [appliedSelection]="dropdownAppliedSelection"
+    [withMultipleSelection]="true"
+    [showCurrentSelection]="true"
+    (selectionHasBeenConfirmed)="dropdownSelectionConfirmed($event)"
+  ></app-dropdown>
+
+  <div class="chart-container">
+    <ngx-charts-line-chart
+      [view]="view"
+      [xAxis]="xAxis"
+      [yAxis]="yAxis"
+      [results]="multi"
+      [timeline]="true"
+    >
+
+      <ng-template #seriesTooltipTemplate let-model="model">
+        <div class="tooltip-content">
+          <div class="value">
+            {{model[0].value}}
+          </div>
+          <div class="label">
+            instituții
+          </div>
+        </div>
+      <!--<div class="selected-container"></div>-->
+      </ng-template>
+
+
+    </ngx-charts-line-chart>
+  </div>
+</div>

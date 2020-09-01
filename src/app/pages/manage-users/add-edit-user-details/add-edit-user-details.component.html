@@ -1,0 +1,239 @@
+<div class="page-content">
+  <div class="detail-element-container header blue-text">
+    <div class="label-container fixed-width">Nume*</div>
+    <div class="value-container full-width">
+      <app-input-new
+        (inputChange)="addInput($event, 'full_name')"
+        [error]="errors?.full_name"
+        [value]="userDetails?.full_name"
+      ></app-input-new>
+    </div>
+  </div>
+  <div class="custom-label">
+    <div class="label">Nume utilizator*</div>
+    <div class="vertical">
+      <div class="error-message red-text">{{errors?.username}}</div>
+      <div class="row">
+        <span class="radio-container" (click)="addInput(false, 'use_phone_as_username')">
+          <div class="radio-button" [class.checked]="!userDetails?.use_phone_as_username"></div>
+          <div class="text">Adresă de email</div>
+        </span>
+      </div>
+      <div class="row">
+        <span class="radio-container" (click)="addInput(true, 'use_phone_as_username')">
+          <div class="radio-button" [class.checked]="userDetails?.use_phone_as_username"></div>
+          <div class="text">Număr de telefon</div>
+        </span>
+      </div>
+    </div>
+  </div>
+  <hr class="margin-list">
+  <div class="custom-label">
+    <div class="label">Rol utilizator*</div>
+    <div class="vertical">
+      <div class="dropdown-parent value">
+        <app-dropdown
+          [list]="userRoleDropdown"
+          [displayedProperty]="'text'"
+          [identifierProperty]="'id'"
+          (elementHasBeenSelected)="handleDropdownChange($event, 'userRole')"
+          [appliedElement]="getUserRole(userDetails?.user_role)"
+          [errorMessage]="errors?.user_role"
+          [error]="errors?.user_role"
+        ></app-dropdown>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="this.availableFields?.studyClass && showState && userDetails?.class_grade && userDetails?.class_letter" class="detail-element-container">
+    <div class="label-container fixed-width">Clasă</div>
+    <div class="value-container bold">{{userDetails?.class_grade + ' ' + userDetails?.class_letter}}</div>
+  </div>
+  <div *ngIf="showState" class="detail-element-container">
+    <div class="label-container fixed-width">Stare</div>
+    <div class="value-container bold {{userDetails?.is_active ? 'green-text' : 'red-text' }}">{{userDetails?.is_active ? 'Activă' : 'Inactivă'}}</div>
+  </div>
+  <div *ngIf="this.availableFields?.labels" class="custom-label">
+    <div class="label">Etichete</div>
+    <div class="vertical flex-row flex-wrap">
+      <div
+        *ngFor="let label of labels"
+        class="label-rounded {{isLabelChecked(label.id) ? 'check-background' : ''}}"
+        (click)="handleLabelClicked(label)"
+      >{{ label.text }}
+      </div>
+      <div class="label-rounded" *ngIf="loadingLabels">Loading...</div>
+    </div>
+  </div>
+  <hr class="margin-list">
+  <div class="detail-element-container margin-top-small">
+    <div class="label-container fixed-width">Număr de telefon*</div>
+    <div class="value-container full-width">
+      <app-input-new
+        (inputChange)="addInput($event, 'phone_number')"
+        [error]="errors?.phone_number"
+        [value]="userDetails?.phone_number"
+      ></app-input-new>
+    </div>
+  </div>
+  <div class="detail-element-container margin-top-small">
+    <div class="label-container fixed-width">Adresă de email*</div>
+    <div class="value-container full-width">
+      <app-input-new
+        [value]="userDetails?.email"
+        (inputChange)="addInput($event, 'email')"
+        [error]="errors?.email"
+      ></app-input-new>
+    </div>
+  </div>
+  <div *ngIf="this.availableFields?.address" class="detail-element-container margin-top-small">
+    <div class="label-container fixed-width">Adresă</div>
+    <div class="value-container full-width">
+      <app-input-new
+        [value]="userDetails?.address"
+        (inputChange)="addInput($event, 'address')"
+        [error]="errors?.address"
+      ></app-input-new>
+    </div>
+  </div>
+
+  <div class="detail-element-container" *ngIf="!isEdit">
+    <div class="label-container fixed-width">Parolă</div>
+    <div class="value-container full-width">
+      <app-input-new
+        (inputChange)="addInput($event, 'password')"
+        value="{{userDetails?.password}}"
+        [error]="errors?.password"
+        inputType="password"
+      ></app-input-new>
+    </div>
+  </div>
+
+  <div class="detail-element-container subheader" *ngIf="isEdit">
+    <div class="label-container">Modificare parolă</div>
+  </div>
+  <div class="border-left bottom-margin" *ngIf="isEdit">
+    <div class="detail-element-container margin-top-small">
+      <div class="label-container fixed-width">Parolă nouă</div>
+      <div class="value-container full-width">
+        <app-input-new
+          (inputChange)="addInput($event, 'new_password')"
+          value="{{newPassword.new_password}}"
+          [error]="errors?.new_password ? errors?.new_password : (backendErrors.hasOwnProperty('password') ? backendErrors['password'] : '')"
+          inputType="password"
+        ></app-input-new>
+      </div>
+    </div>
+    <div class="detail-element-container margin-top-small">
+      <div class="label-container fixed-width">Repetare parolă nouă</div>
+      <div class="value-container full-width">
+        <app-input-new
+          (inputChange)="addInput($event, 'repeatNewPassword')"
+          value="{{newPassword.repeatNewPassword}}"
+          [error]="errors?.repeatNewPassword"
+          inputType="password"
+        ></app-input-new>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="this.availableFields?.personalNumber" class="detail-element-container margin-top-small">
+    <div class="label-container fixed-width">CNP</div>
+    <div class="value-container full-width">
+      <app-input-new
+        [value]="userDetails?.personal_id_number"
+        (inputChange)="addInput($event, 'personal_id_number')"
+        [error]="errors?.personal_id_number"
+      ></app-input-new>
+    </div>
+  </div>
+
+  <div class="detail-element-container margin-top-small {{availableFields?.birthDate ? '' : 'display-none'}}">
+    <div class="label-container fixed-width">Dată naștere</div>
+    <div class="value-container datepicker-container">
+      <div class="datepicker-input-wrapper">
+        <input
+          class="date custom-date {{errors?.birth_date ? 'error-input' : ''}}"
+          (click)="openPicker()"
+          readOnly
+          placeholder=""
+          value="{{ userDetails?.birth_date ||  '' }}"
+        >
+        <div class="datepicker-container">
+          <app-datepicker
+            color="#0077DB"
+            #datepicker
+            [dateValue]="convertStringToDate(userDetails?.birth_date)"
+            (dateChanged)="changeCreatedDate($event)"
+          >
+          </app-datepicker>
+        </div>
+        <div class="red-text error-message">{{errors?.birth_date}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="this.availableFields?.parentSection">
+    <hr class="margin-list">
+    <div class="detail-element-container header blue-text bold">
+      <div class="label-container fixed-width">Părinți</div>
+    </div>
+    <div class="border-left">
+      <div *ngFor="let parent of userDetails?.parents; let i = index">
+        <div class="parent-container">
+          <p>Nume</p>
+          <div class="parent-dropdown-container">
+            <app-dropdown
+              [list]="parents"
+              [displayedProperty]="'full_name'"
+              [identifierProperty]="'id'"
+              (elementHasBeenSelected)="handleDropdownChange($event, 'parent', i)"
+              [appliedElement]="parent.full_name"
+              [error]="get(errors, 'parentFrontValidation['+ i + ']', false) ? errors.parentFrontValidation[i] : ''"
+              [withSearch]="true"
+            ></app-dropdown>
+          </div>
+          <div class="button-container">
+            <div (click)="deleteParent(i)" class="text-button dark-text">Șterge</div>
+          </div>
+        </div>
+        <hr *ngIf="i + 1 !== userDetails?.parents.length" class="margin-list">
+      </div>
+      <div class="red-text error-message">{{errors?.parents}}</div>
+      <div (click)="addParent()" class="text-button margin-top-default">Adaugă un părinte nou</div>
+    </div>
+  </div>
+
+  <div *ngIf="this.availableFields?.pedagogueSection">
+    <hr class="margin-list">
+    <div class="detail-element-container header blue-text bold">
+      <div class="label-container fixed-width">Pedagog</div>
+    </div>
+    <div class="border-left">
+      <app-input label="Nume" type="regular" [value]="userDetails?.educator_full_name"
+                 (inputChange)="addInput($event, 'educator_full_name')">
+      </app-input>
+      <app-input label="Număr de telefon" type="regular" [value]="userDetails?.educator_phone_number"
+                 [errorMessage]="errors?.educator_phone_number" (inputChange)="addInput($event, 'educator_phone_number')" >
+      </app-input>
+      <app-input label="Andresă de email" type="regular" [value]="userDetails?.educator_email"
+                 [errorMessage]="errors?.educator_email" (inputChange)="addInput($event, 'educator_email')">
+      </app-input>
+    </div>
+  </div>
+
+  <div *ngIf="this.availableFields?.taughtSubjects">
+    <hr class="margin-list">
+    <div class="detail-element-container header blue-text bold">
+      <div class="label-container fixed-width">Materii Predate</div>
+    </div>
+    <div class="border-left bold">
+      <div *ngFor="let item of subjects" class="custom-label flex-row-mobile">
+        <div class="label width250">{{item.name}}</div>
+        <div class="vertical">
+          <div class="radio-button" (click)="handleSubjectClicked(item)" [class.checked]="isSubjectChecked(item.id)"></div>
+        </div>
+        <div class="label width250" *ngIf="loadingLabels">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>

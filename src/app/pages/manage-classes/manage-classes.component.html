@@ -1,0 +1,80 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Gestionare clase</h1>
+    <h2 id="header-subtitle">{{filterParams.academicYear?.text || defaultAcademicYear?.text}}</h2>
+    <div id="header-top-right-container">
+      <button class="action-button" [routerLink]="['/manage-classes/add']">Adaugă o clasă nouă</button>
+    </div>
+    <div id="header-filter">
+      <app-filter noCount={{true}}>
+        <span class="mobile-title">Filtrează</span>
+        <div class="dropdown-parent">
+          <app-dropdown [list]="filterData.academicYears"
+                        [appliedElement]="filterParams.academicYear || defaultAcademicYear"
+                        [displayedProperty]="'text'"
+                        [placeholder]="'An academic'"
+                        [required]="true"
+                        (elementHasBeenSelected)="changeAcademicYear($event.element)"></app-dropdown>
+        </div>
+      </app-filter>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container *ngIf="!this.requestInProgress; else loadingList">
+      <ng-container *ngIf="this.classes; else noResultsText">
+        <div class="list">
+          <div class="section" *ngFor="let section of classes | keyvalue: keepOrder"
+               [class.hidden]="!section.value.length">
+            <span class="section-title">Clasa {{section.key}}</span>
+            <div>
+              <div class="card list-element-animation"
+                   *ngFor="let studyClass of section.value"
+                   [class.wide]="studyClass.academic_program_name">
+                <div class="card-left-container">
+                  <a class="card-title text-button" [routerLink]="['/manage-classes', studyClass.id, 'view']">
+                    {{studyClass.class_grade}} {{studyClass.class_letter}}
+                  </a>
+                  <div class="categories">
+                    <div class="category">
+					              			<span class="profile medium" *ngIf="studyClass.academic_program_name">
+					                			{{studyClass.academic_program_name}}
+					             			 </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-right-container">
+                  <hr class="vertical visible-on-desktop">
+                  <hr>
+                  <div class="buttons">
+                    <div class="text-button edit"
+                         [routerLink]="[ + studyClass.id + '/edit']">
+                            <!-- [class.disabled]="!isEditable" removed from above for Demo purposes -->
+                      Editează
+                    </div>
+                    <div class="text-button dark-text"
+                         (click)="deleteClass(studyClass, section.key)">
+                      <!-- [class.disabled]="!isEditable || studyClass.has_previous_catalog_data" removed from above for Demo purposes -->
+                      Șterge
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noResultsText>
+        <div class="no-results">
+          Niciun rezultat găsit
+        </div>
+      </ng-template>
+    </ng-container>
+    <ng-template #loadingList>
+      <div class="list-count">
+        Se încarcă datele...
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<app-confirmation-modal #appConfirmationModal></app-confirmation-modal>

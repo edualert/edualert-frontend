@@ -1,0 +1,109 @@
+<form
+  [ngClass]="page"
+  (submit)="handleSubmit($event)">
+  <div id="error-alert">
+    <div class="error-toast" *ngIf="forgotPasswordError?.length > 0">
+      <div class="request-error">
+        {{ forgotPasswordError }}
+      </div>
+      <div class="close-error" (click)="hideErrorToast()"></div>
+    </div>
+  </div>
+  <div id="title-and-description">
+    <h1 [ngSwitch]="page">
+    <span *ngSwitchCase="'login'">
+      <div class="navigation-button top" *ngIf="isFaculty && schoolId" (click)="goToLoginStep(1)">
+        <span class="text-item link-content blue-text bold">
+          <div class="arrow left"></div>
+          Alege o altă instituție de învățământ
+        </span>
+      </div>
+      <ng-container *ngIf="isFaculty && !schoolId; else normalLoginTitle">
+        <span class="title-char" *ngFor="let char of 'Bine ai venit!'.split('')">{{char}}</span>
+      </ng-container>
+      <ng-template #normalLoginTitle>
+        <span class="title-char" *ngFor="let char of 'Autentificare utilizatori'.split('')">{{char}}</span>
+      </ng-template>
+    </span>
+      <span *ngSwitchCase="'forgot-password'">
+      <span class="title-char" *ngFor="let char of 'Am uitat parola'.split('')">{{char}}</span>
+    </span>
+      <span *ngSwitchCase="'reset-password'">
+      <span class="title-char" *ngFor="let char of 'Resetare parolă'.split('')">{{char}}</span>
+    </span>
+    </h1>
+    <div class="description" [class.hidden]="page === 'login' && !isFaculty">
+      <ng-container *ngIf="page === 'forgot-password'">
+        Pentru resetarea parolei, introduceți adresa de email / numărul de telefon folosit(ă) pentru autentificare.
+      </ng-container>
+      <ng-container *ngIf="page === 'reset-password'">
+        Introduceți noua parolă de două ori în câmpurile de mai jos.
+      </ng-container>
+      <ng-container *ngIf="page === 'login' && isFaculty">
+        <span *ngIf="!schoolId" class="large">
+          Alege școala în contul căreia dorești să te loghezi.
+        </span>
+        <span *ngIf="schoolId" class="large">
+          {{selectedSchool?.name}}
+        </span>
+      </ng-container>
+    </div>
+  </div>
+  <ng-container *ngIf="isFaculty && !schoolId && page === 'login'; else normalForm">
+    <div class="dropdown-parent">
+      <app-dropdown
+        [list]="schools"
+        [displayedProperty]="'name'"
+        (elementHasBeenSelected)="handleSchoolChange($event)"
+        [appliedElement]="selectedSchool"
+        [placeholder]="'Scrieți numele școlii dorite'"
+        [withSearch]="true"
+      ></app-dropdown>
+    </div>
+    <div class="navigation-button" [class.disabled]="!selectedSchool" (click)="goToLoginStep(2)">
+      <span class="text-item link-content blue-text bold">
+        Înainte
+        <div class="arrow right"></div>
+      </span>
+    </div>
+  </ng-container>
+  <ng-template #normalForm>
+    <label for="username" [class.hidden]="page !== 'login' && page !== 'forgot-password'">
+      Adresă de email / număr de telefon
+      <input type="text" id="username" name="username" autofocus
+             [attr.disabled]="page !== 'login' && page !== 'forgot-password' ? '' : null"
+             [(ngModel)]="username" class="{{ (errorLogin !== '' && errorLogin !== undefined) || forgotPasswordError ? 'error-input' : ''}}">
+    </label>
+    <label for="password" [class.hidden]="page !== 'login' && page !== 'reset-password'">
+      Parolă
+      <input type="password" id="password" name="password"
+             [attr.disabled]="page !== 'login' && page !== 'reset-password' ? '' : null"
+             [(ngModel)]="password" class="{{ errorLogin !== '' && errorLogin !== undefined ? 'error-input' : ''}}">
+    </label>
+    <label for="repeat-password" [class.hidden]="page !== 'reset-password'">
+      Repetare parolă nouă
+      <input type="password" id="repeat-password" name="repeat-password"
+             [attr.disabled]="page !== 'reset-password' ? '' : null"
+             [(ngModel)]="repeatPassword">
+    </label>
+    <div *ngIf="errorLogin" class="error-message red-text">{{errorLogin}}</div>
+  </ng-template>
+
+  <div class="horizontal">
+    <button type="submit" id="login" class="action-button" [ngSwitch]="page" [class.hidden]="isFaculty && !schoolId" #submitButton>
+      <span *ngSwitchCase="'login'">Autentificare</span>
+      <span *ngSwitchCase="'forgot-password'">Resetare parolă</span>
+      <span *ngSwitchCase="'reset-password'">Salvare parolă nouă</span>
+    </button>
+    <ng-container [ngSwitch]="page">
+      <button *ngSwitchCase="'login'"
+              (click)="switchToForgotPassword($event)" id="switch-to-forgot-password" class="text-button" [class.hidden]="isFaculty && !schoolId">
+        Am uitat parola
+      </button>
+      <button *ngSwitchCase="'forgot-password'"
+              (click)="switchToLogin($event)" id="switch-to-login" class="text-button">
+        Înapoi la pagina de autentificare
+      </button>
+    </ng-container>
+  </div>
+</form>

@@ -1,0 +1,182 @@
+<div class="animated-page">
+  <app-header>
+    <div id="header-title">
+      <h1>Editare calendar an școlar</h1>
+    </div>
+    <h2
+      id="header-subtitle">{{ currentAcademicYear?.academic_year + ' - ' + (currentAcademicYear?.academic_year + 1)}}</h2>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div class="text-button" [routerLink]="['/manage-school-calendar']" (click)="submit()">Salvează</div>
+        <div class="text-button dark-text" [routerLink]="['/manage-school-calendar']" (click)="cancelEdit()">Anulează
+        </div>
+      </div>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <div class="detail-element-container header blue-text bold">
+      <div class="label-container fixed-large-column">Semestrul I</div>
+    </div>
+    <app-date-range-input labelValue="Interval*"
+                          [isSemesterDate]="true"
+                          [messageErrorFrom]="currentAcademicYearErrorMessages?.first_semester?.starts_at"
+                          [messageErrorTo]="currentAcademicYearErrorMessages?.first_semester?.ends_at"
+                          [startDate]="convertStringToDate(currentAcademicYear.first_semester?.starts_at)"
+                          [endDate]="convertStringToDate(currentAcademicYear.first_semester?.ends_at)"
+                          (dateChanged)="handleSemesterDateChange($event, 'first_semester', [$event.key])"></app-date-range-input>
+    <!-- [isCalendarEditable]="isCalendarEditable" ---- Removed from above for Demo purposes -->
+    <hr class="hr-small">
+    <div class="detail-element-container">
+      <div class="label-container fixed-large-column">Evenimente</div>
+    </div>
+    <div class="event-list-container row">
+      <div class="full-width">
+        <div *ngFor="let event of currentAcademicYear?.first_semester?.events; let i = index;">
+          <div class="event-list">
+            <div>
+              <div class="row">
+                <div class="label padded-text">Tip*</div>
+                <div class="dropdown-parent value">
+                  <app-dropdown
+                    [errorMessage]="currentAcademicYearErrorMessages?.first_semester?.events[i].event_type"
+                    [list]="eventTypesFirstSemester"
+                    [appliedElement]="eventTypesFirstSemester[findEvent(event.event_type, 'eventTypesFirstSemester')]?.name ?
+                     eventTypesFirstSemester[findEvent(event.event_type, 'eventTypesFirstSemester')].name : null"
+                    displayedProperty="name"
+                    (elementHasBeenSelected)="selectEventFirstSemester($event, i)"
+                    placeholder="-"
+                  ></app-dropdown>
+                </div>
+              </div>
+              <app-date-range-input labelValue="Interval*" styleInput="narrow-input"
+                                    [messageErrorFrom]="currentAcademicYearErrorMessages?.first_semester?.events[i].starts_at"
+                                    [messageErrorTo]="currentAcademicYearErrorMessages?.first_semester?.events[i].ends_at"
+                                    [startDate]="convertStringToDate(currentAcademicYear?.first_semester?.events[i].starts_at)"
+                                    [endDate]="convertStringToDate(currentAcademicYear?.first_semester?.events[i].ends_at)"
+                                    (dateChanged)="handleEventDateChange($event, i, currentAcademicYear?.first_semester?.events, 'first_semester')"></app-date-range-input>
+            </div>
+            <div class="delete-button" *ngIf="currentAcademicYear?.first_semester?.events.length >= 2"
+                 (click)="deleteEvent(currentAcademicYear.first_semester.events, currentAcademicYearErrorMessages.first_semester.events, i)">
+              <div class="text-button no-margin dark-text">
+                Șterge
+              </div>
+            </div>
+          </div>
+          <hr class="hr-small margin-top-small" *ngIf="i < currentAcademicYear?.first_semester?.events.length-1">
+        </div>
+        <div class="padded-text new-element-container">
+          <div class="text-button blue-text medium"
+               (click)="addNewEventFirstSemester()">Adaugă un eveniment nou
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="full-width">
+    <div class="detail-element-container header blue-text bold">
+      <div class="label-container fixed-large-column">Semestrul II</div>
+    </div>
+    <app-date-range-input labelValue="Interval*"
+                          [isSemesterDate]="true"
+                          [messageErrorFrom]="currentAcademicYearErrorMessages?.second_semester?.starts_at"
+                          [messageErrorTo]="currentAcademicYearErrorMessages?.second_semester?.ends_at"
+                          [startDate]="convertStringToDate(currentAcademicYear.second_semester?.starts_at)"
+                          [endDate]="convertStringToDate(currentAcademicYear.second_semester?.ends_at)"
+                          (dateChanged)="handleSemesterDateChange($event, 'second_semester', [$event.key])"></app-date-range-input>
+    <!-- [isCalendarEditable]="isCalendarEditable" ---- Removed from above for Demo purposes -->
+    <hr class="hr-small">
+    <div class="detail-element-container">
+      <div class="label-container fixed-large-column">Evenimente</div>
+    </div>
+    <div class="event-list-container row">
+      <div class="full-width">
+        <div *ngFor="let event of currentAcademicYear?.second_semester?.events; let i = index;">
+          <div class="event-list">
+            <div>
+              <div class="row">
+                <div class="label padded-text">Tip*</div>
+                <div class="dropdown-parent value">
+                  <app-dropdown
+                    [errorMessage]="currentAcademicYearErrorMessages?.second_semester?.events[i].event_type"
+                    [list]="eventTypesSecondSemester"
+                    [appliedElement]="eventTypesSecondSemester[findEvent(event.event_type, 'eventTypesSecondSemester')] ?
+                     eventTypesSecondSemester[findEvent(event.event_type, 'eventTypesSecondSemester')] : null"
+                    displayedProperty="name"
+                    (elementHasBeenSelected)="selectEventSecondSemester($event, i)"
+                    placeholder="-"
+                  ></app-dropdown>
+                </div>
+              </div>
+              <app-date-range-input labelValue="Interval*" styleInput="narrow-input"
+                                    [messageErrorFrom]="currentAcademicYearErrorMessages?.second_semester?.events[i].starts_at"
+                                    [messageErrorTo]="currentAcademicYearErrorMessages?.second_semester?.events[i].ends_at"
+                                    [startDate]="convertStringToDate(currentAcademicYear?.second_semester?.events[i].starts_at)"
+                                    [endDate]="convertStringToDate(currentAcademicYear?.second_semester?.events[i].ends_at)"
+                                    (dateChanged)="handleEventDateChange($event, i, currentAcademicYear?.second_semester?.events, 'second_semester')"></app-date-range-input>
+            </div>
+            <div class="delete-button" *ngIf="currentAcademicYear?.second_semester?.events.length >= 2"
+                 (click)="deleteEvent(currentAcademicYear.second_semester.events, currentAcademicYearErrorMessages.second_semester.events, i)">
+              <div class="text-button no-margin dark-text">
+                Șterge
+              </div>
+            </div>
+          </div>
+          <hr class="hr-small margin-top-small" *ngIf="i < currentAcademicYear?.second_semester?.events.length-1">
+        </div>
+        <div class="padded-text new-element-container">
+          <div class="text-button blue-text medium"
+               (click)="addNewEventSecondSemester()">Adaugă un eveniment nou
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="full-width">
+    <div class="detail-element-container header blue-text bold">
+      <div class="label-container fixed-large-column">Alte evenimente</div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-large-column">Evenimente</div>
+    </div>
+    <div class="event-list-container row">
+      <div class="full-width">
+        <div *ngFor="let event of currentAcademicYear?.events; let i = index;">
+          <div class="event-list">
+            <div>
+              <div class="row">
+                <div class="label padded-text">Tip*</div>
+                <div class="dropdown-parent value">
+                  <app-dropdown
+                    [errorMessage]="currentAcademicYearErrorMessages?.events[i].event_type"
+                    [list]="eventTypesOtherEvents"
+                    [appliedElement]="eventTypesOtherEvents[findEvent(event.event_type, 'eventTypesOtherEvents')] ?
+                     eventTypesOtherEvents[findEvent(event.event_type, 'eventTypesOtherEvents')] : null"
+                    displayedProperty="name"
+                    (elementHasBeenSelected)="selectEventOtherEvent($event, i)"
+                    placeholder="-"
+                  ></app-dropdown>
+                </div>
+              </div>
+              <app-date-range-input labelValue="Interval*" styleInput="narrow-input"
+                                    [messageErrorFrom]="currentAcademicYearErrorMessages?.events[i]?.starts_at"
+                                    [messageErrorTo]="currentAcademicYearErrorMessages?.events[i]?.ends_at"
+                                    [startDate]="convertStringToDate(currentAcademicYear?.events[i]?.starts_at)"
+                                    [endDate]="convertStringToDate(currentAcademicYear?.events[i]?.ends_at)"
+                                    (dateChanged)="handleEventDateChange($event, i, currentAcademicYear?.events)"></app-date-range-input>
+            </div>
+            <div class="delete-button" *ngIf="currentAcademicYear?.events.length >= 2"
+                 (click)="deleteEvent(currentAcademicYear?.events, currentAcademicYearErrorMessages.events, i)">
+              <div class="text-button no-margin dark-text">
+                Șterge
+              </div>
+            </div>
+          </div>
+          <hr class="hr-small margin-top-small" *ngIf="i < currentAcademicYear?.events.length-1">
+        </div>
+        <div class="padded-text new-element-container">
+          <div class="text-button blue-text medium"
+               (click)="addNewEventOtherEvents()">Adaugă un eveniment nou
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

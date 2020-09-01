@@ -1,0 +1,69 @@
+<app-modal [headerColor]="'blue'" #modal>
+  <div id="modal-header">
+    <div class="header">
+       <span class="title">Adăugare note clasă</span>
+       <div class="description">{{classGrade}} {{classLetter}}</div>
+       <div class="datepicker-input-wrapper">
+         <span class="date-label">Dată</span>
+         <input
+           class="date custom-date"
+           (click)="openPicker()"
+           readOnly
+           placeholder="Dată"
+           value="{{ currentDate }}"
+         >
+         <div class="datepicker-container">
+           <app-datepicker
+             color="#0077DB"
+             #datepicker
+             [dateValue]="convertStringToDate(currentDate)"
+             (dateChanged)="changeDate($event)"
+           >
+           </app-datepicker>
+         </div>
+       </div>
+    </div>
+  </div>
+  <div id="modal-body">
+    <div class="student-list">
+      <div class="row">
+         <div class="column">
+          Nume
+        </div>
+         <div class="column">
+          Notă
+        </div>
+      </div>
+      <div class="row" *ngFor="let studentData of students; let i = index;">
+        <div class="column">
+          {{studentData.student.full_name}}
+        </div>
+        <div class="column">
+          <div class="grade-wrapper" *ngIf="studentData.addedGrades.length">
+            <div class="grade-cell" *ngFor="let grade of studentData.addedGrades; let j = index;">
+              <div class="dropdown-wrapper">
+                <app-dropdown
+                  [list]="availableGrades"
+                  [placeholder]="'Notă'"
+                  [appliedElement]="grade"
+                  (elementHasBeenSelected)="gradeDropdownChanged($event, i, j)"
+                  [required]="true"
+                ></app-dropdown>
+              </div>
+              <div class="text-button bold dark-text" (click)="removeGradeForStudent($event, i, j)">
+                Șterge
+              </div>
+            </div>
+          </div>
+          <span class="add-grade text-button bold blue" (click)="addGradeForStudent($event, i)">
+            Adaugă incă o notă
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span class="text-button blue" (click)="saveGradesAction()">Salvează</span>
+    <span class="text-button dark-text" (click)="close()">Anulează</span>
+  </div>
+</app-modal>

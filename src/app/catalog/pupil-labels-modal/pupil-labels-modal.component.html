@@ -1,0 +1,22 @@
+<app-modal [headerColor]="'dark'" #modal>
+  <div id="modal-header">
+    <div class="header">
+      <h2 class="title">Etichete</h2>
+      <div class="description">{{studentName}}</div>
+    </div>
+  </div>
+  <div id="modal-body">
+    <div class="body">
+      <div class="labels-container">
+        <div *ngFor="let label of labels" class="action-button">
+          <span class="text-content">
+            {{label.text}}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span class="text-button dark-text" (click)="close()">Închide</span>
+  </div>
+</app-modal>

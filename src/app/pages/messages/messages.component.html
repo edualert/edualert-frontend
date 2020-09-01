@@ -1,0 +1,2 @@
+<app-messages-principal-teacher *ngIf="accountRole === 'SCHOOL_PRINCIPAL' || accountRole === 'TEACHER'"></app-messages-principal-teacher>
+<app-messages-student-parent *ngIf="accountRole === 'STUDENT' || accountRole === 'PARENT'"></app-messages-student-parent>

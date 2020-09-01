@@ -1,0 +1,334 @@
+@import "../../../assets/styles/base";
+
+.dropdown-parent {
+  width: 150px;
+  margin-left: $margin-small;
+}
+
+
+.page-content {
+  position: relative;
+}
+
+.card {
+  margin-top: $margin-default;
+  position: relative;
+
+  &:hover .card-title {
+    color: $color-blue;
+  }
+
+  .card-title {
+    margin-top: -5px;
+    transition: color 0.1s;
+    cursor: pointer;
+    width: auto;
+    font-size: $font-size-big;
+    color: $color-text-normal;
+    overflow: hidden;
+    max-width: 200px;
+    display: inline-block;
+    white-space: pre-wrap;
+    padding: 5px 8px;
+    margin: -10px -8px -5px;
+    border-radius: 5px;
+  }
+
+  .role {
+    display: flex;
+    margin-top: $margin-tiny;
+
+    .role-icon {
+      background-size: 21px 20px;
+      background-repeat: no-repeat;
+      background-position: left;
+      width: 21px;
+      padding-right: $margin-xsmall;
+      padding-left: $margin-small;
+
+      &.ADMINISTRATOR {
+        background-image: url("../../../assets/img/user-ors.svg");
+      }
+
+      &.SCHOOL_PRINCIPAL {
+        background-image: url("../../../assets/img/user-principal.svg");
+      }
+
+      &.TEACHER {
+        background-image: url("../../../assets/img/user-teacher.svg");
+      }
+
+      &.PARENT {
+        background-image: url("../../../assets/img/user-parent.svg");
+      }
+
+      &.STUDENT {
+        background-image: url("../../../assets/img/student.svg");
+      }
+    }
+
+    .role-name {
+      margin-left: $margin-small;
+      font-size: $font-size-bigish;
+    }
+  }
+
+  .card-right-container {
+    position: absolute;
+    right: $margin-big;
+    top: $margin-default;
+    height: calc(100% - #{$margin-default * 2});
+    width: auto;
+    display: flex;
+    align-items: center;
+
+    .tags-and-status-container {
+      display: flex;
+
+      .tags {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+
+      .user-status {
+        position: relative;
+        width: 200px;
+        height: 30px;
+        border-radius: $border-radius-normal 3px 3px $border-radius-normal;
+        background-color: $color-background;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 $margin-small;
+        color: white;
+        transition: background-color 0.2s;
+
+        &.green {
+          background-color: $color-green;
+
+          hr.vertical {
+            right: 95px;
+          }
+        }
+
+        &.red {
+          background-color: $color-red;
+        }
+
+        &.grey {
+          background-color: $color-text-light;
+        }
+
+        hr.vertical {
+          background-color: rgba(white, 0.5);
+          margin: 0 $margin-tiny 0 0;
+          position: absolute;
+          height: calc(100% - 18px);
+          top: 9px;
+          right: 88px;
+        }
+
+        .text-button:before {
+          left: -10px;
+          top: -4px;
+          width: calc(100% + 22px);
+          height: calc(100% + 8px);
+          border-radius: 3px;
+        }
+
+      }
+    }
+
+    .vertical {
+      margin-left: $margin-default;
+      margin-right: $margin-default;
+    }
+  }
+
+}
+
+.card.loading-card {
+  opacity: 0.7;
+  pointer-events: none;
+
+  .card-left-container {
+    width: 50%;
+  }
+
+  .card-title {
+    width: 100%;
+    background-color: #E2E5EA;
+    height: 21px;
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 1360px) {
+  .card {
+    padding: $margin-big;
+
+    .card-right-container .tags-and-status-container {
+      display: flex;
+      align-items: center;
+
+      .tags {
+        flex-direction: column;
+
+        .tag {
+          margin-bottom: 3px;
+
+          &:last-of-type {
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      .user-status {
+        width: 185px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1130px) {
+  .card {
+    padding: $margin-default $margin-big;
+
+    .card-right-container .tags-and-status-container {
+      flex-direction: column;
+      align-items: flex-end;
+
+      .tags {
+        flex-direction: row;
+
+        .tag {
+          margin-right: unset;
+          margin-left: 3px;
+          padding-left: 8px;
+          padding-right: 8px;
+          border-radius: 5px;
+
+          &:last-of-type {
+            margin-bottom: 3px;
+          }
+        }
+      }
+    }
+
+    .user-status {
+      border-radius: 5px;
+
+      .text-button:before {
+        border-radius: 5px;
+      }
+    }
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .card:first-of-type {
+    margin-top: 0;
+  }
+
+  .page-content {
+    padding-bottom: $margin-xbig;
+
+    .card {
+      .card-right-container .tags-and-status-container {
+        flex-direction: row;
+        align-items: center;
+
+        .tags {
+          flex-direction: column;
+
+          .tag {
+            margin-right: $margin-default;
+            border-radius: $border-radius-normal;
+            margin-bottom: 3px;
+
+            &:last-of-type {
+              margin-bottom: 0;
+            }
+          }
+        }
+
+        .user-status {
+          border-radius: $border-radius-normal 3px 3px $border-radius-normal;
+
+          .text-button:before {
+            border-radius: 3px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .page-content {
+    padding: $margin-xsmall $margin-default $margin-xbig;
+
+    .vertical.visible-on-desktop {
+      display: none;
+    }
+
+    .card {
+      margin-top: $margin-tiny;
+      padding: $margin-tiny $margin-small;
+
+      .card-title {
+        font-size: $font-size-bigish;
+        margin-top: unset;
+        max-width: unset;
+      }
+
+      .card-left-container .role {
+        margin-top: 12px;
+        margin-bottom: $margin-xsmall;
+
+        .role-icon {
+          height: 21px;
+        }
+
+        .role-name {
+          font-size: $font-size-small;
+        }
+      }
+
+      .card-right-container {
+        position: unset;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .tags-and-status-container {
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%;
+
+          .tags {
+            flex-direction: row;
+            justify-content: flex-start;
+
+            .tag {
+              border-radius: 5px;
+              margin-top: $margin-tiny;
+            }
+          }
+
+          .user-status {
+            width: 100%;
+            border-radius: 5px;
+            margin-top: $margin-tiny;
+            margin-bottom: $margin-tiny;
+          }
+        }
+
+        .vertical {
+          margin-right: $margin-small;
+        }
+      }
+    }
+  }
+}

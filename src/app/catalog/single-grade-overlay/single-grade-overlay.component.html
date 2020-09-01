@@ -1,0 +1,33 @@
+<div class="container grade" #root *ngIf="isOpen">
+  <div class="top">
+    <div class="title">{{existingId ? 'Editează notă' : 'Adaugă notă'}}</div>
+    <hr>
+    <div class="select-container">
+      <div class="label">Notă</div>
+      <div class="dropdown-container">
+        <app-dropdown
+          [list]="grades"
+          [required]="true"
+          [appliedElement]="selectedGrade"
+          (elementHasBeenSelected)="selectGrade($event)"
+          [placeholder]="'-'"
+        ></app-dropdown>
+      </div>
+      <div class="label">Dată</div>
+      <div class="date-container">
+        <input class="date" (click)="openDatepicker()" [value]="displayDate(selectedDate)">
+        <div class="datepicker-container">
+          <app-datepicker #datepicker
+                          [dateValue]="selectedDate"
+                          [color]="'#0077DB'"
+                          (dateChanged)="selectDate($event)"
+          ></app-datepicker>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="text-button" (click)="saveClick()">Salvează</div>
+    <div class="text-button dark-text" (click)="close()">Anulează</div>
+  </div>
+</div>

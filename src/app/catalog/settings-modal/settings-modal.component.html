@@ -1,0 +1,103 @@
+<app-modal [headerColor]="'dark'" #modal>
+  <div id="modal-header">
+    <div class="header">
+      <h2 class="title">Gestionare setări clasă</h2>
+      <div class="description">{{classGrade}} {{classLetter}}</div>
+    </div>
+  </div>
+  <div id="modal-body">
+    <div class="student-list">
+      <div class="table-header">
+        <div class="row">
+          <div class="column">
+            Nume
+          </div>
+          <div class="column">
+            <span class="column checkbox-container">
+                <div class="checkbox-button"
+                     [class.checked]="isGloballySelected?.wants_level_testing_grade"
+                     (click)="toggleSettingForAll('wants_level_testing_grade')"
+                ></div>
+                Teste inițiale / finale
+            </span>
+          </div>
+          <div class="column">
+            <span class="column checkbox-container">
+                <div class="checkbox-button"
+                     [class.checked]="isGloballySelected?.wants_thesis"
+                     (click)="toggleSettingForAll('wants_thesis')"
+                ></div>
+                Teză
+            </span>
+          </div>
+          <div class="column">
+            <span class="column checkbox-container">
+                <div class="checkbox-button"
+                     [class.checked]="isGloballySelected?.wants_simulation"
+                     (click)="toggleSettingForAll('wants_simulation')"
+                ></div>
+                Simulări
+            </span>
+          </div>
+          <div *ngIf="allowExemption" class="column">
+            <span class="column radio-container">
+                <div class="checkbox-button"
+                     [class.checked]="isGloballySelected?.is_exempted"
+                     (click)="toggleSettingForAll('is_exempted')"
+                ></div>
+                Scutit
+            </span>
+          </div>
+          <div *ngIf="isOptional" class="column">
+            <span class="column radio-container">
+                <div class="checkbox-button"
+                     [class.checked]="isGloballySelected?.is_enrolled"
+                     (click)="toggleSettingForAll('is_enrolled')"
+                ></div>
+                Înregistrat opțional
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngFor="let studentSettings of classSettings; let i = index">
+        <div class="column">
+          {{studentSettings.student.full_name}}
+        </div>
+        <span class="column checkbox-container">
+            <div class="checkbox-button"
+                 [class.checked]="studentSettings.wants_level_testing_grade"
+                 (click)="changeValue(studentSettings, 'wants_level_testing_grade', i)"
+            ></div>
+        </span>
+        <span class="column checkbox-container">
+            <div class="checkbox-button"
+                 [class.checked]="studentSettings.wants_thesis"
+                 (click)="changeValue(studentSettings, 'wants_thesis', i)"
+            ></div>
+        </span>
+        <span class="column checkbox-container">
+            <div class="checkbox-button"
+                 [class.checked]="studentSettings.wants_simulation"
+                 (click)="changeValue(studentSettings, 'wants_simulation', i)"
+            ></div>
+        </span>
+        <span *ngIf="allowExemption" class="column checkbox-container">
+            <div class="checkbox-button"
+                 [class.checked]="studentSettings.is_exempted"
+                 (click)="changeValue(studentSettings, 'is_exempted', i)"
+            ></div>
+        </span>
+        <span *ngIf="isOptional" class="column checkbox-container">
+            <div class="checkbox-button"
+                 [class.checked]="studentSettings.is_enrolled"
+                 (click)="changeValue(studentSettings, 'is_enrolled', i)"
+            ></div>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span class="text-button blue" (click)="save()">Salvează</span>
+    <span class="text-button dark-text" (click)="close()">Anulează</span>
+  </div>
+</app-modal>

@@ -1,0 +1,65 @@
+$color-blue: #0077DB;
+$color-red: #CC0033;
+$color-green: #00AE17;
+$color-yellow: #FFB300;
+$color-background: #EDF0F5;
+$color-separator: #D2DCE8;
+
+$color-text-light: #929EAC;
+$color-text-normal: #4B5B6E;
+$color-text-dark: #393C51;
+
+$font-weight-thin: 100;
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+$font-weight-black: 900;
+$font-size-small: 12px;
+$font-size-normal: 13px;
+$font-size-bigish: 15px;
+$font-size-big: 20px;
+$font-size-huge: 30px;
+
+$margin-xsmall: 5px;
+$margin-tiny: 10px;
+$margin-small: 15px;
+$margin-default: 20px;
+$margin-big: 30px;
+$margin-xbig: 50px;
+
+$fixed-width-column-large: 205px;
+$fixed-width-column: 150px;
+$fixed-width-column-small: 100px;
+
+$border-radius-tiny: 5px;
+$border-radius-normal: 10px;
+
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+$ease-middle: cubic-bezier(0.24, 0.68, 0.29, 0.04);
+
+$big-ease-in-out: cubic-bezier(0.87, 0.02, 0.47, 0.91);
+$big-ease-out: cubic-bezier(0, 0.9, 0.48, 0.98);
+
+$tiny-bouncy-out: cubic-bezier(.4, 1.4, .69, .98);
+$small-bouncy-out: cubic-bezier(0.47, 1.62, 0.55, 1.08);
+$bouncy-out: cubic-bezier(0.48, 2, 0.53, 0.99);
+$big-bouncy-out: cubic-bezier(0.42, 2.94, 0.83, 0.67);
+
+$small-bouncy-in: cubic-bezier(0.57, -0.25, 0.58, 1);
+$bouncy-in: cubic-bezier(0.36, 0.06, 0.42, -0.78);
+$big-bouncy-in: cubic-bezier(0.36, 0.06, 0.42, -1.7);
+
+$bouncy-in-out: cubic-bezier(0.36, -1.54, 0.73, 2.51);
+
+$nav-bar-width: 300px;
+$big-nav-bar-width: 38vw;
+$events-list-width: 630px;
+
+$mobile-screen-width-normal: 1024px; /* From generic tablet downwards */
+$mobile-screen-width-intermediate: 768px;
+$mobile-screen-width-small: 500px; /* For phones */
+
+$scrollable-modal-height: 500px;

@@ -1,0 +1,59 @@
+<div class="table-wrapper">
+  <div class="scroll-container" (scroll)="handleScroll()">
+    <div class="table">
+      <div class="table-head">
+        <div class="head {{ columnHeader?.columnType }} header" [ngStyle]="{minWidth: columnHeader?.minWidth + 'px'}"
+             *ngFor="let columnHeader of tableColumns">{{ columnHeader.name }}</div>
+      </div>
+      <div class="table-body">
+        <div class="row" *ngFor="let data of tableData">
+          <div class="row-data {{ column?.columnType }} column"
+               [ngStyle]="{minWidth: column?.minWidth + 'px'}"
+               *ngFor="let column of tableColumns">
+
+            <ng-container *ngIf="column?.displayFormatter; else simpleData">
+              {{ column.displayFormatter(data[column.dataKey]) }}
+            </ng-container>
+
+            <ng-template #simpleData>
+              <a *ngIf="column.columnType === 'link-button'"
+                 routerLink='{{ column.link(data) }}'
+                 class="text-item link-content blue-text bold">
+                {{ data[column?.dataKey] }}
+              </a>
+
+              <a *ngIf="column.columnType === 'user-details-modal'"
+                 (click)="triggerUserModalEvent(column.link(data))"
+                 class="text-item link-content blue-text bold">
+                {{ data[column?.dataKey] }}
+              </a>
+
+              <div *ngIf="column.columnType === 'numbered-cell'"
+                   class="medium red-text">
+                {{ data[column?.dataKey] }}
+              </div>
+
+              <div *ngIf="column.columnType === 'graded-cell'"
+                   class="{{ data[column?.dataKey] < 5 ? 'red-text' : '' }}">
+                {{ data[column?.dataKey] }}
+              </div>
+
+              <div *ngIf="column.columnType === 'simple-cell'">
+                {{ data[column?.dataKey] }}
+              </div>
+
+              <div *ngIf="column.columnType === 'class-name'">
+                Clasa {{ data[column?.dataKey] }}
+              </div>
+
+              <div *ngIf="column.columnType === 'custom-text'"
+                   class="{{ getColorByEventType(data?.event_type) }}">
+                {{ data[column?.dataKey] }}
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

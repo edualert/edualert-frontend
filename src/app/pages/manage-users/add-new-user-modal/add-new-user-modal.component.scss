@@ -1,0 +1,65 @@
+@import '../../../../assets/styles/base';
+@import '../../../../assets/styles/buttons';
+
+.title {
+  color: white;
+}
+
+.body {
+  .info {
+    padding: $margin-big 0 $margin-default;
+  }
+
+  .choices {
+    display: flex;
+    padding-bottom: $margin-big;
+  }
+
+  .action-button {
+    display: flex;
+    color: $color-text-normal;
+    background-color: white;
+    margin-right: $margin-tiny;
+    padding: 6px $margin-small 6px $margin-tiny;
+
+    + .action-button {
+      margin-right: 0;
+    }
+
+    .text-content {
+      align-self: center;
+    }
+
+    .icon-right {
+      background-size: 10px 10px;
+      background-image: url("../../../../assets/img/check-blue.svg");
+      background-repeat: no-repeat;
+      background-position: right;
+      padding-right: $margin-xsmall;
+      padding-left: $margin-small;
+
+      &.image-none {
+        background-image: none;
+      }
+    }
+  }
+}
+
+.text-button {
+  &.disabled {
+    color: $color-text-normal;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: $mobile-screen-width-small) {
+  .body .choices {
+    flex-wrap: wrap;
+    padding-bottom: $margin-default;
+
+    .action-button {
+      margin-bottom: $margin-tiny;
+    }
+  }
+}
+

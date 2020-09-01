@@ -1,0 +1,80 @@
+<div class="dropdown"
+     [ngClass]="dropdownStyle"
+     [class.open]="isOpen"
+     [class.disabled]="isDisabled"
+     [class.with-search]="withSearch"
+     #root>
+  <div class="button-container">
+
+    <div *ngIf="!withSearch; else searchInput" class="dropdown-button {{ errorMessage ? 'display-error' : ''}}" (click)="open()">
+      <ng-container *ngIf="!withMultipleSelection; else withMultiple">
+        <span *ngIf="appliedElement; else displayPlaceholder">
+            {{appliedElement[displayedProperty] || appliedElement}}
+          </span>
+        <ng-template #displayPlaceholder>
+          <span class="placeholder">{{placeholder}}</span>
+        </ng-template>
+      </ng-container>
+
+      <ng-template #withMultiple>
+        <div *ngIf="appliedSelection && appliedSelection.length; else showPlaceholder" class="dropdown-button-text">
+          <span *ngFor="let element of appliedSelection" class="comma-separated">
+            {{element[displayedProperty] || element}}
+          </span>
+        </div>
+        <ng-template #showPlaceholder>
+          <span class="placeholder">{{placeholder}}</span>
+        </ng-template>
+      </ng-template>
+
+      <div class="dropdown-button-icon">
+        <div class="arrow-triangle-button"></div>
+      </div>
+    </div>
+    <div class="error-message" *ngIf="error !== ''">{{ error }}</div>
+  </div>
+
+  <ng-template #searchInput>
+    <input class="{{ error ? 'error-input' : ''}}"
+           [disabled]="componentDisabled"
+           [ngClass]="componentDisabled ? 'disabled' : ''"
+           #search type="text"
+           [ngModel]="searchString"
+           [class.no-value]="!appliedElement"
+           placeholder="{{appliedElement ? (appliedElement[displayedProperty] || appliedElement) : placeholder}}"
+           (focus)="open()" (ngModelChange)="searchChange($event)">
+    <div class="error-message" *ngIf="errorMessage !== ''">{{ errorMessage }}</div>
+  </ng-template>
+
+  <div class="list-container" #listContainer *ngIf="isOpen">
+
+    <ng-container *ngIf="!withMultipleSelection">
+      <div *ngIf="!searchString && !required" class="element" (click)="singleElementSelected($event, null)">&nbsp;-</div>
+      <div class="element" *ngFor="let element of displayedList; index as i"
+           (click)="singleElementSelected($event, element, i)"
+           [class.highlighted]="i === highlightIndex"
+           [class.checked]="appliedElement ? (element[displayedProperty] ? element[displayedProperty] === appliedElement[displayedProperty] : element === appliedElement) : false">
+        {{element[displayedProperty] || element}}
+      </div>
+      <div *ngIf="searchString && !displayedList.length" class="element disabled">Niciun rezultat</div>
+    </ng-container>
+
+    <ng-container *ngIf="withMultipleSelection">
+      <div *ngIf="showCurrentSelection" class="current-selection-horizontal-list">
+        <span class="comma-separated"
+              *ngFor="let element of currentFullSelection">{{element.element[displayedProperty] || element.element}}</span>
+      </div>
+      <div class="element checkbox-container" *ngFor="let element of displayedList; index as $i"
+           (click)="elementFromSelectionClicked($i)"
+           [class.checked]="viewIndexSelection[$i]">
+        {{element[displayedProperty] || element}}
+        <div class="checkbox-button" [class.checked]="viewIndexSelection[$i]"></div>
+      </div>
+      <div class="confirm-buttons">
+        <div class="text-button dark-text" (click)="close()">cancel</div>
+        <div class="text-button" (click)="confirmSelection()">confirm</div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

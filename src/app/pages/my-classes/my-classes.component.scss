@@ -1,0 +1,79 @@
+@import "../../../assets/styles/base";
+
+.section {
+  &.master {
+    .card {
+      display: block;
+      color: $color-blue;
+
+      &:hover {
+        filter: brightness(1.3);
+      }
+
+      .card-title {
+        color: $color-blue;
+      }
+    }
+  }
+}
+
+.card {
+  width: 480px;
+  min-height: 94px;
+  margin-top: $margin-default;
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  margin-right: $margin-default;
+    
+    .card-left-container {
+      padding-top: $margin-xsmall;
+      width: fit-content;
+      display: block;
+    }
+
+  &.wide {
+    width: 980px;
+    max-width: 100%;
+  }
+
+   &.tall {
+    min-height: 122px;
+
+   .card-left-container {
+     padding-top: unset;
+    }
+  }
+
+  .profile {
+    display: block;
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .page-content {
+    .card {
+      display: block;
+      width: 280px;
+      min-height: 61px;
+      margin-top:$margin-tiny;
+      padding: $margin-tiny $margin-small;
+
+      .card-left-container {
+        padding-top: unset;
+      }
+
+      &.wide {
+        width: 280px;
+      }
+
+      &.tall {
+        min-height: 82px;
+      }
+
+      .categories {
+        margin-top: -5px;
+      }
+    }
+  }
+}

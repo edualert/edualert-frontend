@@ -1,0 +1,41 @@
+@import "../../../assets/styles/base";
+
+
+.datepicker-input-wrapper {
+  margin-left: $margin-small;
+  margin-bottom: 10px;
+
+  .datepicker-container {
+    width: 400px;
+    top: 50px;
+    position: absolute;
+    z-index: 10;
+  }
+
+  input.date {
+    &.custom-date {
+      background-position: calc(100% - #{$margin-tiny}) 50%;
+      width: 112px;
+      padding-right: 0;
+    }
+  }
+}
+
+@media(max-width: $mobile-screen-width-normal) {
+  .datepicker-input-wrapper {
+    margin: unset;
+
+    .datepicker-container {
+      width: 300px;
+      top: unset;
+      bottom: 25%;
+      right: 10px;
+    }
+  }
+  
+  input.date {
+    &.custom-date {
+      border-radius: $border-radius-tiny;
+    }
+  }
+}

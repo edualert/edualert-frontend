@@ -1,0 +1,29 @@
+<app-modal [headerColor]="'dark'" #modal>
+  <div id="modal-header">
+    <div class="header">
+      <h2 class="title">{{title}}</h2>
+    </div>
+  </div>
+  <div id="modal-body">
+    <div class="body">
+      <div class="info">{{infoText}}</div>
+      <div class="choices">
+        <div class="action-button" (click)="singleUserChoiceClick()">
+          <span class="text-content">
+            {{newUserButtonText}}
+          </span>
+          <span [ngClass]="{'image-none': !singleUserChoice}" class="icon-right"></span>
+        </div>
+        <div class="action-button" (click)="multipleUsersChoiceClick()">
+          <span class="text-content">
+            {{importUsersButtonText}}
+          </span>
+          <span [ngClass]="{'image-none': !multipleUsersChoice}" class="icon-right"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span [class.disabled]="!(singleUserChoice || multipleUsersChoice)" class="text-button blue" (click)="close()">CONFIRMĂ</span>
+  </div>
+</app-modal>

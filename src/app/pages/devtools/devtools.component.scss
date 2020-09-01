@@ -1,0 +1,16 @@
+.DevtoolsComponent {
+  padding: 20px;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+
+  button, input, .radio-container, .checkbox-container, .card, hr {
+    margin-top: 15px;
+  }
+}
+
+app-dropdown {
+  display: flex;
+  width: 250px;
+  margin: 10px 0;
+}

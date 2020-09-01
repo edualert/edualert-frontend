@@ -1,0 +1,58 @@
+@import "../../../../assets/styles/base";
+
+.info-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: $font-size-normal;
+  margin-top: $margin-big;
+  height: 18px;
+  width: 100%;
+  .label {
+    width: $fixed-width-column;
+  }
+  .cell {
+    .margin-left {
+      margin-left: $margin-small;
+    }
+    .title {
+      color: $color-text-light;
+    }
+    a.arrow, span.arrow {
+      cursor: pointer;
+      padding-right: $margin-default;
+      margin-left: $margin-small;
+      &:first-of-type {
+        margin-left: 0;
+      }
+    }
+  }
+  hr.vertical {
+    color: $color-separator;
+    width: 1px;
+    height: 100%;
+    margin: 0 $margin-small;
+  }
+  .arrow  {
+    background-position: right;
+    &.right {
+      margin-left: 0;
+    }
+  }
+}
+.margin-list {
+  margin-top: $margin-big;
+}
+@media (max-width: $mobile-screen-width-normal) {
+  .info-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: unset;
+    justify-content: unset;
+    .cell {
+      margin-top: $margin-tiny;
+    }
+  }
+}

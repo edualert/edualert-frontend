@@ -1,0 +1,103 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Rapoarte</h1>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <div class="text-button export_button disabled">Exportă rapoarte</div>
+      </div>
+    </div>
+    <div id="tabs-container">
+      <app-tabs
+        [tabsList]="tabs_top"
+        [activeTab]="activeTabTop"
+        (tabHasBeenSelected)="changeTab($event, 'top')"></app-tabs>
+      <app-tabs
+        [tabsList]="tabs_bottom"
+        [activeTab]="activeTabBottom"
+        (tabHasBeenSelected)="changeTab($event, 'bottom')"></app-tabs>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container [ngSwitch]="activeTabTop">
+      <ng-container *ngSwitchCase="'my_classes'">
+        <ng-container [ngSwitch]="activeTabBottom">
+          <ng-container *ngSwitchCase="'study_classes_at_risk'">
+            <app-reports-table [tableColumns]="studyClassesAtRiskTable"
+                               [tableData]="data[activeTabTop][activeTabBottom]">
+            </app-reports-table>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase="'class_mastery'">
+        <ng-container [ngSwitch]="activeTabBottom">
+          <ng-container *ngSwitchCase="'students_at_risk'">
+            <app-reports-table [tableColumns]="ownStudentsAtRiskTable"
+                               [tableData]="data[activeTabTop][activeTabBottom]"
+                               (userHasBeenSelected)="emitUserIdForModal($event)">
+            </app-reports-table>
+          </ng-container>
+          <ng-container *ngSwitchCase="'own_students_average'">
+            <app-reports-table [tableColumns]="ownStudentsAverageTable"
+                               [tableData]="data[activeTabTop][activeTabBottom]"
+                               (userHasBeenSelected)="emitUserIdForModal($event)">
+            </app-reports-table>
+          </ng-container>
+          <ng-container *ngSwitchCase="'own_students_absences'">
+            <app-reports-table [tableColumns]="ownStudentsAbsencesTable"
+                               [tableData]="data[activeTabTop][activeTabBottom]"
+                               (userHasBeenSelected)="emitUserIdForModal($event)">
+            </app-reports-table>
+          </ng-container>
+          <ng-container *ngSwitchCase="'own_students_behaviour_grade'">
+            <app-reports-table [tableColumns]="ownStudentsBehaviourGradeTable"
+                               [tableData]="data[activeTabTop][activeTabBottom]"
+                               (userHasBeenSelected)="emitUserIdForModal($event)">
+            </app-reports-table>
+          </ng-container>
+          <ng-container *ngSwitchCase="'own_students_risk_evolution'">
+            <app-month-picker (dateChanged)="changeMonth($event)"></app-month-picker>
+            <div class="chart-container">
+              <div class="chart-holder" *ngIf="displayChart">
+                <ngx-charts-line-chart
+                  [view]="generalChartView"
+                  [xAxis]="true"
+                  [yAxis]="true"
+                  [scheme]="colorSchemeRed"
+                  [results]="data[activeTabTop][activeTabBottom].chartData"
+                  [xAxisTicks]="data[activeTabTop][activeTabBottom].xAxisTicks"
+                >
+                  <ng-template #seriesTooltipTemplate let-model="model">
+                    <div class="tooltip-content">
+                      <div class="tooltip-container simple red">
+                        <div class="value">
+                          {{model[0].value}}
+                        </div>
+                        <div class="label">
+                          {{ data[activeTabTop][activeTabBottom]["chartData"][0]["name"] }}
+                        </div>
+                        <div class="bottom-tooltip more-bottom-tabs">
+                          <div class="padded">{{ model[0].name }}</div>
+                          <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <!--<div class="selected-container"></div>-->
+                  </ng-template>
+
+                </ngx-charts-line-chart>
+              </div>
+              <div *ngIf="!displayChart" class="big-text bold padded-top info-card">Nu există date disponibile
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="'inactive_parents'">
+            <app-reports-table [tableColumns]="inactiveParentsTable"
+                               [tableData]="data[activeTabTop][activeTabBottom]"
+                               (userHasBeenSelected)="emitUserIdForModal($event)">
+            </app-reports-table>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

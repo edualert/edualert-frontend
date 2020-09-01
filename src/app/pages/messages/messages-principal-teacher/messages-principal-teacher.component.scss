@@ -1,0 +1,37 @@
+@import "../../../../assets/styles/base";
+
+
+.card {
+  min-width: 800px;
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .page-content {
+    .card {
+      padding: $margin-tiny $margin-small 35px;
+
+      .card-right-container {
+        .message-status {
+          hr.vertical {
+            position: unset;
+            margin-right: $margin-small;
+          }
+
+          .read-status {
+            min-width: 38px;
+            margin-right: $margin-small;
+          }
+        }
+      }
+
+      .targets {
+        .message-platform {
+          position: absolute;
+          bottom: $margin-tiny;
+          display: block;
+          margin-top: unset;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,158 @@
+@import "../../../../assets/styles/base";
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  height: 100%;
+  padding-bottom: $margin-default;
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+.text-button {
+  margin-right: $margin-small;
+  margin-left: $margin-small;
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      background: none;
+      outline: none;
+
+      &:before {
+        background: none;
+      }
+    }
+  }
+}
+
+#header-back-button {
+  margin-bottom: $margin-tiny !important;
+
+  .blue-text {
+    font-size: $font-size-small;
+  }
+}
+
+.page-content {
+  position: relative;
+}
+
+.title {
+  font-size: $font-size-normal;
+  line-height: 18px;
+  color: $color-text-normal;
+  display: inline-block;
+}
+
+.text-item {
+  position: absolute;
+  left: 304px;
+  font-size: $font-size-normal;
+  line-height: 18px;
+}
+
+.link-content {
+  cursor: pointer;
+  display: inline-flex !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    filter: brightness(1.3);
+  }
+}
+
+.large {
+  font-size: $font-size-big;
+  line-height: 28px;
+}
+
+.row {
+  margin: $margin-tiny 0;
+}
+
+.main-info {
+  padding: $margin-tiny 0;
+}
+
+.class-master {
+  padding: $margin-big 0;
+}
+
+.tabs-section {
+  margin-top: -10px;
+}
+
+.body {
+  padding-top: $margin-default;
+
+  .row {
+    margin-top: 13px;
+
+    hr {
+      margin: $margin-small 0;
+    }
+
+    &:last-of-type {
+      hr {
+        display: none;
+      }
+    }
+
+    .sub-row {
+      margin-bottom: 13px;
+    }
+  }
+}
+
+@media(max-width: $mobile-screen-width-normal) {
+  .row {
+    margin-top: unset;
+  }
+  .text-button {
+    margin-left: unset;
+  }
+  .title {
+    display: block;
+    font-size: $font-size-small;
+  }
+  .text-item {
+    position: unset;
+    left: unset;
+    font-size: $font-size-small;
+    display: block;
+
+    &.bold.blue-text.large {
+      margin-top: -5px;
+    }
+  }
+
+  .large {
+    font-size: $font-size-bigish;
+  }
+
+  .main-info {
+    padding-top: unset;
+    margin-top: -4px;
+
+    &.no-bottom-padding {
+      padding-bottom: unset;
+    }
+  }
+
+  .class-master {
+    padding: $margin-default 0;
+  }
+
+  .body {
+    padding-top: 2px;
+  }
+}

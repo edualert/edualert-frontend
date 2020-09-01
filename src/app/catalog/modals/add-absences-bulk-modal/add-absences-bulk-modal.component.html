@@ -1,0 +1,78 @@
+<app-modal [headerColor]="'red'" #modal>
+  <div id="modal-header">
+    <div class="header">
+       <span class="title">Adăugare absențe clasă</span>
+       <div class="description">{{classGrade}} {{classLetter}}</div>
+       <div class="datepicker-input-wrapper">
+         <span class="date-label">Dată</span>
+         <input
+           class="date custom-date"
+           (click)="openPicker()"
+           readOnly
+           placeholder="Dată"
+           value="{{ currentDate }}"
+         >
+         <div class="datepicker-container">
+           <app-datepicker
+             color="#0077DB"
+             #datepicker
+             [dateValue]="convertStringToDate(currentDate)"
+             (dateChanged)="changeDate($event)"
+           >
+           </app-datepicker>
+         </div>
+       </div>
+    </div>
+  </div>
+  <div id="modal-body">
+    <div class="student-list">
+      <div class="row">
+         <div class="column">
+          Nume
+        </div>
+         <div class="column">
+          <div class="element checkbox-container"
+               (click)="globalAbsencesToggle()"
+               [class.checked]="isGloballySelected">
+            <div class="checkbox-button" [class.checked]="isGloballySelected"></div>
+          </div>
+          Absență
+        </div>
+      </div>
+      <div class="row" *ngFor="let studentData of students; let i = index;">
+        <div class="column">
+          {{studentData.student.full_name}}
+        </div>
+        <div class="column">
+          <div class="element checkbox-container student-check"
+               (click)="localAbsencesToggle(i)"
+               [class.checked]="this.students[i].addedAbsences.length">
+            <div class="checkbox-button" [class.checked]="this.students[i].addedAbsences.length"></div>
+          </div>
+          <div class="absence-wrapper" *ngIf="studentData.addedAbsences.length">
+            <div class="absence-cell" *ngFor="let absence of studentData.addedAbsences; let j = index;">
+              <div class="checkbox-fancy-label">
+                <span class="label">Absență motivată</span>
+                <div class="element checkbox-container"
+                     (click)="absenceChanged($event, i, j)"
+                     [class.checked]="this.students[i].addedAbsences[j]">
+                  <div class="checkbox-button" [class.checked]="this.students[i].addedAbsences[j]"></div>
+                </div>
+              </div>
+              <div class="text-button bold dark-text" (click)="removeAbsenceForStudent(i, j, $event)">
+                Șterge
+              </div>
+            </div>
+          </div>
+          <span class="add-absence text-button bold blue" *ngIf="this.students[i].addedAbsences.length" (click)="addAbsenceForStudent(i, $event)">
+            Adaugă incă o absență
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span class="text-button blue" (click)="saveAbsencesAction()">Salvează</span>
+    <span class="text-button dark-text" (click)="close()">Anulează</span>
+  </div>
+</app-modal>

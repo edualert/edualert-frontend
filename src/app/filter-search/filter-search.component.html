@@ -1,0 +1,4 @@
+<form (submit)="formSubmit($event)" class="search-form">
+  <input type="text" [class.wide]="isWide" placeholder="Caută" class="search-input" [(ngModel)]="currentSearchString" name="search-input">
+  <input type="submit" value="" tabindex="-1">
+</form>

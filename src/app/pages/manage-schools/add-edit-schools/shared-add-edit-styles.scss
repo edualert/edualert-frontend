@@ -1,0 +1,95 @@
+@import '../../../../assets/styles/base.scss';
+
+hr {
+  margin-top: $margin-big;
+  margin-bottom: $margin-tiny;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.page-input-container {
+  margin-top: $margin-default;
+}
+
+.label-style {
+  margin-bottom: $margin-tiny;
+  font-size: $font-size-small;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  height: 100%;
+  padding-bottom: $margin-default;
+}
+
+.text-button {
+  margin-right: $margin-small;
+  margin-left: $margin-small;
+}
+
+.page-content {
+  padding-top: $margin-small;
+}
+
+.value {
+  margin-top: $margin-tiny;
+  flex: 1;
+}
+
+.label {
+  margin-top: $margin-tiny;
+  width: $fixed-width-column;
+}
+
+.large {
+  font-size: $font-size-big;
+}
+
+.dropdown-parent {
+  width: 1px;
+}
+
+
+@media (max-width: $mobile-screen-width-normal) {
+	.row {
+		margin-top: $margin-default;
+		flex-direction: column;
+		align-items: flex-start;
+
+		.label {
+			margin-top: unset;
+			font-size: $font-size-small;
+			line-height: 18px;
+
+			&.large {
+			  	font-size: $font-size-bigish;
+		      	line-height: 28px;
+			  }
+		}
+
+		.dropdown-parent {
+		  width: 100%;
+		  margin-top: 10px;
+		}
+	}
+
+	.page-content {
+	  padding: 31px $margin-default $margin-big;
+
+	  hr {
+	    margin-top: $margin-default;
+	    margin-bottom: $margin-small;
+	  }
+	}
+
+	.text-button {
+	  margin-left: unset;
+	}
+}

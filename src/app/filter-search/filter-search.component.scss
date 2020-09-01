@@ -1,0 +1,47 @@
+@import "../../assets/styles/base";
+
+form {
+  position: relative;
+  margin-left: $margin-small;
+  margin-bottom: 10px;
+}
+
+input {
+  width: 120px;
+  padding-right: 30px;
+
+  &.wide {
+    width: 176px;
+  }
+}
+
+input::placeholder {
+  font-weight: $font-weight-regular;
+}
+
+input[type="submit"] {
+  position: absolute;
+  display: block;
+  height: 27px;
+  width: 27px;
+  background-color: white;
+  border-radius: 0 calc(#{$border-radius-normal} - 1px) calc(#{$border-radius-normal} - 1px) 0;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 2px;
+  border: none;
+  padding: 0;
+  background-image: url("../../assets/img/search.svg");
+  background-size: 16px;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+
+  &:hover {
+    background-image: url("../../assets/img/search-blue.svg");
+  }
+
+  &:active {
+    background-color: rgba($color-text-normal, 0.1);
+  }
+}

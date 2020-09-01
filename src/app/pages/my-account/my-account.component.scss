@@ -1,0 +1,57 @@
+@import "../../../assets/styles/base";
+
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  align-items: flex-end;
+  padding-bottom: $margin-default;
+
+  .text-button {
+    margin: 0 10px;
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+}
+
+.margin-list {
+  margin-top: $margin-big;
+}
+
+.section-header {
+  margin-top: $margin-big;
+  margin-bottom: $margin-small;
+  font-size: $font-size-big;
+  color: $color-text-normal;
+  &:first-of-type {
+    margin-top: $margin-default;
+  }
+  @media (max-width: $mobile-screen-width-normal) {
+    font-size: $font-size-bigish;
+    color: $color-text-normal;
+  }
+}
+
+.custom-input {
+  display: flex;
+  flex-direction: row;
+  margin-top: $margin-default;
+  .custom-label {
+    width: 350px;
+  }
+  .uncheckable {
+    pointer-events: none;
+  }
+}
+
+.arrow-right {
+  margin-top: $margin-default;
+  width: 60px;
+  background: url("src/assets/img/long-arrow.svg") no-repeat right;
+}
+
+.value-container {
+  margin-top: 0!important;
+}

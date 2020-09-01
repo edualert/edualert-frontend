@@ -1,0 +1,73 @@
+@import "../../../../../assets/styles/base";
+
+.toolbar {
+  background: #67778A;
+  width: calc(100% - 380px);
+  max-width: 1111px;
+  height: 46px;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  border-radius: $border-radius-normal 0 0 0;
+  padding: $margin-small 80px $margin-small $margin-default;
+  justify-content: space-between;
+  display: flex;
+
+  @media (max-width: 1190px) {
+    width: calc(100% - 320px);
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+
+  .text-button {
+    padding: 0 $margin-big;
+    white-space: nowrap;
+
+    &:before {
+      width: calc(100% - 16px);
+      left: 8px;
+    }
+
+    @media (max-width: 1290px) { padding: 0 20px }
+    @media (max-width: 1190px) {
+      padding: 0 $margin-small;
+      &:before {
+        width: calc(100% - 6px);
+        left: 3px;
+      }
+    }
+    @media (max-width: 1090px) {
+      padding: 0 $margin-tiny;
+      &:before {
+        width: calc(100% - 4px);
+        left: 2px;
+      }
+    }
+  }
+
+  .text-button + .text-button {
+    border-left: 1px solid rgba($color-separator, 0.3);
+  }
+}
+
+.vertical {
+  height: auto;
+  opacity: 0.3
+}
+
+.count-container {
+  font-size: $font-size-small;
+  white-space: nowrap;
+  color: white;
+  font-weight: $font-weight-light;
+  margin-top: 1px;
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .toolbar {
+    width: 238px;
+  }
+}

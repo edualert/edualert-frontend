@@ -1,0 +1,71 @@
+@import '../../../assets/styles/base';
+
+
+.multi-choice-wrapper {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.current-selection-horizontal-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  min-height: 31px;
+  border-bottom: 1px solid $color-separator;
+  padding: 6px $margin-tiny;
+}
+
+.comma-separated {
+  &:after {
+    content: " ";
+    display: inline-block;
+    height: 3px;
+    width: 3px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    background-color: $color-blue;
+  }
+
+  &:last-of-type:after {
+    display: none;
+  }
+
+}
+
+.element {
+  &.checked {
+    font-weight: $font-weight-bold;
+    color: $color-blue;
+  }
+
+  .checkbox-button {
+    position: absolute;
+    right: $margin-tiny;
+  }
+}
+
+
+.confirm-buttons {
+  width: 100%;
+  height: auto;
+  padding: 7px 10px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-top: 1px solid $color-separator;
+
+  .text-button + .text-button {
+    margin-left: 16px;
+  }
+
+  .text-button:last-of-type::before {
+    border-bottom-right-radius: 8px;
+  }
+}
+

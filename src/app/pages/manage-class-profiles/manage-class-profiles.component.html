@@ -1,0 +1,59 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Gestionare profile clase</h1>
+    <h2 id="header-subtitle">{{filterParams.academicYear?.text || defaultAcademicYear?.text}}</h2>
+    <div id="header-top-right-container">
+      <a routerLink="{{'add'}}" class="action-button">Adaugă un profil nou</a>
+    </div>
+    <div id="header-filter">
+      <app-filter>
+        <div class="dropdown-parent">
+          <app-dropdown [list]="filterData.academicYears"
+                        [appliedElement]="filterParams.academicYear || defaultAcademicYear"
+                        [displayedProperty]="'text'"
+                        [placeholder]="'An academic'"
+                        [required]="true"
+                        (elementHasBeenSelected)="changeAcademicYear($event.element)"></app-dropdown>
+        </div>
+      </app-filter>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container *ngIf="!this.requestInProgress; else loadingList">
+      <ng-container *ngIf="this.schoolProfiles?.length; else noResultsText">
+        <div class="list">
+          <div class="card list-element-animation" *ngFor="let profile of schoolProfiles">
+            <div class="card-left-container">
+              <a routerLink="{{profile.id + '/view'}}" class="card-title text-button">{{profile.name}}</a>
+              <div class="detail-element-container margin-top-small">
+                <div class="label-container margin-right">Clase cu acest profil:</div>
+                <div class="value-container bold dark-text">{{profile.classes_count.toString(10)}}</div>
+              </div>
+            </div>
+            <div class="card-right-container">
+              <hr class="vertical visible-on-desktop">
+              <div class="row">
+                <a routerLink="{{profile.id + '/edit'}}" class="text-button edit spaced-out">Editează</a>
+                <div class="text-button dark-text" (click)="deleteSchoolProfile(profile)">
+                  Șterge
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noResultsText>
+        <div class="no-results">
+          Niciun rezultat găsit
+        </div>
+      </ng-template>
+    </ng-container>
+    <ng-template #loadingList>
+      <div class="list-count">
+        Se încarcă datele...
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<app-confirmation-modal #appConfirmationModal></app-confirmation-modal>

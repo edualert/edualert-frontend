@@ -1,0 +1,26 @@
+@import "../../../assets/styles/base";
+
+.chart-container {
+  height: 100%;
+  width: 100%;
+  padding-top: $margin-tiny;
+  margin-bottom: $margin-small;
+  position: relative;
+
+  .chart-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chart-subtitle {
+    padding-top: $margin-small;
+    padding-bottom: $margin-small;
+  }
+
+  .chart-holder {
+    width: 100%;
+    overflow-x: auto;
+  }
+}

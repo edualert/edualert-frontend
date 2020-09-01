@@ -1,0 +1,33 @@
+@import "../../../../assets/styles/base";
+
+
+.card {
+  min-width: 648px;
+
+  .targets {
+    .receiver-info-wrapper {
+      max-width: 345px;
+    }
+  }
+
+  .card-right-container {
+    top: calc(50% - #{$margin-small});
+    height: calc(100% - #{$margin-default * 2});
+
+    .message-status {
+      max-width: 139px;
+
+      &.read {
+        max-width: unset;
+
+        .read-status {
+          margin-right: unset;
+        }
+      }
+
+      &.unread {
+        max-width: 231px;
+      }
+    }
+  }
+}

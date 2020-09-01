@@ -1,0 +1,107 @@
+@import "../../../../assets/styles/base";
+
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  align-items: flex-end;
+  padding-bottom: $margin-default;
+
+  .text-button {
+    margin: 0 10px;
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+}
+
+.margin-list {
+  margin-top: $margin-big;
+}
+
+.section-header {
+  margin-top: $margin-big;
+  margin-bottom: $margin-small;
+  font-size: $font-size-bigish;
+  color: $color-text-normal;
+  &:first-of-type {
+    margin-top: $margin-default;
+  }
+  @media (max-width: $mobile-screen-width-normal) {
+    font-size: $font-size-bigish;
+    color: $color-text-normal;
+  }
+}
+
+.custom-input {
+  display: flex;
+  flex-direction: row;
+  margin-top: $margin-default;
+  .row {
+    margin-bottom: $margin-small;
+  }
+  @media (max-width: $mobile-screen-width-normal) {
+    flex-direction: column;
+  }
+  .label {
+    width: 150px;
+    @media (max-width: $mobile-screen-width-normal) {
+      margin-bottom: $margin-tiny;
+    }
+  }
+  .custom-label {
+    max-width: 350px;
+    width: 100%;
+  }
+  .uncheckable {
+    pointer-events: none;
+  }
+}
+
+.row {
+  flex-direction: row;
+}
+
+.arrow-right {
+  margin-top: $margin-default;
+  width: 60px;
+  background: url("src/assets/img/long-arrow.svg") no-repeat right;
+}
+
+.border-left {
+  border-left: 1px solid $color-separator;
+  padding-left: $margin-big;
+  margin-top: $margin-big;
+  padding-right: $margin-big;
+}
+
+.custom-button {
+  margin-top: $margin-tiny;
+}
+
+.radio-button {
+  width: 16px;
+  height: 16px;
+}
+
+.unmargined-top {
+}
+
+@media screen and (max-width: $mobile-screen-width-normal){
+  .full-width {
+    width: 100%!important;
+  }
+}
+
+@media screen and (max-width: $mobile-screen-width-small){
+
+  .unmargined-top {
+    margin-top: 0!important;
+  }
+
+  .fixed-width {
+    align-self: center;
+  }
+
+}

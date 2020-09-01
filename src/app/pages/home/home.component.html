@@ -1,0 +1,10 @@
+<ng-container [ngSwitch]="accountRole">
+  <app-home-ors *ngSwitchCase="'ADMINISTRATOR'" [userDetails]="userDetails"></app-home-ors>
+  <app-home-principal *ngSwitchCase="'SCHOOL_PRINCIPAL'" [userDetails]="userDetails"></app-home-principal>
+  <app-home-teacher *ngSwitchCase="'TEACHER'" [userDetails]="userDetails"></app-home-teacher>
+  <app-home-parent *ngSwitchCase="'PARENT'" [userDetails]="userDetails"></app-home-parent>
+  <app-home-student *ngSwitchCase="'STUDENT'" [userDetails]="userDetails"></app-home-student>
+  <div *ngSwitchDefault>
+    [Some kind of error message for unknown user role]
+  </div>
+</ng-container>

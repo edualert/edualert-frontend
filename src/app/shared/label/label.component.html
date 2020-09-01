@@ -1,0 +1,26 @@
+<div class="row">
+  <ng-container *ngIf="type === 'header'">
+    <h2 class="blue-text column fixed-width-column {{ customInputClass ? customInputClass : ''}}" id="regular-text">{{ label }}</h2>
+    <h2 class="bold blue-text column {{ customInputClass ? customInputClass : ''}}">{{ value }}</h2>
+  </ng-container>
+  <ng-container *ngIf="type === 'regular'">
+    <div class="column fixed-width-column {{ customLabelClass ? customLabelClass : '' }}">{{ label }}</div>
+    <div class="column {{ customInputClass ? customInputClass : 'bold'}}">{{ value }}</div>
+  </ng-container>
+  <ng-container *ngIf="type === 'extra-data'">
+    <div class="column fixed-width-column {{ customLabelClass ? customLabelClass : '' }}">{{ label }}</div>
+    <div class="extra-data-container">
+      <div *ngIf="extraData" class="static-field-container column extra-data">{{ extraData }}</div>
+      <div class="column {{ customInputClass ? customInputClass : 'bold'}}">{{ value }}</div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="type === 'link'">
+    <div class="row child">
+      <div class="column fixed-width-column">{{ label }}</div>
+      <div class="row enforced-horizontal child">
+        <div class="bold blue-text column">{{ value }}</div>
+        <div class="arrow right column"></div>
+      </div>
+    </div>
+  </ng-container>
+</div>

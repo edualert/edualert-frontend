@@ -1,0 +1,270 @@
+@import "../../../../assets/styles/base";
+
+.header {
+  .title {
+    font-weight: bold;
+    font-size: $font-size-big;
+    display: block;
+    color: white;
+  }
+
+  .description {
+    margin-top: $margin-xsmall;
+    font-weight: $font-weight-regular;
+    font-size: $font-size-bigish;
+    color: white;
+  }
+
+  .datepicker-input-wrapper {
+    margin-top: $margin-tiny;
+
+    .date-label {
+      color: white;
+      display: inline-block;
+      margin-right: $margin-tiny;
+    }
+
+    .datepicker-container {
+      width: 400px;
+      top: 50px;
+      position: absolute;
+      z-index: 10;
+    }
+
+    input.date {
+      &.custom-date {
+        background-position: calc(100% - #{$margin-tiny}) 50%;
+        width: 82px;
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+#modal-body {
+  width: calc(100vw - 160px);
+  max-height: calc(100vh * 0.7 - 60px);
+  overflow: auto;
+  margin-right: -40px;
+}
+
+.student-list {
+  padding: $margin-default 0;
+
+  .row {
+    font-weight: bold;
+    font-size: $font-size-small;
+    padding: 11px 0;
+    display: flex;
+    align-items: center;
+    width: calc(100% - 40px);
+    border-bottom: 1px solid $color-separator;
+
+    &:first-of-type {
+      font-weight: $font-weight-medium;
+
+      .column {
+        &:first-of-type {
+          padding: unset;
+          font-size: $font-size-small;
+        }
+      }
+    }
+
+    .column {
+      display: inline-flex;
+      align-items: center;
+      width: 72%;
+
+      &:first-of-type {
+        padding: $margin-tiny 0;
+        width: 28%;
+        font-size: $font-size-bigish;
+      }
+
+      .checkbox-container {
+        margin-right: $margin-small;
+      }
+
+      .absence-wrapper {
+        display: inline-block;
+
+        .absence-cell {
+          display: inline-block;
+          border-right: 1px solid $color-separator;
+          margin-right: $margin-default;
+          margin-top: 2px;
+          margin-bottom: 2px;
+
+          div {
+            display: inline-block;
+
+            &.text-button.dark-text {
+              margin-left: $margin-small;
+              margin-right: $margin-default; 
+            }
+
+            &.checkbox-fancy-label {
+              display: inline-flex;
+              align-items: center;
+              padding: $margin-xsmall $margin-tiny;
+              background: white;
+              border-radius: $border-radius-normal;
+              margin-left: $margin-xsmall;
+
+              .label {
+                color: $color-text-light;
+                font-size: $font-size-small;
+                font-weight: $font-weight-regular;
+                display: inline-block;
+                margin-right: $margin-small;
+              }
+
+              .checkbox-container {
+                margin-right: unset;
+              }
+            }
+          }
+        }
+      }
+
+      .add-absence {
+        display: block;
+        margin-left: auto;
+      }
+    }
+
+    &:last-of-type {
+      border-bottom: unset;
+    }
+  }
+}
+
+#modal-footer {
+  .text-button {
+    &.blue {
+      margin-right: $margin-big;
+    }
+  }
+}
+
+@media(max-width: $mobile-screen-width-normal) {
+  .header {
+    .title {
+      font-size: $font-size-bigish;
+    }
+
+    .description {
+      font-size: $font-size-normal;
+    }
+
+    .datepicker-input-wrapper {
+      margin: unset;
+
+      .datepicker-container {
+        width: 300px;
+        top: unset;
+        bottom: 25%;
+        right: 10px;
+      }
+
+      .date-label {
+        font-size: $font-size-small;
+      }
+    }
+    
+    input.date {
+      &.custom-date {
+        border-radius: $border-radius-tiny;
+      }
+    }
+  }
+
+  #modal-body {
+    width: calc(100vw - 160px);
+    margin-right: -10px;
+  }
+
+  .student-list {
+    .row {
+      width: calc(100% - 20px);
+    }
+  }
+}
+
+@media(max-width: $mobile-screen-width-intermediate) {
+  #modal-body {
+    width: calc(100vw - 65px);
+    margin-right: unset;
+  }
+
+  .student-list {
+    padding: 4px 0 $margin-small;
+
+    .row {
+      align-items: unset;
+      width: calc(100% - 10px);
+
+      &:first-of-type {
+        .column {
+            display: inline-flex;
+            flex-direction: unset;
+        }
+      }
+
+      .column {
+        display: block;
+        width: 58%;
+
+        &:first-of-type {
+          padding: unset;
+          width: 42%;
+          font-size: $font-size-small;
+        }
+
+        .checkbox-container {
+          margin-right: $margin-tiny;
+
+          &.student-check {
+            display: inline-block;
+            margin-right: unset;
+            vertical-align: top;
+          }
+        }
+
+        .absence-wrapper {
+          display: inline-block;
+          flex-direction: column;
+          align-items: flex-start;
+
+          .absence-cell {
+            display: block;
+            border-right: unset;
+            margin-bottom: 0;
+            margin-left: $margin-tiny;
+            margin-top: $margin-tiny;
+            margin-right: unset;
+
+            &:first-of-type{
+              margin-top: unset;
+            }
+
+            div.checkbox-fancy-label {
+              margin-left: unset; 
+            }
+
+            .text-button.dark-text {
+              margin-right: unset; 
+            }
+          }
+        }
+
+        .add-absence {
+          width: fit-content;
+          margin-top: 15px;
+          margin-left: 26px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+export enum YearGrades {
+  'I' = 'Clasa I',
+  'II' = 'Clasa II',
+  'III' = 'Clasa III',
+  'IV' = 'Clasa IV',
+  'V' = 'Clasa V',
+  'VI' = 'Clasa VI',
+  'VII' = 'Clasa VII',
+  'VIII' = 'Clasa VIII',
+  'IX' = 'Clasa IX',
+  'X' = 'Clasa X',
+  'XI' = 'Clasa XI',
+  'XII' = 'Clasa XII',
+  'XIII' = 'Clasa XIII',
+}

@@ -1,0 +1,124 @@
+@import '../../assets/styles/base';
+
+.detail-element-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: $margin-big;
+  &.display-none {
+    display: none;
+  }
+
+  &.header {
+    font-size: $font-size-big;
+  }
+
+  &.subheader {
+    margin-bottom: $margin-small;
+    font-size: $font-size-big;
+    color: $color-text-normal;
+  }
+
+  &.blue-text {
+    color: $color-blue;
+  }
+
+  &.red-text {
+    color: $color-red;
+  }
+
+  &.gray-text {
+    color: $color-text-light
+  }
+
+  &.dark-text {
+    color: $color-text-dark
+  }
+
+  &.bold {
+    font-weight: bold;
+  }
+
+  &.margin-top-small {
+    margin-top: $margin-tiny;
+  }
+
+  .label-container {
+    &.fixed-width {
+      width: $fixed-width-column;
+    }
+
+    &.fixed-large-column {
+      width: $fixed-width-column-large;
+    }
+
+    &.fixed-width-small {
+      width: $fixed-width-column-small;
+    }
+    &.margin-right {
+      margin-right: $margin-tiny;
+    }
+  }
+
+  .extra-data {
+    &.margin-right {
+      margin-right: $margin-tiny;
+    }
+  }
+
+  .value-container {
+    .big-input-container {
+      height: 40px;
+      font-size: $font-size-big;
+      @media (max-width: $mobile-screen-width-small) {
+        height: 35px;
+        font-size: $font-size-bigish;
+      }
+    }
+    &.header-input-error {
+      height: 59px;
+    }
+    &.full-width {
+      width: calc(100% - 150px);
+    }
+
+    &.arrow-right {
+      padding-right: 20px;
+      cursor: pointer;
+      background: url("src/assets/img/long-arrow.svg") no-repeat right;
+    }
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .detail-element-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: $margin-default;
+    align-items: flex-start;
+    &.flex-direction-row {
+      flex-direction: row;
+    }
+    &.header {
+      font-size: $font-size-bigish;
+    }
+    .value-container {
+      margin-top: $margin-xsmall;
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+
+  .detail-element-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .label-container {
+      &.fixed-large-column {
+        width: 100%;
+      }
+    }
+
+  }
+}

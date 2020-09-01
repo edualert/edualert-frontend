@@ -1,0 +1,72 @@
+<div class="calendar-wrapper" [class.narrow]="isNarrow" #rootElement *ngIf="this.isMobile === false; else mobileView">
+	<div class="calendar-row" *ngFor="let row of calendarMapping">
+		<div class="days">
+			<span class="dayName" *ngFor="let weekDay of weekDays">
+				{{weekDay}}
+			</span>
+		</div>
+		<div class="month-wrapper" *ngFor="let month of row | keyvalue:keepOrder">
+			<span class="title">{{month.key}}</span>
+			<div class="body">
+				<div class="row-wrapper" *ngFor="let weekDay of month.value | keyvalue:keepOrder">
+					<div class="row">
+						<div class="cell-wrapper" *ngFor="let date of weekDay.value">
+							<div class="blank-cell" *ngIf="!date; else normalCell"></div>
+							<ng-template #normalCell>
+						        <div class="cell" [ngStyle]="decideStyleClass(date, month.key)">
+						        	{{date.format("D")}}
+						        </div>
+						    </ng-template>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="legend">
+		<div class="legend-item" *ngFor="let event of eventTypeMapping | keyvalue:keepOrder">
+			<div [ngStyle]="{background: event.value.color}" class="color-block"></div>
+			<div class="legend-text">
+				{{event.value.title}}
+			</div>
+		</div>
+	</div>
+</div>
+<ng-template #mobileView>
+	<div class="calendar-wrapper">
+		<div class="calendar-row">
+			<div class="month-wrapper" *ngFor="let month of calendarMapping | keyvalue:keepOrder">
+				<div class="days">
+					<span class="dayName" *ngFor="let weekDay of month.value | keyvalue:keepOrder">
+						{{weekDay.key}}
+					</span>
+				</div>
+				<div class="mobile-body-wrapper">
+					<span class="title">{{month.key}}</span>
+					<div class="body">
+						<div class="row-wrapper" *ngFor="let weekDay of month.value | keyvalue:keepOrder">
+							<div class="row">
+								<div class="cell-wrapper" *ngFor="let date of weekDay.value">
+									<div class="blank-cell" *ngIf="!date; else normalCell"></div>
+									<ng-template #normalCell>
+								        <div class="cell" [ngStyle]="decideStyleClass(date, month.key)">
+								        	{{date.format("D")}}
+								        </div>
+								    </ng-template>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="legend">
+			<div class="legend-item" *ngFor="let event of eventTypeMapping | keyvalue:keepOrder">
+				<div [ngStyle]="{background: event.value.color}" class="color-block"></div>
+				<div class="legend-text">
+					{{event.value.title}}
+				</div>
+			</div>
+		</div>
+	</div>
+</ng-template>

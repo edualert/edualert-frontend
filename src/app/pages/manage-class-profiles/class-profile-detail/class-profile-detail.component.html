@@ -1,0 +1,86 @@
+<div class="animated-page">
+  <app-header>
+    <a id="header-back-button" [routerLink]="['/manage-class-profiles']">
+      <div class="arrow left"></div>
+      <div class="blue-text bold column">
+        Gestionare profile clase
+      </div>
+    </a>
+    <h1 id="header-title">Detalii profil</h1>
+    <h2 id="header-subtitle" *ngIf="!requestInProgress">
+      {{academicProgramDetails?.academic_year}} - {{academicProgramDetails?.academic_year + 1}}
+    </h2>
+    <div id="header-top-right-container">
+      <div class="button-container">
+        <a [routerLink]="'/manage-class-profiles/' + academicProgramDetails?.id + '/edit'" class="text-button">
+          Editează
+        </a>
+        <div class="text-button dark-text"
+             *ngIf="academicProgramDetails?.classes_count === 0"
+             (click)="openDeleteAcademicProgramModal(academicProgramDetails)">Șterge
+        </div>
+      </div>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container *ngIf="!this.requestInProgress; else loadingList">
+      <div class="detail-element-container header blue-text bold">
+        <div class="label-container fixed-large-column">Nume</div>
+        <div class="value-container">{{academicProgramDetails.name}}</div>
+      </div>
+      <div class="detail-element-container" *ngIf="academicProgramDetails.core_subject">
+        <div class="label-container fixed-large-column">Disciplină de specialitate</div>
+        <div class="value-container bold">{{coreSubject?.subject_name}}</div>
+      </div>
+      <div class="detail-element-container">
+        <div class="label-container fixed-large-column">Clase cu acest profil</div>
+        <div class="value-container bold">{{academicProgramDetails.classes_count}}</div>
+      </div>
+      <div class="tabs-container">
+        <app-tabs [tabsList]="yearGradesTabList"
+                  [activeTab]="yearGradeActiveTab"
+                  (tabHasBeenSelected)="onYearGradeTabClicked($event)">
+        </app-tabs>
+        <app-tabs [tabsList]="subjectsTabsList"
+                  [activeTab]="subjectActiveTab"
+                  (tabHasBeenSelected)="onSubjectTabClicked($event)">
+        </app-tabs>
+      </div>
+      <div [ngSwitch]="subjectActiveTab">
+        <div *ngSwitchCase="'mandatory_subjects'">
+          <div *ngFor="let subject of academicProgramDetails.subjects[yearGradeActiveTab]?.mandatory_subjects">
+            <div class="detail-element-container">
+              <div class="label-container fixed-large-column">Nume</div>
+              <div class="value-container bold">{{subject.subject_name}}</div>
+            </div>
+            <div class="detail-element-container">
+              <div class="label-container fixed-large-column">Număr de ore / săptămână</div>
+              <div class="value-container bold">{{subject.weekly_hours_count}}</div>
+            </div>
+            <hr class="margin-list">
+          </div>
+        </div>
+        <div *ngSwitchCase="'optional_subjects'">
+          <div *ngFor="let subject of academicProgramDetails.subjects[yearGradeActiveTab]?.optional_subjects">
+            <div class="detail-element-container">
+              <div class="label-container fixed-large-column">Nume</div>
+              <div class="value-container bold">{{subject.subject_name}}</div>
+            </div>
+            <div class="detail-element-container">
+              <div class="label-container fixed-large-column">Număr de ore / săptămână</div>
+              <div class="value-container bold">{{subject.weekly_hours_count}}</div>
+            </div>
+            <hr class="margin-list">
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #loadingList>
+      <div class="list-count">
+        Se încarcă datele...
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<app-confirmation-modal #appConfirmationModal></app-confirmation-modal>

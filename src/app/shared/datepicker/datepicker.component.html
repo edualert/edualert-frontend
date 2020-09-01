@@ -1,0 +1,74 @@
+<div class="datepicker"
+     id="rootElement"
+     #rootElement
+     [class.with-confirm-buttons]="withConfirmButtons"
+     [ngClass]="'layout-' + layout"
+     [class.open]="isOpen">
+  <div class="top-row">
+    <div class="today-button" (click)="setToday()">Azi</div>
+    <div class="years">
+      <div class="year" *ngIf="layout === 2" (click)="selectYear(inView.year - 2)">{{inView.year - 2}}</div>
+      <div class="year" (click)="selectYear(inView.year - 1)">{{inView.year - 1}}</div>
+      <input type="number" class="year selected" maxlength="4"
+             [value]="inView.year"
+             (click)="selectAllText($event)"
+             (blur)="applyYearInput($event)"
+             (keypress)="blurInputOnEnter($event)">
+      <div class="year" (click)="selectYear(inView.year + 1)">{{inView.year + 1}}</div>
+      <div class="year" *ngIf="layout === 2" (click)="selectYear(inView.year + 2)">{{inView.year + 2}}</div>
+    </div>
+  </div>
+  <div class="months-days">
+    <div class="months desktop-only">
+      <div *ngFor="let month of monthsLabels; let $i = index"
+           class="month-cell"
+           [class.selected]="inView.month === $i"
+           (click)="selectMonth($i)">
+
+        {{layout === 1 ? month : month.slice('0', '3')}}
+      </div>
+    </div>
+
+    <div class="months mobile-only">
+      <div *ngFor="let month of monthsLabels; let $i = index"
+           class="month-cell"
+           [class.selected]="inView.month === $i"
+           (click)="selectMonth($i)">
+        {{month.slice('0', '3')}}
+      </div>
+    </div>
+
+    <div class="days">
+      <div class="weekdays row">
+        <div class="cell">L</div>
+        <div class="cell">M</div>
+        <div class="cell">M</div>
+        <div class="cell">J</div>
+        <div class="cell">V</div>
+        <div class="cell">S</div>
+        <div class="cell">D</div>
+      </div>
+      <div class="matrix">
+        <div *ngFor="let row of rawDaysMatrix" class="row">
+          <div *ngFor="let dayCell of row;" class="cell day-cell"
+               [class.today]="inView.year === today.year && inView.month === today.month && dayCell.dayNumber === today.day && dayCell.month === 'current'"
+               [class.selected]="selectedDate.year === inView.year && selectedDate.month === inView.month && selectedDate.day === dayCell.dayNumber && dayCell.month === 'current'"
+               [class.not-current-month]="dayCell.month !== 'current'"
+               (click)="selectDayFromCell(dayCell)">
+            {{dayCell.dayNumber}}
+          </div>
+        </div>
+      </div>
+      <div class="confirm-buttons">
+        <div class="button" (click)="close()">
+          <div class="button-content">Cancel</div>
+        </div>
+        <div class="button colored"
+             [class.disabled]="!selectedDate.year || !selectedDate.month ||!selectedDate.day"
+             (click)="applyClicked()">
+          <div class="button-content">Apply</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

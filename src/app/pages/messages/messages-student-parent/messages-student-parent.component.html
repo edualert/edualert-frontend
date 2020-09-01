@@ -1,0 +1,145 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Mesaje primite</h1>
+    <div id="header-filter">
+      <app-filter>
+        <ng-container
+          *ngIf="!this.requestInProgress; else loadingListCountMobile"
+          id="list-count-mobile"
+        >
+          <div class="list-count-mobile">
+            {{messages?.length}} mesaje afișate din {{totalCount}}
+          </div>
+        </ng-container>
+        <span class="mobile-title">Filtrează</span>
+        <app-filter-search
+          [isWide]="true"
+          [searchString]="filterParams.search"
+          (searchSubmit)="changeSearch($event)"
+        ></app-filter-search>
+        <div class="datepicker-input-wrapper">
+          <input
+            class="date custom-date"
+            (click)="openPicker()"
+            readOnly
+            placeholder="Dată"
+            value="{{ filterParams.createdDate ||  '' }}"
+          >
+          <div class="datepicker-container">
+            <app-datepicker
+              color="#0077DB"
+              #datepicker
+              [dateValue]="convertStringToDate(filterParams.createdDate)"
+              (dateChanged)="changeCreatedDate($event)"
+            >
+            </app-datepicker>
+          </div>
+        </div>
+      </app-filter>
+    </div>
+  </app-header>
+  <div class="page-content">
+    <ng-container *ngIf="!this.requestInProgress; else loadingList">
+      <ng-container *ngIf="this.messages?.length; else noResultsText">
+        <div class="list-count">
+          {{messages?.length}} mesaje afișate din {{totalCount}}
+        </div>
+        <div class="list">
+          <div
+            class="card list-element-animation"
+            *ngFor="let message of messages; let i = index"
+            [attr.data-index]="i"
+            [routerLink]="['/messages/', message.id, 'view']"
+          >
+            <div class="card-left-container">
+              <a
+                class="card-title text-button"
+                [routerLink]="['/messages/', message.id, 'view']"
+              >
+                {{message.title}}
+              </a>
+              <div class="targets">
+                <ng-container [ngSwitch]="message.from_user_role">
+                  <div
+                    *ngSwitchCase="'SCHOOL_PRINCIPAL'"
+                    class="receiver-info-wrapper"
+                  >
+                    <div class="cell">
+                      <span class="title">De la:</span>
+                      <span class="text-item link-content blue-text bold" (click)="openUserModal($event, message.from_user)">
+                        {{message.from_user_full_name}}
+                        <div class="arrow right"></div>
+                      </span>
+                    </div>
+                    <hr class="vertical">
+                    <div class="cell">
+                      <span class="title">Director</span>
+                    </div>
+                  </div>
+                  <div
+                    *ngSwitchCase="'TEACHER'"
+                    class="receiver-info-wrapper"
+                  >
+                    <div class="cell">
+                      <span class="title">De la:</span>
+                      <span class="text-item link-content blue-text bold" (click)="openUserModal($event, message.from_user)">
+                        {{message.from_user_full_name}}
+                        <div class="arrow right"></div>
+                      </span>
+                    </div>
+                    <hr class="vertical">
+                    <div class="cell">
+                      <span class="title">Profesor:</span>
+                      <span class="text-item dark-text bold">
+                        {{message.from_user_subjects.join(', ')}}
+                      </span>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="card-right-container">
+              <div
+                class="message-status"
+                [ngClass]="message.is_read ? 'read' : 'unread'"
+              >
+                <span class="read-status">{{message.is_read ? '' : 'Mesaj nou'}}</span>
+                <hr
+                  class="vertical"
+                  *ngIf="!message.is_read"
+                >
+                <span class="timestamp white">
+                  {{message.created.format("DD-MM-YYYY hh:mm")}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noResultsText>
+        <div class="no-results">Niciun rezultat găsit</div>
+      </ng-template>
+    </ng-container>
+    <ng-template #loadingListCountMobile>
+      <div class="list-count-mobile">Se încarcă datele...</div>
+    </ng-template>
+    <ng-template #loadingList>
+      <div class="list-count">Se încarcă datele...</div>
+      <div class="list loading-list">
+        <div
+          *ngFor="let card of (messages && (messages | json) !== '{}' ? messages : [0,1])"
+          class="card loading-card loading-list-element"
+        >
+          <div class="card-left-container">
+            <div class="card-title"></div>
+            <div class="targets">
+              <div class="row"></div>
+              <div class="row"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+<app-view-user-modal #appViewUserModal></app-view-user-modal>

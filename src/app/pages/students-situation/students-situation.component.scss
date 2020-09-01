@@ -1,0 +1,50 @@
+@import "../../../assets/styles/base";
+
+.page-content {
+  padding-right: 0;
+}
+
+.dropdown-parent {
+  width: 171px;
+  margin-left: $margin-small;
+}
+
+.mobile-horizontal {
+  display: none;
+}
+
+.mobile-sort {
+  display: none;
+}
+
+#header-sort {
+  display: flex;
+  align-items: baseline;
+}
+
+.list-count {
+  position: absolute;
+  bottom: 60px;
+  right: 5px;
+  width: max-content;
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+
+  .mobile-horizontal {
+    display: unset;
+    margin-bottom: $margin-default;
+    margin-top: $margin-default;
+    opacity: 30%;
+  }
+
+  .desktop-sort {
+    display: none;
+  }
+
+  .mobile-sort {
+    display: unset;
+  }
+
+}
+

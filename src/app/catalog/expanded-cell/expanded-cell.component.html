@@ -1,0 +1,162 @@
+<ng-container [ngSwitch]="identifier">
+
+  <!-- GRADES LIST --------------------------------------------->
+  <div *ngSwitchCase="identifier === 'grades_sem_1' || identifier === 'grades_sem_2' ? identifier : null"
+       class="expanded-container grades-list">
+    <app-single-grade-overlay *ngIf="isEditable"
+                              (save)="gradeSubmitted($event)"
+                              #singleGradeModal
+    ></app-single-grade-overlay>
+
+    <div class="horizontal">
+
+      <div class="label">Note</div>
+      <div class="elements" *ngIf="data?.grades">
+        <div class="element-cell grade-cell" *ngFor="let grade of data.grades">
+          <div class="grade">{{grade.grade}}</div>
+          <div class="date">{{displayDate(grade.taken_at)}}</div>
+          <ng-container *ngIf="isEditable && grade.minutesSinceCreation <= editableMinutes">
+            <hr class="vertical">
+            <span class="edit-button text-button" (click)="openGradeOverlay($event, grade)">Editează</span>
+            <div class="delete-button text-button dark-text" (click)="onGradeDelete(grade)">Șterge</div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="add-button-container" *ngIf="isEditable">
+        <div class="text-button blue-text add-button" (click)="openGradeOverlay($event)">Adaugă notă</div>
+      </div>
+
+    </div>
+
+    <div class="horizontal" *ngIf="data?.thesis">
+      <div class="label">Notă teză</div>
+      <div class="elements">
+        <div class="element-cell grade-cell">
+          <div class="grade">{{data.thesis.grade}}</div>
+          <div class="date">{{displayDate(data.thesis.taken_at)}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="horizontal" *ngIf="data?.avg">
+      <div class="label">Medie</div>
+      <div class="elements">
+        <div class="element-cell grade-cell">
+          <div class="grade {{data.avg > 4 ? 'blue-text': 'red-text'}}">{{data.avg}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRADE ANNUAL --------------------------------------------->
+  <div *ngSwitchCase="'grade_annual'" class="expanded-container grades-annual">
+
+  </div>
+
+  <!-- ABSENCES LIST --------------------------------------------->
+  <div *ngSwitchCase="identifier === 'abs_sem_1' || identifier === 'abs_sem_2' ? identifier : null"
+       class="expanded-container absences-list">
+    <app-single-absence-overlay *ngIf="isEditable"
+                                (save)="absenceSubmitted($event)"
+                                #singleAbsenceModal
+    ></app-single-absence-overlay>
+
+    <div class="horizontal" *ngIf="data">
+      <div class="label">Absențe</div>
+      <div class="elements">
+        <div class="element-cell absence-cell" *ngFor="let absence of data" [class.red-text]="!absence.is_founded">
+          {{displayLongDate(absence.taken_at)}}
+
+          <ng-container *ngIf="isEditable">
+            <hr class="vertical" *ngIf="!absence.is_founded || absence.minutesSinceCreation <= editableMinutes">
+            <span *ngIf="!absence.is_founded" class="edit-button text-button" (click)="onAbsenceAuthorize(absence)">
+              Motivează
+            </span>
+            <span *ngIf="absence.minutesSinceCreation <= editableMinutes"
+                  class="delete-button text-button dark-text"
+                  (click)="onAbsenceDelete(absence)">
+              Șterge
+            </span>
+          </ng-container>
+        </div>
+      </div>
+      <div class="add-button-container" *ngIf="isEditable">
+        <div class="text-button blue-text add-button" (click)="openAbsenceOverlay($event)">Adaugă absență</div>
+      </div>
+    </div>
+    <div class="absences-summary">
+      <ng-container *ngIf="data?.length">
+        <div class="elements desktop-only">
+          <div class="label relative">Nr. total de absențe</div>
+          <div class="element-cell single-number" [class.red-text]="data.length >= 10">{{data.length || 0}}</div>
+          <div class="label relative">Motivate</div>
+          <div class="element-cell single-number">{{countFoundedAbsences(data)}}</div>
+          <div class="label relative">Nemotivate</div>
+          <div class="element-cell single-number red-text">{{countUnfoundedAbsences(data)}}</div>
+        </div>
+        <div class="mobile-only">
+          <div class="elements">
+            <div class="absences-count">
+              <div class="label relative">Nr. de absențe</div>
+              <div class="element-cell single-number" [class.red-text]="data.length >= 10">{{data.length || 0}}</div>
+            </div>
+          </div>
+          <div class="elements">
+            <div class="absences-count">
+              <div class="label relative">Motivate</div>
+              <div class="element-cell single-number">{{countFoundedAbsences(data)}}</div>
+            </div>
+            <div class="absences-count">
+              <div class="label relative">Nemotivate</div>
+              <div class="element-cell single-number red-text">{{countUnfoundedAbsences(data)}}</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+
+  <!-- ABSENCES ANNUAL --------------------------------------------->
+  <div *ngSwitchCase="'abs_annual'" class="expanded-container absences-annual absences-summary">
+    <ng-container *ngIf="data">
+      <div class="elements desktop-only">
+        <div class="label relative">Nr. total de absențe</div>
+        <div class="element-cell single-number" [class.red-text]="data.abs_count_annual >= 10">
+          {{data.abs_count_annual || 0}}
+        </div>
+        <div class="label relative">Motivate</div>
+        <div class="element-cell single-number">{{data.founded_abs_cont_annual || 0}}</div>
+        <div class="label relative">Nemotivate</div>
+        <div class="element-cell single-number red-text">
+          {{(data.abs_count_annual || 0) - (data.founded_abs_cont_annual || 0)}}
+        </div>
+      </div>
+      <div class="mobile-only">
+        <div class="elements">
+          <div class="absences-count">
+            <div class="label relative">Nr. de absențe</div>
+            <div class="element-cell single-number" [class.red-text]="data.abs_count_annual >= 10">
+              {{data.abs_count_annual || 0}}
+            </div>
+          </div>
+        </div>
+        <div class="elements">
+          <div class="absences-count">
+            <div class="label relative">Motivate</div>
+            <div class="element-cell single-number">{{data.founded_abs_cont_annual || 0}}</div>
+          </div>
+          <div class="absences-count">
+            <div class="label relative">Nemotivate</div>
+            <div class="element-cell single-number red-text">
+              {{(data.abs_count_annual || 0) - (data.founded_abs_cont_annual || 0)}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+<app-confirmation-modal #confirmationModal></app-confirmation-modal>
+

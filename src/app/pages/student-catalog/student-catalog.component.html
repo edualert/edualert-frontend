@@ -1,0 +1,39 @@
+<div class="animated-page">
+
+  <app-header>
+    <a id="header-back-button" [routerLink]="backLink">
+      <div class="arrow left"></div>
+      <div class="blue-text bold" *ngIf="!rip">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</div>
+      <div class="blue-text bold" *ngIf="rip">Clasa</div>
+    </a>
+    <h1 id="header-title">
+      <ng-container *ngIf="!rip">{{student?.full_name}}</ng-container>
+      <ng-container *ngIf="rip">Se încarcă datele...</ng-container>
+    </h1>
+    <h2 id="header-subtitle">
+      <ng-container *ngIf="!rip">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</ng-container>
+      <ng-container *ngIf="rip">...</ng-container>
+    </h2>
+    <div id="header-top-right-container">
+      <div class="catalog-top-right">
+        <div class="column">
+          <div class="gray-text label">{{student?.parents?.length === 1 ? 'Părinte' : 'Părinți'}}</div>
+          <div class="value bold">
+            <span *ngFor="let parent of student?.parents">{{parent.full_name}}</span>
+            <span *ngIf="!student || !student.parents || !student.parents.length">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-header>
+
+  <div class="page-content" *ngIf="!rip">
+    <app-catalog
+      [data]="catalog"
+      [tableLayout]="layout"
+      (addAbsenceToStudent)="addSingleAbsence($event)"
+      (deleteAbsence)="deleteAbsence($event)"
+      (authorizeAbsence)="authorizeAbsence($event)"
+    ></app-catalog>
+  </div>
+</div>

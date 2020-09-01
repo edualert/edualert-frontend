@@ -1,0 +1,131 @@
+<div class="animated-page">
+  <app-header>
+    <h1 id="header-title">Acasă</h1>
+    <h2 id="header-subtitle">Bine ai revenit, <span class="bold">{{ userDetails?.full_name }}</span>!</h2>
+    <!--<div id="header-top-right-container">-->
+    <!--<button class="action-button">Adauga o unitate noua</button>-->
+    <!--</div>-->
+  </app-header>
+  <div class="page-content">
+    <div class="chart-container">
+      <div class="chart-title">
+        <div class="big-text bold">Evoluție număr instituții de învățământ înrolate</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'enrolled_institutions'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="chart-subtitle blue-text regular">{{ graphSubtitle }}</div>
+      <div class="chart-holder" *ngIf="displayChart">
+        <ngx-charts-line-chart
+          [view]="institutionsChartView"
+          [xAxis]="xAxis"
+          [yAxis]="yAxis"
+          [scheme]="colorSchemeYellow"
+          [results]="institutionsEnrollmentStatistics.chartData"
+          [xAxisTicks]="institutionsEnrollmentStatistics.xAxisTicks"
+        >
+
+          <ng-template #seriesTooltipTemplate let-model="model">
+            <div class="tooltip-content">
+              <div class="tooltip-container simple">
+                <div class="value">
+                  {{model[0].value}}
+                </div>
+                <div class="label">
+                  {{ institutionsEnrollmentStatistics["chartData"][0]["name"] }}
+                </div>
+                <div class="bottom-tooltip">
+                  <div class="padded">{{ model[0].name }}</div>
+                  <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                </div>
+              </div>
+            </div>
+            <!--<div class="selected-container"></div>-->
+          </ng-template>
+
+        </ngx-charts-line-chart>
+      </div>
+      <div *ngIf="!displayChart" class="big-text bold padded-top info-card">Nu există date disponibile</div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'enrolled_institutions'}"
+      >Mai multe rapoarte</div>
+    </div>
+
+    <div class="card-table-container card">
+      <div class="card-table-header">
+        <div class="big-text bold card-title-text">Top instituții de învățământ cu risc</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'institutions_at_risk'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="table-container">
+        <app-reports-table [tableColumns]="institutionsAtRiskTableLayout"
+                           [tableData]="institutionsAtRiskList">
+        </app-reports-table>
+      </div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'institutions_at_risk'}"
+      >Mai multe rapoarte</div>
+    </div>
+
+    <div class="card-table-container card">
+      <div class="card-table-header">
+        <div class="big-text bold card-title-text">Top instituții de învățământ inactive</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'inactive_institutions'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="table-container">
+        <app-reports-table [tableColumns]="inactiveInstitutionsTableLayout"
+                           [tableData]="inactiveInstitutionList">
+        </app-reports-table>
+      </div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'inactive_institutions'}"
+      >Mai multe rapoarte</div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">
+        <div class="big-text bold">Evolutie număr elevi cu risc</div>
+        <div class="text-item link-content blue-text bold more-button arrow-right web"
+             [routerLink]="['/reports']" [queryParams]="{top_tab: 'students_risk_evolution'}"
+        >Mai multe rapoarte</div>
+      </div>
+      <div class="chart-subtitle blue-text regular">{{ graphSubtitle }}</div>
+      <div class="chart-holder" *ngIf="studentsRiskDisplayChart">
+        <ngx-charts-line-chart
+          [view]="studentsRiskChartView"
+          [xAxis]="xAxis"
+          [yAxis]="yAxis"
+          [scheme]="colorSchemeRed"
+          [results]="studentsRiskEvolutionStatistics?.chartData"
+          [xAxisTicks]="studentsRiskEvolutionStatistics?.xAxisTicks"
+        >
+
+          <ng-template #seriesTooltipTemplate let-model="model">
+            <div class="tooltip-content">
+              <div class="tooltip-container simple red">
+                  <div class="value">
+                    {{model[0].value}}
+                  </div>
+                  <div class="label">
+                    {{ studentsRiskEvolutionStatistics["chartData"][0]["name"] }}
+                  </div>
+                <div class="bottom-tooltip">
+                  <div class="padded">{{ model[0].name }}</div>
+                  <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                </div>
+              </div>
+            </div>
+            <!--<div class="selected-container"></div>-->
+          </ng-template>
+        </ngx-charts-line-chart>
+      </div>
+      <div *ngIf="!studentsRiskDisplayChart" class="big-text bold padded-top info-card">Nu există date disponibile</div>
+      <div class="text-item link-content blue-text bold more-button arrow-right mobile"
+           [routerLink]="['/reports']" [queryParams]="{top_tab: 'students_risk_evolution'}"
+      >Mai multe rapoarte</div>
+    </div>
+  </div>
+</div>

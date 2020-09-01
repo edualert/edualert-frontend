@@ -1,0 +1,54 @@
+@import '../../../../assets/styles/base.scss';
+
+#header-top-right-container {
+
+  .button-container {
+    display: flex;
+    flex-direction: row;
+    height: 98px;
+    align-items: flex-end;
+    padding-bottom: calc(#{$margin-small} + 1px);
+  }
+
+  .text-button + .text-button {
+    margin-left: $margin-big;
+  }
+}
+
+.margin-list {
+  margin-top: $margin-big;
+  margin-bottom: $margin-small;
+}
+
+.tabs-container {
+  margin-top: 40px;
+  margin-bottom: $margin-tiny;
+  position: sticky;
+  top: 148px;
+  background-color: $color-background;
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .text-button {
+    margin-left: $margin-tiny;
+    margin-right: $margin-tiny;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+
+  .page-content {
+    padding-top: 0;
+  }
+
+  .tabs-container {
+    margin-top: $margin-small;
+    position: unset;
+  }
+
+  .margin-list {
+    margin-top: $margin-default;
+    margin-bottom: 0;
+  }
+}

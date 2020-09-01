@@ -1,0 +1,38 @@
+<div class="scrollable-container">
+  <div class="row">
+    <div *ngFor="let columnItem of tableMetadata; let j = index;"
+         class="column-title border columns-border {{ columnItem.width ? columnItem.width : 'flex' }}
+                {{ columnItem.subcolumns.length > 0 ? 'auto-width' : '' }}">
+      <div class="{{ j !== 0 ? 'left-padded' : ''}} border border-bottom">{{ columnItem.name }}</div>
+      <div class="row">
+        <div
+          *ngFor="let subcolumn of columnItem.subcolumns;"
+          class="subcol-title border subcols-border
+               {{ subcolumn?.width }}">
+          <!--{{!(tableMetadata[j+1]?.subcolumns.length > 0) && i === columnItem.subcolumns.length-1 ? 'border-right' : ''}} add this to the class above to add right border to the last cell of the row-->
+          {{ subcolumn.name }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column data">    <!-- BEGINNING OF THE DATA ROWS, ADD CELL COMPONENT AND TYPE HERE, NOT ABOVE -->
+    <div *ngFor="let student of data" class="row">
+      <div *ngFor="let column of tableMetadata" class="row {{ column.width ? column.width : 'flex' }} data">
+        <div *ngIf="!column.subcolumns.length; else hasSubcolumns"
+             class="border cell-bottom-border">
+          <app-table-cell [data]="student[column.dataObjectKey]"
+                          [cellType]="column.type"></app-table-cell>
+        </div>
+        <ng-template #hasSubcolumns>
+          <div *ngFor="let subcolumn of column.subcolumns"
+               class="border subcols-border
+                    {{ subcolumn.width }}">
+            <!--{{ (i === tableMetadata.length-1 && j === name.subcolumns.length-1) ? 'end-border' : '' }} add this to the class above to add right border to the last cell of the row-->
+            <app-table-cell [data]="student[subcolumn.dataObjectKey]"
+                            [cellType]="subcolumn.type">{{student[subcolumn.dataObjectKey]}}</app-table-cell>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

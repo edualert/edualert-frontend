@@ -1,0 +1,176 @@
+@import '../../assets/styles/base.scss';
+
+$cell-height: 66px;
+
+
+.scrollable-container {
+  max-width: 100%;
+  min-height: calc(100vh - 280px);
+
+  overflow-x: auto;
+
+  &::-webkit-scrollbar-track {
+    background: rgba(#67778A, 0.1);
+  }
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.cell {
+  flex: 1;
+  height: $cell-height;
+}
+
+
+.small {
+  min-width: 66px;
+
+  &.data {
+    padding-bottom: 0;
+    height: $cell-height;
+  }
+}
+
+.regular {
+  min-width: 150px;
+
+  &.data {
+    padding-bottom: 0;
+    height: $cell-height;
+  }
+}
+
+.big {
+  min-width: 230px;
+
+  &.data {
+    padding-bottom: 0;
+    height: $cell-height;
+  }
+}
+
+.huge {
+  min-width: 250px;
+}
+
+.row.header, .row.subheader {
+  position: relative;
+
+  .cell {
+    height: 27px;
+    font-size: $font-size-small;
+    white-space: nowrap;
+    overflow: visible;
+    border-bottom: 1px solid $color-separator;
+    background-color: $color-background;
+
+    &:not(.empty) {
+      z-index: 1;
+    }
+  }
+
+  .cell + .cell {
+    .label {
+      padding-left: $margin-tiny;
+    }
+  }
+}
+
+.row.header {
+  z-index: 2;
+
+  .cell {
+    height: 37px;
+    padding-top: $margin-tiny;
+    font-weight: $font-weight-medium;
+    border-right: 0;
+  }
+}
+
+
+.row.subheader {
+  z-index: 2;
+
+  .cell {
+    line-height: 27px;
+  }
+
+  .cell.empty {
+    border-bottom: none;
+  }
+
+  .cell + .cell {
+    border-left: 1px solid $color-separator;
+  }
+}
+
+.row.data {
+  flex-flow: column;
+  width: auto;
+
+  .horizontal {
+    display: flex;
+    flex-flow: row;
+  }
+
+  .cell {
+    font-size: $font-size-normal;
+    border-bottom: 1px solid $color-separator;
+  }
+
+  .cell + .cell {
+    border-left: 1px solid $color-separator;
+  }
+}
+
+.expanded-row {
+  position: relative;
+  width: 100%;
+  height: auto;
+  border-right: 1px solid $color-separator;
+  border-bottom: 1px solid $color-separator;
+  border-left: 1px solid $color-separator;
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .list-cell {
+    .list {
+      display: none;
+    }
+  }
+
+  .big {
+    min-width: 66px;
+  }
+}
+
+@keyframes catalogNoDataFadeIn {
+  0% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.no-data-text {
+  height: calc(100vh - 400px);
+  min-height: 100px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: catalogNoDataFadeIn 1s 0s linear 1 backwards;
+}

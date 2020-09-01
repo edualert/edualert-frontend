@@ -1,0 +1,12 @@
+<app-modal [headerColor]="'yellow'" #modal>
+  <div id="modal-header">
+    <div class="header">
+      <h2 class="title">{{title}}</h2>
+      <div class="description">{{description}}</div>
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span class="text-button blue" (click)="confirmButtonAction()">{{confirmButtonText}}</span>
+    <span class="text-button dark-text" (click)="cancel()">{{cancelButtonText}}</span>
+  </div>
+</app-modal>

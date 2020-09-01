@@ -1,0 +1,149 @@
+@import '../../../../assets/styles/base.scss';
+
+.page-content {
+  position: relative;
+}
+
+#header-top-right-container {
+  height: auto;
+
+  .button-container {
+    display: flex;
+    flex-direction: row;
+    height: 98px;
+    align-items: flex-end;
+    padding-bottom: calc(#{$margin-small} + 1px);
+  }
+
+  .text-button + .text-button {
+    margin-left: $margin-big;
+  }
+}
+
+.tabs-container {
+  margin-top: 40px;
+  margin-bottom: $margin-tiny;
+  position: sticky;
+  top: 148px;
+  background-color: $color-background;
+  z-index: 1;
+}
+
+.weekly-hours-info {
+  padding-left: $margin-small;
+  padding-top: 7px;
+  margin-bottom: 14px;
+  font-size: $font-size-small;
+  font-weight: $font-weight-bold;
+  color: $color-text-light;
+
+  &.error {
+    color: $color-red;
+  }
+}
+
+.detail-element-container {
+  align-items: flex-start !important;
+  justify-content: flex-start;
+  margin-top: 10px !important;
+
+  .label-container {
+    height: auto;
+    line-height: 30px;
+    width: $fixed-width-column-large;
+    min-width: $fixed-width-column-large;
+    padding-right: $margin-small;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .value-container {
+    width: calc(100% - #{$fixed-width-column-large});
+    align-self: center;
+    display: flex;
+    height: 100%;
+
+    &.profile-name {
+      flex: 1;
+    }
+
+    &.small {
+      width: 92px;
+    }
+  }
+
+  & + & {
+    margin-top: $margin-tiny;
+  }
+
+  .vertical-line {
+    position: absolute;
+    right: 65px;
+    top: 0;
+    height: calc(100% - #{$margin-small});
+    width: 1px;
+    background-color: $color-separator;
+  }
+
+  .delete-button {
+    margin-top: 7px;
+    margin-left: calc(#{$margin-big * 2});
+  }
+}
+
+.subjects-container {
+  padding-top: 5px;
+}
+
+.subject {
+  position: relative;
+  margin-top: $margin-small;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+  }
+  animation: fadeIn 0.2s linear 1 backwards;
+
+  @for $i from 1 through 10 {
+    &:nth-of-type(#{$i}) {
+      animation-delay: calc(0.1s + #{$i} * 0.05s);
+    }
+  }
+
+  &:last-of-type {
+    hr {
+      display: none;
+    }
+  }
+}
+
+hr {
+  margin-top: $margin-small;
+}
+
+.add-subject-button {
+  display: inline-block;
+  margin: $margin-default 0;
+}
+
+.no-results {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: calc(100px - 15vh);
+  height: 100px;
+
+  .up-arrow {
+    height: 50px;
+    width: 60px;
+    margin-bottom: $margin-default;
+    background-image: url(../../../../assets/img/long-arrow.svg);
+    transform: rotateZ(-90deg);
+    filter: grayscale(0.93) brightness(150%);
+  }
+}
+
