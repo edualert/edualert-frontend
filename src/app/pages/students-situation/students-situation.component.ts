@@ -1,4 +1,4 @@
-import {Component, Injector} from '@angular/core';
+import {AfterViewInit, Component, Injector, OnDestroy} from '@angular/core';
 import {AccountService} from '../../services/account.service';
 import {UserDetails} from '../../models/user-details';
 import {ListPage} from '../list-page/list-page';
@@ -15,19 +15,21 @@ import {of} from 'rxjs';
 class RequestParams extends BaseRequestParameters {
   readonly search: string;
   readonly academic_year: number;
-  readonly academic_profile: number;
+  readonly academic_program: number;
   readonly study_class_grade: string;
   readonly ordering: string;
   readonly page_size: number;
+  readonly page: number;
 
   constructor(newObj?: any) {
     super();
     this.search = newObj?.search;
     this.academic_year = newObj?.academicYear;
-    this.academic_profile = newObj?.academicProfile;
+    this.academic_program = newObj?.academicProgram;
     this.study_class_grade = newObj?.studyClassGrade;
     this.ordering = newObj?.ordering;
     this.page_size = newObj?.page_size;
+    this.page = newObj?.page;
   }
 }
 
@@ -36,7 +38,7 @@ class RequestParams extends BaseRequestParameters {
   templateUrl: './students-situation.component.html',
   styleUrls: ['./students-situation.component.scss']
 })
-export class StudentsSituationComponent extends ListPage {
+export class StudentsSituationComponent extends ListPage implements AfterViewInit, OnDestroy {
 
   accountRole: string;
   students: PupilStatisticsListOrs[] | PupilStatisticsList[] = [];
@@ -62,12 +64,22 @@ export class StudentsSituationComponent extends ListPage {
     });
     this.customUrlParamsChange({'ordering': this.defaultSortingCriterion?.id, 'academicYear': this.defaultAcademicYear?.id});
 
+    this.scrollHandle = this.scrollHandle.bind(this);
+    this.requestDataFunc = this.requestData;
+    this.initialBodyHeight = document.body.getBoundingClientRect().height;
+
     this.activatedRoute.queryParams.subscribe((urlParams: Params) => {
+      if ( Object.keys(urlParams).length === 0 ) {
+        urlParams = {'ordering': this.defaultSortingCriterion?.id, 'academicYear': this.defaultAcademicYear?.id};
+        this.customUrlParamsChange(urlParams);
+      }
+      this.students = [];
+      this.requestedPageCount = 1;
+      this.activeUrlParams = urlParams;
       this.requestData(urlParams);
     });
   }
 
-  // TODO: Remove this mock method once we test it thoroughly
   private formatData(students: any) {
     return students.map((student: any) => {
       if (student.school_unit) {
@@ -84,50 +96,56 @@ export class StudentsSituationComponent extends ListPage {
         student.student_name = student.student;
       }
 
-      // MOCK
-      // student.avg_sem1 = student.avg_sem1 || 4;
-      // student.avg_sem2 = student.avg_sem2 || 5;
-      // student.avg_final = student.avg_final || 5;
-      // student.labels = student.labels?.length ? student.labels : ['Inregistrat proiect ORS', 'exmatriculat', 'corigent'];
-      // student.unfounded_abs_count_sem1 = student.unfounded_abs_count_sem1 || 4;
-      // student.unfounded_abs_count_sem2 = student.unfounded_abs_count_sem2 || 6;
-      // student.unfounded_abs_count_annual = student.unfounded_abs_count_annual || 3;
-      // ENDMOCK
-
       return student;
     });
   }
 
   requestData(urlParams?: Params): void {
-    this.requestInProgress = true;
-    const httpParams = new RequestParams({...urlParams, page_size: 100}).getHttpParams();
+    this.requestInProgress = !this.keepOldList;
+    this.initialRequestInProgress = true;
+
+    const responseStudents: any = this.students;
+
+    const httpParams = new RequestParams({...urlParams, page_size: 50}).getHttpParams();
     const path = 'pupils-statistics/';
     this.http.get(path, {params: httpParams}).subscribe((response: NetworkingListResponse) => {
       if (this.accountRole === 'ADMINISTRATOR') {
-        this.students = this.formatData(response.results);
+        response.results.map(result => responseStudents.push(result));
+        this.students = this.formatData(responseStudents);
       } else {
-        this.students = this.formatData(response.results);
+        response.results.map(result => responseStudents.push(result));
+        this.students = this.formatData(responseStudents);
       }
-      this.studentsTotalCount = response.count;
+      this.studentsTotalCount = this.totalCount = response.count;
+      this.elementCount = this.students.length;
+      this.initialRequestInProgress = false;
       this.requestInProgress = false;
+      this.keepOldList = false;
     });
   }
 
   changeRequestedAcademicYear(value) {
     this.academicYearToRequest = value?.id;
-    this.studyClassAvailableGradesService.getData(true, this.academicYearToRequest).pipe(catchError(() => of(null)))
+    this.studyClassAvailableGradesService.getData(true).pipe(catchError(() => of(null)))
       .subscribe(availableClassGrade => {
         this.filterData.studyClassGrades = availableClassGrade;
       });
   }
 
   onLinkClick(event) {
-    console.log(event);
     switch (event.cellIdentifier) {
       case 'student_all_subjects': {
         this.router.navigateByUrl(`/my-classes/${event?.dataRow?.student_in_class?.id}/students/${event.dataRow.student.id}/catalog`);
       }
     }
+  }
+
+  ngAfterViewInit(): void {
+    document.body.addEventListener('scroll', this.scrollHandle);
+  }
+
+  ngOnDestroy(): void {
+    document.body.removeEventListener('scroll',  this.scrollHandle);
   }
 
 }

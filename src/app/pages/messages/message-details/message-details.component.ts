@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {AccountService} from "../../../services/account.service";
-import {UserDetails} from "../../../models/user-details";
-import {Message, ReceivedMessage, SentMessage} from "../../../models/message";
-import {ActivatedRoute} from "@angular/router";
-import {get} from 'lodash'
-import {HttpClient} from "@angular/common/http";
-import {ViewUserModalComponent} from "../../manage-users/view-user-modal/view-user-modal.component";
+import {AccountService} from '../../../services/account.service';
+import {UserDetails} from '../../../models/user-details';
+import {Message, ReceivedMessage, SentMessage} from '../../../models/message';
+import {ActivatedRoute} from '@angular/router';
+import {get} from 'lodash';
+import {HttpClient} from '@angular/common/http';
+import {ViewUserModalComponent} from '../../manage-users/view-user-modal/view-user-modal.component';
 
 @Component({
   selector: 'app-message-details',
@@ -23,38 +23,31 @@ export class MessageDetailsComponent implements OnInit {
     private accountService: AccountService,
     private activatedRoute: ActivatedRoute,
     private httpClient: HttpClient,
-  ) { }
-
-  openViewUserModal(id: string | number) {
-    this.userDetailModal.open(id)
+  ) {
   }
 
-  requestDataMessages(messageId: number) : void {
-    if (this.sendOrReceivedTemplate === "loading") return;
-    this.httpClient.get<Message>('my-' + this.sendOrReceivedTemplate + '-messages/' + messageId).subscribe(response => {
+  openViewUserModal(id: string | number) {
+    this.userDetailModal.open(id);
+  }
+
+  requestDataMessages(messageId: number): void {
+    if (this.sendOrReceivedTemplate === 'loading') {
+      return;
+    }
+    this.httpClient.get<Message>('my-' + this.sendOrReceivedTemplate + '-messages/' + messageId + '/').subscribe(response => {
       if (this.sendOrReceivedTemplate === 'sent') {
         this.message = new SentMessage(response);
-      }
-      else if (this.sendOrReceivedTemplate === 'received') {
+      } else if (this.sendOrReceivedTemplate === 'received') {
         this.message = new ReceivedMessage(response);
+        if (!this.message.is_read) {
+          this.markAsRead(this.message.id);
+        }
       }
-    }, (errorObject => {
-      // TODO Delete this when backend works
-      this.message = new ReceivedMessage({
-        "id": 1,
-        "title": "Message title",
-        "created": "24-02-2020T19:20:00",
-        "from_user": 12,
-        "from_user_full_name": "John Doe",
-        "from_user_role": "TEACHER",
-        "from_user_subjects": [
-          "Matematica",
-          "Fizica"
-        ],
-        "is_read": false,
-        "body": 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-      });
-    }));
+    });
+  }
+
+  markAsRead(messageId: number): void {
+    this.httpClient.post(`my-received-messages/${messageId}/mark-as-read/`, {}).subscribe();
   }
 
   ngOnInit(): void {

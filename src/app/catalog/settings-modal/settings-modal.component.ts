@@ -17,7 +17,7 @@ export class SettingsModalComponent {
   classLetter: string;
   classSettings: StudentSettings[] = [];
   updateSettingsBody: StudentSettings[] = [];
-  allowExemption: boolean;
+  allowsExemption: boolean;
   isOptional: boolean;
   isGloballySelected: {[key: string]: boolean};
 
@@ -36,17 +36,13 @@ export class SettingsModalComponent {
           this.isGloballySelected[key] = false;
         }
       });
-    }, (error) => {
-      console.log(error);
-    });
+    }, (error) => {});
   }
 
   updateSettings() {
     this.http.put(`own-study-classes/${this.classId}/subjects/${this.subjectId}/settings/`, this.updateSettingsBody).subscribe((response: StudentSettings[]) => {
       this.classSettings = response;
-    }, (error) => {
-      console.log(error);
-    });
+    }, (error) => {});
   }
 
   save() {
@@ -65,7 +61,7 @@ export class SettingsModalComponent {
       this.classId = classDetails.id;
       this.classGrade = classDetails.class_grade;
       this.classLetter = classDetails.class_letter;
-      this.allowExemption = classDetails.taught_subjects[findIndex(classDetails.taught_subjects, {id: this.subjectId})].allow_exemption;
+      this.allowsExemption = classDetails.taught_subjects[findIndex(classDetails.taught_subjects, {id: this.subjectId})].allows_exemption;
       this.isOptional = classDetails.taught_subjects[findIndex(classDetails.taught_subjects, {id: this.subjectId})].is_optional;
       if (this.subjectId) {
         this.fetchSettingsData();

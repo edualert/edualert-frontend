@@ -1,8 +1,13 @@
 @import './base';
 
+.header-sublayer {
+  width: 100%;
+}
+
 header#page-header {
   display: block;
-  position: sticky;
+  position: fixed;
+  width: 100%;
   top: 0;
   padding: 45px 80px 15px;
   background-color: $color-background;
@@ -53,7 +58,7 @@ header#page-header {
     width: 100%;
     height: auto;
     top: 20px;
-    left: -10px;
+    left: -12%;
     z-index: 10000;
     border-radius: $border-radius-normal;
   }
@@ -63,19 +68,25 @@ header#page-header {
     padding-top: $margin-small;
   }
 
-
   .top-right-container {
     position: absolute;
-    right: 80px;
+    right: 385px;
     top: 50px;
-    height: 100%;
+    pointer-events: initial;
+    z-index: 1001;
+  }
+
+  .bottom-right-container {
+    position: absolute;
+    right: 385px;
+    bottom: 10px;
     pointer-events: initial;
   }
 
   hr {
     position: absolute;
     bottom: 0;
-    width: calc(100% - 80px * 2);
+    width: calc(100% - 465px);
   }
 }
 
@@ -114,13 +125,19 @@ header#page-header {
 /* MOBILE STYLES */
 
 @media (max-width: $mobile-screen-width-normal) {
+  .header-sublayer {
+    position: absolute;
+    pointer-events: none;
+    z-index: -100;
+  }
+
   header#page-header {
     top: 50px;
     will-change: unset;
-    padding: 0 $margin-default 0;
-
-    position: unset;
+    padding: 10px $margin-default 0;
+    //position: fixed;
     margin-top: 50px;
+    position: unset;
 
     .filter {
       z-index: 1;
@@ -133,7 +150,7 @@ header#page-header {
     }
 
     #header-back-button {
-      display: none;
+      margin-top: 0;
     }
 
     #header-title {
@@ -179,6 +196,11 @@ header#page-header {
       .button-container {
         padding: 0;
       }
+    }
+
+    #error-alert {
+      z-index: 10000;
+      left: 0%;
     }
   }
 }

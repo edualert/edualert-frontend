@@ -50,7 +50,9 @@
             value="{{newPassword.current_password}}"
             [error]="errors?.current_password"
             inputType="password"
+            #currentPass
           ></app-input-new>
+          <div class="show-password-button" [class.is-showing]="currentPass.inputType === 'text'" (click)="showHidePassword(currentPass)"></div>
         </div>
       </div>
       <div class="detail-element-container margin-top-small">
@@ -61,7 +63,9 @@
             value="{{newPassword.new_password}}"
             [error]="errors?.new_password"
             inputType="password"
+            #newPass
           ></app-input-new>
+          <div class="show-password-button" [class.is-showing]="newPass.inputType === 'text'" (click)="showHidePassword(newPass)"></div>
         </div>
       </div>
       <div class="detail-element-container margin-top-small">
@@ -72,7 +76,9 @@
             value="{{newPassword.repeatNewPassword}}"
             [error]="errors?.repeatNewPassword"
             inputType="password"
+            #repeatPass
           ></app-input-new>
+          <div class="show-password-button" [class.is-showing]="repeatPass.inputType === 'text'" (click)="showHidePassword(repeatPass)"></div>
         </div>
       </div>
     </div>

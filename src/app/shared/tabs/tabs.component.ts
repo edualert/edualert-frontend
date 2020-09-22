@@ -5,9 +5,8 @@ import {
   EventEmitter,
   HostListener,
   Input,
-  OnChanges, OnDestroy,
-  OnInit,
-  Output, SimpleChanges,
+  OnDestroy,
+  Output,
   ViewChild
 } from '@angular/core';
 import {IdName} from '../../models/id-name';
@@ -17,7 +16,7 @@ import {IdName} from '../../models/id-name';
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.scss']
 })
-export class TabsComponent implements AfterViewInit, OnChanges, OnDestroy, AfterViewChecked {
+export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked {
 
   @Input() tabsList: IdName[];
   @Input() activeTab: string;
@@ -31,56 +30,66 @@ export class TabsComponent implements AfterViewInit, OnChanges, OnDestroy, After
     this.activateOrDeactivateArrows = this.activateOrDeactivateArrows.bind(this);
   }
 
-  onTabClicked(tabClicked: string) {
-    this.tabHasBeenSelected.emit(tabClicked);
-    this.activateOrDeactivateArrows(tabClicked);
-    this.scrollTheContainer(tabClicked);
+  onTabClicked(tabClicked: string | number) {
+    this.tabHasBeenSelected.emit(tabClicked.toString());
+    this.activateOrDeactivateArrows();
+    const positionInArray = this.tabsList.map(el => el.id.toString()).indexOf(tabClicked.toString());
+    const clickedTab = this.tabsList[positionInArray].id.toString();
+    this.scrollTheContainer(clickedTab);
   }
 
-  scrollTheContainer(tabClicked: string): void {
-    const positionInArray = this.tabsList.map(el => {return el.id}).indexOf(tabClicked);
+  scrollTheContainer(tabClicked: string | number): void {
+    const positionInArray = this.tabsList.map(el => el.id.toString()).indexOf(tabClicked.toString());
     const element = this.tabContainer.nativeElement.children[positionInArray];
-    if (element) element.scrollIntoView();
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+      });
+    }
   }
 
   arrowClicked(type: string) {
-    const positionInArray = this.tabsList.map(el => {return el.id}).indexOf(this.activeTab);
+    const positionInArray = this.tabsList.map(el => el.id).indexOf(this.activeTab);
     if (type === 'back') {
-      if (positionInArray - 1 < 0) return;
-      const clickedTab = this.tabsList[positionInArray -  1].id.toString();
+      const clickedTab = this.tabsList[positionInArray - 1].id.toString();
       this.tabHasBeenSelected.emit(clickedTab);
-      this.activateOrDeactivateArrows(clickedTab);
+      this.activateOrDeactivateArrows();
       this.scrollTheContainer(clickedTab);
     }
     if (type === 'forth') {
-      if (positionInArray + 1 === this.tabsList.length ) return;
       const clickedTab = this.tabsList[positionInArray + 1].id.toString();
       this.tabHasBeenSelected.emit(clickedTab);
-      this.activateOrDeactivateArrows(clickedTab);
+      this.activateOrDeactivateArrows();
       this.scrollTheContainer(clickedTab);
     }
   }
 
-  activateOrDeactivateArrows(clickedTab=null) {
-    if (!clickedTab) {
-      clickedTab = this.activeTab;
+  activateOrDeactivateArrows() {
+    if (
+      !this.tabContainer.nativeElement ||
+      !this.tabContainer.nativeElement.children[0] ||
+      !this.tabContainer.nativeElement.lastElementChild
+    ) {
+      return;
     }
-    const positionInArray = this.tabsList.map(el => {return el.id}).indexOf(clickedTab);
     const boundingFirstChild = this.tabContainer.nativeElement.children[0].getBoundingClientRect();
-    const boundingLastChild = this.tabContainer.nativeElement.lastElementChild.getBoundingClientRect();
+    const boundingLastChild = this.tabContainer.nativeElement.children[this.tabContainer.nativeElement.children.length - 1].getBoundingClientRect();
     const boundingContainer = this.tabContainer.nativeElement.getBoundingClientRect();
+    if (boundingFirstChild.left === boundingContainer.left && boundingContainer.right === boundingLastChild.right || this.tabsList.length < 3) {
 
-    if (boundingFirstChild.left === boundingContainer.left && boundingContainer.right === boundingLastChild.right) {
       this.backArrow.nativeElement.style.display = 'none';
       this.forthArrow.nativeElement.style.display = 'none';
     } else {
+
       if (boundingFirstChild.left < boundingContainer.left) {
         this.backArrow.nativeElement.style.display = 'inline-block';
       } else {
         this.backArrow.nativeElement.style.display = 'none';
       }
 
-      if (boundingLastChild.right >= boundingContainer.right) {
+      if (Math.floor(boundingLastChild.right) > boundingContainer.right) {
         this.forthArrow.nativeElement.style.display = 'inline-block';
       } else {
         this.forthArrow.nativeElement.style.display = 'none';
@@ -90,11 +99,11 @@ export class TabsComponent implements AfterViewInit, OnChanges, OnDestroy, After
 
   @HostListener('window:resize', ['$event'])
   onResize() {
-    this.activateOrDeactivateArrows()
+    this.activateOrDeactivateArrows();
   }
 
   ngOnDestroy() {
-    this.tabContainer.nativeElement.removeEventListener('scroll', this.activateOrDeactivateArrows)
+    this.tabContainer.nativeElement.removeEventListener('scroll', this.activateOrDeactivateArrows);
   }
 
   ngAfterViewChecked(): void {
@@ -102,12 +111,9 @@ export class TabsComponent implements AfterViewInit, OnChanges, OnDestroy, After
   }
 
   ngAfterViewInit(): void {
-    if (!this.tabContainer) return;
-    this.tabContainer.nativeElement.addEventListener('scroll', this.activateOrDeactivateArrows)
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (!this.tabContainer) return;
-    this.activateOrDeactivateArrows()
+    if (!this.tabContainer) {
+      return;
+    }
+    this.tabContainer.nativeElement.addEventListener('scroll', this.activateOrDeactivateArrows);
   }
 }

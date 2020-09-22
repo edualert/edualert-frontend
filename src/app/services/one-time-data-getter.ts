@@ -12,7 +12,7 @@ export class OneTimeDataGetter {
     this.httpClient = injector.get(HttpClient);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<any> {
+  getData(forceRequest: boolean, requestPath: string): Observable<any> {
 
     // If data hasn't been requested yet, request it from the server
     if (!this.requested || forceRequest) {

@@ -31,8 +31,8 @@ export class SchoolDetailComponent implements OnInit {
 
   openDeActivateSchoolModalSchoolModal(school: SchoolDetail) {
     const modalData = {
-      title: `${school.is_active ? 'Dezactivați' : 'Activați'} ${school.name}?`,
-      description: `Vor fi ${school.is_active ? 'dezactivate' : 'activate'} toate conturile utilizatorilor din unitate`,
+      title: `Doriți să ${school.is_active ? 'dezactivați' : 'reactivați'} contul școlii ${school.name}?`,
+      description: `Pentru această școală ${ school.is_active ? 'nu se vor mai putea' :  'se vor putea'} introduce date în sistem și utilizatorii care aparțin școlii ${ school.is_active ? 'nu se vor mai putea' :  'se vor putea'} autentifica în contul EduAlert.`,
       cancelButtonText: 'NU',
       confirmButtonText: 'DA',
       confirmButtonCallback: () => {

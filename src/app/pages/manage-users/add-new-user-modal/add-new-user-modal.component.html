@@ -19,6 +19,7 @@
             {{importUsersButtonText}}
           </span>
           <span [ngClass]="{'image-none': !multipleUsersChoice}" class="icon-right"></span>
+          <div *ngIf="uploadedFileName" class="uploaded-file-info">{{ uploadedFileName }}</div>
         </div>
       </div>
     </div>
@@ -26,4 +27,7 @@
   <div id="modal-footer">
     <span [class.disabled]="!(singleUserChoice || multipleUsersChoice)" class="text-button blue" (click)="close()">CONFIRMĂ</span>
   </div>
+
+  <!--- File chooser input for the user-containing CSV file --->
+  <input type="file" accept="text/csv" #uploadUsersList hidden (change)="getFileData($event)">
 </app-modal>

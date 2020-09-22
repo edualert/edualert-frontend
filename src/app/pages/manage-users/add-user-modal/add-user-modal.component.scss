@@ -7,7 +7,6 @@ h2 {
 .modal-body {
   padding-top: $margin-tiny;
   padding-bottom: $margin-default;
-  width: 700px;
   max-width: calc(100vw - 100px);
   margin-right: 0;
 }
@@ -31,13 +30,13 @@ h2 {
 
   .row {
     display: flex;
-    height: 30px;
     width: 100%;
+    height: auto;
   }
 
 
   .radio-container {
-    width: 140px;
+    min-width: 150px;
   }
 
   @keyframes fadeIn {
@@ -57,6 +56,34 @@ h2 {
   margin-left: $margin-big;
 }
 
+.error-message {
+  color: $color-red;
+  font-size: $font-size-small;
+  margin-top: 3px;
+  animation: appearMessage 0.1s 0s $ease-out 1 backwards;
+
+  @keyframes appearMessage {
+    0% {
+      font-size: 0;
+      opacity: 0;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+}
+
+.input-container {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  margin-left: $margin-default;
+
+  .error-input {
+    height: 30px;
+  }
+}
+
 @media (max-width: $mobile-screen-width-intermediate) {
   .mail-phone-switch {
     flex-flow: column;
@@ -69,12 +96,16 @@ h2 {
       margin-top: $margin-tiny;
     }
 
-
     input {
       height: 30px;
       margin-left: 0;
       margin-top: $margin-tiny;
       width: 100%;
+    }
+
+    .input-container {
+      margin-left: unset;
+      margin-top: $margin-tiny;
     }
   }
 

@@ -1,0 +1,35 @@
+<app-modal #modal>
+  <div id="modal-header">
+    <div class="header">
+      <h1 class="title">Raport</h1>
+    </div>
+  </div>
+  <div id="modal-body">
+    <div class="body" *ngIf="!requestInProgress; else loading">
+      <div class="content" *ngIf="responseErrors; else successModal">
+        <div class="report-message big-text bold">{{ successMessage }}</div>
+        <hr>
+        <div class="error-card" *ngFor="let error of formatErrors(responseErrors)">
+          <div class="card-title blue-text biggish-text bold">{{ 'Randul ' + error.rowName + ':' }}</div>
+          <div class="error-detail" *ngFor="let key of error.errorKeys">
+            {{ key + ':  ' }}
+            <span class="red-text">{{ error.errorData[key] }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #successModal>
+        <div class="report-message big-text bold">{{ successMessage }}</div>
+      </ng-template>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="body-loading">
+      <div class="huge-text bold">Se incarcă utilizatorii...</div>
+    </div>
+  </ng-template>
+  <div id="modal-footer">
+    <div class="text-button blue" (click)="close()">ÎNCHIDE</div>
+  </div>
+</app-modal>

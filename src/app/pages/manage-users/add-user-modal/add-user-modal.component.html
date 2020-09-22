@@ -10,7 +10,9 @@
         label="Nume"
         type="header"
         [value]="name"
-        (inputChange)="nameChange"
+        (inputChange)="nameChange($event)"
+        [error]="errors?.full_name"
+        [errorMessage]="errors?.full_name"
       ></app-input>
       <div class="mail-phone-switch">
         <div class="label">Nume utilizator*</div>
@@ -20,14 +22,30 @@
               <div class="radio-button" [class.checked]="usernameType === 'email'"></div>
               <div class="text">Adresă de email</div>
             </span>
-            <input type="email" *ngIf="usernameType === 'email'" placeholder="Email" [(ngModel)]="email" #usernameInput>
+            <div *ngIf="usernameType === 'email'"
+                 class="input-container"
+                 #usernameInput>
+              <app-input-new
+                [value]="email"
+                (inputChange)="addInput($event, 'email')"
+                [error]="errors?.email"
+              ></app-input-new>
+            </div>
           </div>
           <div class="row">
-            <span class="radio-container" (click)="switchUsername('phone')">
-              <div class="radio-button" [class.checked]="usernameType === 'phone'"></div>
+            <span class="radio-container" (click)="switchUsername('phone_number')">
+              <div class="radio-button" [class.checked]="usernameType === 'phone_number'"></div>
               <div class="text">Număr de telefon</div>
             </span>
-            <input type="number" *ngIf="usernameType === 'phone'" placeholder="Telefon" [(ngModel)]="phone" #usernameInput>
+            <div *ngIf="usernameType === 'phone_number'"
+                 class="input-container"
+                 #usernameInput>
+              <app-input-new
+                [value]="phone"
+                (inputChange)="addInput($event, 'phone_number')"
+                [error]="errors?.phone_number"
+              ></app-input-new>
+            </div>
           </div>
         </div>
       </div>

@@ -14,18 +14,34 @@
         </div>
         <div class="column">
           <div class="gray-text label">Diriginte</div>
-          <div class="value bold">{{classDetails?.class_master.full_name}}</div>
+          <div class="value bold blue-text arrow-right link-content"
+               (click)="openUserModal($event, classDetails?.class_master.id)">
+            {{classDetails?.class_master.full_name}}</div>
         </div>
       </div>
     </div>
-  </app-header>
-  <div class="page-content">
-    <div class="tabs-container">
+    <div id="header-sort">
+      <div class="label desktop-sort">Sortează</div>
+      <div class="dropdown-parent desktop-sort">
+        <app-dropdown
+          [list]="filterData.sortCriteria"
+          [displayedProperty]="'text'"
+          (elementHasBeenSelected)="changeSortingCriterion($event.element)"
+          [appliedElement]="filterParams.sortCriterion"
+          [placeholder]="'Sortează'"
+          [required]="true"
+        ></app-dropdown>
+      </div>
+      <hr>
+    </div>
+    <div id="tabs-container">
       <app-tabs (tabHasBeenSelected)="changeTab($event)"
                 [activeTab]="activeTab?.id"
                 [tabsList]="tabs">
       </app-tabs>
     </div>
+  </app-header>
+  <div class="page-content">
     <div [ngSwitch]="activeTab?.id">
       <ng-container *ngSwitchCase="0">
         <app-catalog
@@ -37,6 +53,7 @@
       <ng-container *ngFor="let subject of classDetails?.taught_subjects">
         <div *ngSwitchCase="subject.id">
           <app-catalog [data]="tableData"
+                       [isClassMaster]="classDetails?.is_class_master"
                        [tableLayout]="activeTab?.tableLayout"
                        (addGradeToStudent)="saveSingleGrade($event)"
                        (addAbsenceToStudent)="addSingleAbsence($event)"
@@ -64,3 +81,4 @@
 <app-add-grades-bulk-modal #addGradesBulkModal></app-add-grades-bulk-modal>
 <app-add-absences-bulk-modal #addAbsencesBulkModal></app-add-absences-bulk-modal>
 <app-settings-modal #settingsModal></app-settings-modal>
+<app-view-user-modal #appViewUserModal></app-view-user-modal>

@@ -6,13 +6,13 @@ input:not([type="submit"]), textarea {
   background-color: white;
   border-radius: $border-radius-normal;
   border: none;
-  color: $color-text-normal;
+  color: $color-text-normal!important;
   box-shadow: 0 0 4px rgba(black, 0.03);
   padding: 0 $margin-tiny;
   transition: box-shadow 0.1s, background-color 0.05s, background-image 0.1s, border-radius 0.1s, filter 0.05s;
 
   &::placeholder {
-    color: #aaa;
+    color: $color-text-normal!important;
   }
 
   &:hover {
@@ -36,6 +36,15 @@ input:not([type="submit"]), textarea {
 
 input:not([type="submit"]) {
   height: 30px;
+
+  &::placeholder {
+    color: $color-text-normal!important;
+  }
+
+  &.modal-input {
+    height: unset;
+    min-height: 30px;
+  }
 
   &.with-icon {
     background-size: 16px;
@@ -66,6 +75,28 @@ input[type="date"], input.date {
     background-position: calc(100% - #{$margin-default}) 50%
   }
 
+}
+
+.show-password-button {
+  background-image: url(./assets/img/password-show.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: inherit;
+  position: absolute;
+  display: block;
+  height: 23px;
+  width: 23px;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  @media (max-width: $mobile-screen-width-normal) {
+    transform: translateY(0%);
+  }
+
+  &.is-showing {
+    background-image: url(./assets/img/password-hide.svg);
+  }
 }
 
 // With error

@@ -22,6 +22,7 @@ import {convertStringToDate} from '../../../shared/calendar/calendar-utils';
 import {DatepickerComponent} from '../../../shared/datepicker/datepicker.component';
 import * as moment from 'moment';
 import {InputValidator} from '../../../services/field-validation';
+import {UserDetailsBase} from '../../../models/user-details-base';
 
 @Component({
   selector: 'app-add-edit-user-details',
@@ -36,6 +37,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   @Input() backendErrors: {};
   @Output() userDetailChanged: EventEmitter<UserDetails> = new EventEmitter();
   @Output() hasModifiedDataOutput: EventEmitter<boolean> = new EventEmitter();
+  @Output() subjectsAreEdited: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('datepicker', {'static': true}) datepicker: DatepickerComponent;
 
   account: UserDetails;
@@ -92,13 +94,12 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       case 'ADMINISTRATOR': {
         this.userRoleDropdown = [
           {id: 'ADMINISTRATOR', text: 'Administrator'},
-          {id: 'SCHOOL_PRINCIPAL', text: 'Director'},
+          {id: 'SCHOOL_PRINCIPAL', text: 'Director de școală'},
         ];
         break;
       }
       case 'SCHOOL_PRINCIPAL': {
         this.userRoleDropdown = [
-          {id: 'SCHOOL_PRINCIPAL', text: 'Director'},
           {id: 'TEACHER', text: 'Profesor'},
           {id: 'PARENT', text: 'Părinte'},
           {id: 'STUDENT', text: 'Elev'},
@@ -107,14 +108,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       }
       case 'PARENT':
       case 'STUDENT':
-      case 'TEACHER': {
-        this.userRoleDropdown = [
-          {id: 'TEACHER', text: 'Profesor'},
-          {id: 'PARENT', text: 'Părinte'},
-          {id: 'STUDENT', text: 'Elev'},
-        ];
-        break;
-      }
+      case 'TEACHER':
     }
   }
 
@@ -132,24 +126,24 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
           resp = false;
         }
       } else if (!this.isEdit && !userDetails.password) {
-        this.errors.password = 'Acest câmp este obligatoriu!';
+        this.errors.password = 'Acest câmp este obligatoriu.';
         resp = false;
       }
     }
-    if (!userDetails.full_name) {
-      this.errors.full_name = 'Acest câmp este obligatoriu!';
+    if (!userDetails.full_name || !(/\S/.test(userDetails.full_name))) {
+      this.errors.full_name = 'Acest câmp este obligatoriu.';
       resp = false;
     }
     if (!userDetails.user_role) {
-      this.errors.user_role = 'Acest câmp este obligatoriu!';
+      this.errors.user_role = 'Acest câmp este obligatoriu.';
       resp = false;
     }
-    if (!userDetails.phone_number) {
-      this.errors.phone_number = 'Acest câmp este obligatoriu!';
+    if (!userDetails.phone_number && userDetails.use_phone_as_username) {
+      this.errors.phone_number = 'Acest câmp este obligatoriu.';
       resp = false;
     }
-    if (!userDetails.email) {
-      this.errors.email = 'Acest câmp este obligatoriu!';
+    if (!userDetails.email && !userDetails.use_phone_as_username) {
+      this.errors.email = 'Acest câmp este obligatoriu.';
       resp = false;
     }
     if (this.userDetails.email && (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userDetails.email) || userDetails.email?.length > 150)) {
@@ -214,18 +208,28 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       }
       return;
     }
+    this.errors[key] = null;
+    if (key === 'use_phone_as_username') {
+      this.errors.username = null;
+    }
     this.userDetails[key] = event;
   }
 
   handleDropdownChange(object: { element, index }, key: string, index = null): void {
     switch (key) {
       case 'userRole': {
-        this.hasModifiedDataOutput.emit(true);
-        this.userDetails.user_role = object.element.id;
-        this.updateUserDetails(this.userDetails);
-        this.userDetails.taught_subjects = [];
-        this.userDetails.labels = [];
-        this.userDetails.parents = [];
+        this.userDetails.user_role = object.element?.id;
+        if ( object.element ) {
+          this.hasModifiedDataOutput.emit(true);
+          this.updateUserDetails(this.userDetails);
+          this.userDetails.taught_subjects = [];
+          this.userDetails.labels = [];
+          this.userDetails.parents = [];
+        } else {
+          this.availableFields = null;
+          this.labels = null;
+          this.subjects = null;
+        }
         break;
       }
       case 'parent': {
@@ -234,6 +238,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
           return;
         }
         this.userDetails.parents[index] = object.element;
+        this.errors.parentFrontValidation[index] = null;
         break;
       }
     }
@@ -272,6 +277,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   }
 
   handleSubjectClicked(subject: IdName): void {
+    this.subjectsAreEdited.emit(true);
     this.hasModifiedDataOutput.emit(true);
     let subjectExists = false;
     if (this.userDetails.taught_subjects === undefined) {
@@ -355,7 +361,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   }
 
   getSubjectsFromBackend(): void {
-    if (['ADMINISTRATOR', 'STUDENT', 'PARENT'].includes(this.userDetails.user_role)) {
+    if (['SCHOOL_PRINCIPAL', 'ADMINISTRATOR', 'STUDENT', 'PARENT'].includes(this.userDetails.user_role)) {
       return;
     }
     this.loadingSubjects = true;
@@ -421,7 +427,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
     }
     if (changes.userDetailsInput && changes.userDetailsInput.currentValue) {
       this.updateUserDetails({...changes.userDetailsInput.currentValue});
-      this.addUserRoleDropdownData(this.userDetails.user_role);
+      this.addUserRoleDropdownData(this.account.user_role);
     }
   }
 
@@ -431,5 +437,21 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
 
   openPicker() {
     this.datepicker.open();
+  }
+
+  confirmAddingUser(response: UserDetailsBase, index) {
+    const newParent = new IdFullname(response);
+    this.parents.push(newParent);
+    const newParentIndex = findIndex(this.parents, {id: response.id});
+    this.handleDropdownChange({element: newParent, index: newParentIndex}, 'parent', index);
+  }
+
+  clearBirthDateField() {
+    this.hasModifiedDataOutput.emit(true);
+    this.userDetails.birth_date = null;
+  }
+
+  showHidePassword(element) {
+    element.inputType = element.inputType === 'password' ? 'text' : 'password';
   }
 }

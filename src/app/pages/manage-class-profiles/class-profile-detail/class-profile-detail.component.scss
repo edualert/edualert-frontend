@@ -1,5 +1,9 @@
 @import '../../../../assets/styles/base.scss';
 
+.page-content {
+  padding-top: 40px;
+}
+
 #header-top-right-container {
 
   .button-container {
@@ -22,10 +26,27 @@
 
 .tabs-container {
   margin-top: 40px;
-  margin-bottom: $margin-tiny;
+  margin-bottom: $margin-big;
   position: sticky;
   top: 148px;
   background-color: $color-background;
+}
+
+.no-results {
+  position: relative;
+  text-align: center;
+  font-size: $font-size-big;
+  color: $color-text-light;
+  font-weight: $font-weight-bold;
+  left: unset;
+  top: $margin-default;
+  transform: unset;
+}
+
+.detail-element-container {
+  &:first-of-type {
+    margin-top: 20px !important;
+  }
 }
 
 @media (max-width: $mobile-screen-width-normal) {
@@ -38,17 +59,36 @@
     }
   }
 
-  .page-content {
-    padding-top: 0;
-  }
-
   .tabs-container {
     margin-top: $margin-small;
+    margin-bottom: unset;
     position: unset;
+  }
+
+  .page-content {
+    padding-top: unset;
+
+    .detail-element-container {
+      &:first-of-type {
+        margin-top: $margin-default;
+      }
+    }
   }
 
   .margin-list {
     margin-top: $margin-default;
     margin-bottom: 0;
+  }
+
+  #header-top-right-container {
+    .button-container{
+      height: unset;
+      padding-bottom: 0;
+      padding-top: $margin-xsmall;
+    }
+  }
+
+  .no-results {
+    font-size: $font-size-bigish;
   }
 }

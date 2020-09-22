@@ -22,6 +22,16 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
 
     filter: drop-shadow(0 2px 3px rgba(black, 0.25));
     transition: filter 0.15s 0s;
+
+    .dropdown-button, input {
+      background-size: 10px 10px;
+      background-position: calc(100% - 10px) 50%;
+      background-repeat: no-repeat;
+      background-image: url("../../../assets/img/arrow-up.svg");
+      padding-right: 20px;
+      text-overflow: ellipsis;
+      border-radius: $border-radius-normal $border-radius-normal 0 0;
+    }
   }
 
   &.disabled {
@@ -51,6 +61,19 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
   text-overflow: ellipsis;
 }
 
+.dropdown-list-button {
+  padding-left: 10px;
+  padding-top: 10px;
+  margin-bottom: 10px;
+  border-top: 1px solid $color-separator;
+
+  & > .text-button {
+    margin-left: 0!important;
+    width: fit-content;
+    text-transform: initial!important;
+  }
+}
+
 .dropdown-button {
   transform-origin: 50% 0;
   cursor: pointer;
@@ -69,7 +92,7 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
   }
 
   .placeholder {
-    color: $color-text-light;
+    color: $color-text-normal !important;
     font-weight: $font-weight-regular;
   }
 
@@ -99,8 +122,14 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
   overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100vh - 250px);
-  border-radius: $border-radius-normal;
+  border-radius: 0 0 $border-radius-normal $border-radius-normal;
   transform-origin: 50% 0;
+  margin-top: 25px;
+
+  &hr.hr-list {
+    z-index: 1001;
+  }
+
   @keyframes scaleIn {
     0% {
       opacity: 0;
@@ -126,6 +155,10 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
   align-items: center;
   cursor: pointer;
 
+  &.checkbox-container {
+    max-width: calc(100% - 20px);
+  }
+
   &:hover {
     background-color: #f8f8f8;
   }
@@ -150,11 +183,20 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
     color: $color-text-normal;
   }
 
+  input::-moz-placeholder {
+    color: $color-text-normal;
+    opacity: 1;
+  }
+
   input.no-value::placeholder {
     color: $color-text-light;
     font-weight: $font-weight-regular !important;
   }
 
+  input::-moz-placeholder {
+    color: $color-text-light;
+    opacity: 1;
+  }
 
   &.open input {
     border-radius: $border-radius-normal $border-radius-normal 0 0;
@@ -165,11 +207,21 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
     &::placeholder {
       color: #919DAB;
     }
+
+    &::-moz-placeholder {
+      color: #919DAB;
+      opacity: 1;
+    }
   }
 
   .list-container {
     top: 100%;
-    border-radius: 0 0 $border-radius-normal $border-radius-normal;
+    border-radius: 0 0 $border-radius-normal $border-radius-normal !important;
+    margin-top: 0;
+
+    &.with-error {
+      top: 30px;
+    }
   }
 }
 
@@ -191,9 +243,19 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
   .dropdown-button {
     color: $color-blue;
   }
+
+  > .list-container {
+    margin-top: 35px;
+  }
 }
 
 @media (max-width: $mobile-screen-width-normal) {
+
+  .overflow-handle {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 
   .dropdown-button, input {
     font-weight: bold;
@@ -208,10 +270,6 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
       border-radius: $border-radius-tiny $border-radius-tiny 0 0;
     }
 
-    .list-container {
-      border-radius: 0 0 $border-radius-tiny $border-radius-tiny;
-    }
-
     .mobile-dark-overlay {
       position: fixed !important;
       left: 0;
@@ -220,7 +278,7 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
       height: 100vh;
       background-color: rgba(black, 0.7);
       z-index: 1000;
-      transform: translate3d(0,0,1px);
+      transform: translate3d(0, 0, 1px);
       pointer-events: initial;
 
 
@@ -258,6 +316,21 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
         padding-bottom: 10px;
       }
     }
+  }
+}
+
+.add-user-button-container {
+  width: 100%;
+  height: auto;
+  padding: 7px $margin-tiny;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-top: 1px solid $color-separator;
+
+  .text-button {
+    margin-left: unset;
+    text-transform: unset;
   }
 }
 

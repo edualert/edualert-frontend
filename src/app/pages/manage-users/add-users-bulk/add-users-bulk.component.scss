@@ -1,0 +1,80 @@
+@import "../../../../assets/styles/base";
+
+.title {
+  margin-top: -5px;
+  color: white;
+}
+
+.content {
+  height: 75vh;
+}
+
+.subtitle {
+  color: white;
+  margin-bottom: 0;
+  margin-top: 5px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 15vh;
+  max-height: 80vh;
+  overflow-y: scroll;
+  padding: 10px 0;
+}
+
+.body-loading {
+  display: flex;
+  min-height: 15vh;
+  align-items: center;
+}
+
+.report-message {
+  padding: 20px;
+}
+
+.error-card {
+  min-width: 450px;
+  width: fit-content;
+  background-color: white;
+  border-radius: $border-radius-normal;
+  padding: 15px 20px 15px 20px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .card-title {
+    padding-bottom: 3px;
+  }
+
+  .error-detail {
+    padding: 5px 0;
+    border-bottom: 1px solid $color-separator;
+
+    &:last-of-type {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+  }
+
+  .column-name-hit {
+    color: $color-text-light;
+  }
+}
+
+.biggish-text {
+  font-size: $font-size-bigish;
+}
+
+.huge-text {
+  font-size: $font-size-huge;
+}
+
+.big-text {
+  font-size: $font-size-big;
+}

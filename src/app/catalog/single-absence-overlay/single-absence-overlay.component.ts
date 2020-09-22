@@ -10,7 +10,7 @@ import {DatepickerComponent} from '../../shared/datepicker/datepicker.component'
 })
 export class SingleAbsenceOverlayComponent extends OpenCloseable {
   @Output() save: EventEmitter<{isFounded: boolean, date: Date}> = new EventEmitter<{isFounded: boolean, date: Date}>();
-  isFounded: boolean;
+  isFounded: boolean = false;
   selectedDate: any;
   existingId: number;
   @ViewChild('datepicker', {static: false}) datepicker: DatepickerComponent;
@@ -61,7 +61,6 @@ export class SingleAbsenceOverlayComponent extends OpenCloseable {
       this.existingId = existingGrade.id;
     } else {
       this.selectedDate = new Date();
-      this.isFounded = null;
       this.existingId = null;
     }
   }

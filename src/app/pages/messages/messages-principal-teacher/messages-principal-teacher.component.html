@@ -5,7 +5,8 @@
       <button class="action-button" [routerLink]="['create']">Trimite un mesaj nou</button>
     </div>
     <div id="header-filter">
-      <app-filter>
+      <app-filter
+      [noCount]="false">
         <ng-container
           *ngIf="!this.requestInProgress; else loadingListCountMobile"
           id="list-count-mobile"
@@ -38,6 +39,7 @@
             </app-datepicker>
           </div>
         </div>
+        <div class="text-button delete-filters-button" (click)="deleteFilters()">Șterge Filtre</div>
       </app-filter>
     </div>
   </app-header>
@@ -71,7 +73,9 @@
                       <span class="title">Pentru:</span>
                       <span
                         class="text-item link-content blue-text bold"
-                        [routerLink]="['/manage-classes', message.target_study_class.id, 'view']"
+                        [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
+                          ['/manage-classes', message.target_study_class.id, 'view'] :
+                          ['/my-classes', message.target_study_class.id, 'class-detail']"
                       >
                         {{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
                         <div class="arrow right"></div>
@@ -91,7 +95,9 @@
                       <span class="title">Clasă:</span>
                       <span
                         class="text-item link-content blue-text bold"
-                        [routerLink]="['/manage-classes', message.target_study_class.id, 'view']"
+                        [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
+                          ['/manage-classes', message.target_study_class.id, 'view'] :
+                          ['/my-classes', message.target_study_class.id, 'class-detail']"
                       >
                         {{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
                         <div class="arrow right"></div>
@@ -111,10 +117,12 @@
                     </div>
                     <hr class="vertical">
                     <div class="cell">
-                      <span class="title">Elev:</span>
+                      <span class="title">Clasă:</span>
                       <span
                         class="text-item link-content blue-text bold"
-                        [routerLink]="['/manage-classes', message.target_study_class.id, 'view']"
+                        [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
+                          ['/manage-classes', message.target_study_class.id, 'view'] :
+                          ['/my-classes', message.target_study_class.id, 'class-detail']"
                       >
                         {{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
                         <div class="arrow right"></div>
@@ -152,7 +160,9 @@
                                 <span class="title">Clasă:</span>
                                 <span
                                   class="text-item link-content blue-text bold"
-                                  [routerLink]="['/manage-classes', student.study_class.id, 'view']"
+                                  [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
+                                    ['/manage-classes', student.study_class.id, 'view'] :
+                                    ['/my-classes', student.study_class.id, 'class-detail']"
                                 >
                                   {{student.study_class.class_grade + " " + student.study_class.class_letter}}
                                   <div class="arrow right"></div>
@@ -180,7 +190,9 @@
                               <span class="title">Clasă:</span>
                               <span
                                 class="text-item link-content blue-text bold"
-                                [routerLink]="['/manage-classes', student.study_class.id, 'view']"
+                                [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
+                                  ['/manage-classes', message.target_study_class.id, 'view'] :
+                                  ['/my-classes', message.target_study_class.id, 'class-detail']"
                               >
                                 {{student.study_class.class_grade + " " + student.study_class.class_letter}}
                                 <div class="arrow right"></div>

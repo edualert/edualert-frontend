@@ -17,6 +17,10 @@
   margin-bottom: 10px;
 }
 
+.row {
+  flex-direction: column;
+}
+
 .card {
   margin-top: $margin-default;
   position: relative;
@@ -36,9 +40,18 @@
     right: $margin-big;
     top: $margin-default;
     height: calc(100% - #{$margin-default * 2});
-    width: auto;
+    max-width: 60%;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
+
+    .text-button {
+      margin-bottom: unset;
+
+      & + .text-button {
+        margin-top: $margin-small;
+      }
+    }
 
     .school-status {
       position: relative;
@@ -111,6 +124,19 @@
 
   .page-content {
     padding-bottom: $margin-xbig;
+
+    .card {
+
+      .card-left-container {
+        .detail-element-container {
+          flex-direction: row;
+
+          .value-container {
+            margin-top: unset;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -148,6 +174,15 @@
         position: unset;
         flex-direction: row;
         align-items: flex-start;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        max-width: 100%;
+
+        hr {
+          position: unset;
+          width: 100%;
+          margin: 10px 0 15px 0;
+        }
 
         .school-status {
           width: 100%;
@@ -157,6 +192,7 @@
         }
 
         .text-button {
+          margin-top: unset;
           margin-bottom: $margin-xsmall;
           padding-right: $margin-small;
 

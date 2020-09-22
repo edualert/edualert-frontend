@@ -100,6 +100,7 @@ a {
 }
 
 .animated-page {
+
   @keyframes headerAppear {
     0% {
       opacity: 0;
@@ -118,6 +119,24 @@ a {
 }
 
 .page-content {
+  @keyframes contentAppear {
+    0% {
+      opacity: 0;
+      background-color: opacity($color-background);
+    }
+    50% {
+      opacity: 0;
+      background-color: opacity($color-background);
+    }
+    100% {
+      opacity: 1;
+      background-color: opacity($color-background);
+    }
+
+  }
+  animation: contentAppear .7s linear 1 backwards;
+
+
   padding: $margin-default 80px;
 
   @media (max-width: $mobile-screen-width-normal) {

@@ -1,6 +1,5 @@
 @import "../../../assets/styles/base";
 
-
 .button-container {
   display: flex;
   flex-direction: row;
@@ -42,7 +41,7 @@
     width: 350px;
   }
   .uncheckable {
-    pointer-events: none;
+    cursor: not-allowed;
   }
 }
 

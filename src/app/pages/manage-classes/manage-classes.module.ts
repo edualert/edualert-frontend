@@ -9,6 +9,7 @@ import {DropdownModule} from '../../shared/dropdown/dropdown.module';
 import {ConfirmationModalModule} from '../../shared/confirmation-modal/confirmation-modal.module';
 import {ClassDetailModule} from './class-detail/class-detail.module';
 import { AddEditStudyClassComponent } from './add-edit-study-class/add-edit-study-class.component';
+import {AddUserModalModule} from '../manage-users/add-user-modal/add-user-modal.module';
 import {AddNewUserModalModule} from '../manage-users/add-new-user-modal/add-new-user-modal.module';
 
 
@@ -25,6 +26,7 @@ import {AddNewUserModalModule} from '../manage-users/add-new-user-modal/add-new-
     DropdownModule,
     SharedModule,
     ConfirmationModalModule,
+    AddUserModalModule,
     AddNewUserModalModule
   ],
   exports: [ClassDetailModule]

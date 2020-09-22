@@ -40,6 +40,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   @Input() data: any[];
   @Input() tableLayout: 'class_master' | 'class_students' | 'student_catalog' | 'students_situation_ors' | string;
+  @Input() isClassMaster: boolean = false;
 
   @Output() addGradeToStudent: EventEmitter<any> = new EventEmitter<any>();
   @Output() addAbsenceToStudent: EventEmitter<any> = new EventEmitter<any>();
@@ -68,12 +69,12 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     this.academicCalendar = new AcademicYearCalendar({
       first_semester: new Semester({
-        starts_at: '15-09-2019',
-        ends_at: '18-02-2020'
+        starts_at: '09-09-2019',
+        ends_at: '12-01-2020'
       }),
       second_semester: new Semester({
-        starts_at: '01-03-2019',
-        ends_at: '15-08-2020'
+        starts_at: '13-01-2019',
+        ends_at: '08-09-2020'
       })
     });
 
@@ -200,6 +201,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   expandCell(rowIndex, colIndex): void {
     const identifier = this.internalLayout.dataRow[colIndex].identifier;
     const data = this.getDataForExpandedCell(identifier, this.internalData[rowIndex]);
+    data['wants_thesis'] = this.internalData[rowIndex]?.hasOwnProperty('wants_thesis') ? this.internalData[rowIndex].wants_thesis : null;
     this.expandedCell = new ExpandedCell({rowIndex, colIndex, identifier, data});
     window.requestAnimationFrame(() => {
       this.bringExpandedCellToScreen();
@@ -243,7 +245,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
   }
 
-  addGrade(grade: { selectedGrade: number, selectedDate: Date, id: number }, rowIndex: number, cellIdentifier: string): void {
+  addGrade(grade: { selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }, rowIndex: number, cellIdentifier: string): void {
     this.addGradeToStudent.emit({
       grade: grade,
       id: this.internalData[rowIndex].id,

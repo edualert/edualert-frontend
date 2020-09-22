@@ -12,11 +12,15 @@ import { ViewUserModalComponent } from '../manage-users/view-user-modal/view-use
 export class MessagesRequestParams extends BaseRequestParameters {
   readonly search: string;
   readonly created: string;
+  readonly page_size: number;
+  readonly page: number;
 
-  constructor(newObj: { search?: string, createdDate?: string }) {
+  constructor(newObj: { search?, createdDate?, page_size?, page? }) {
     super();
     this.search = newObj?.search;
     this.created = newObj?.createdDate;
+    this.page_size = newObj?.page_size;
+    this.page = newObj?.page;
   }
 }
 

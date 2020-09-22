@@ -26,3 +26,26 @@
   padding-left: $margin-big;
   margin-top: $margin-small;
 }
+
+.error-toast {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  margin-left: $margin-small;
+  margin-right: $margin-small;
+
+}
+
+.close-error {
+  align-self: center;
+  background: url('../../../../assets/img/x-white.svg');
+  width: 15px;
+  height: 15px;
+  padding-bottom: 16px;
+  padding-right: $margin-tiny;
+  margin-left: $margin-tiny;
+
+  &:hover {
+    cursor: pointer;
+  }
+}

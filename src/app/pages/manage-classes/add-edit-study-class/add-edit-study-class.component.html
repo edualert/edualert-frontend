@@ -34,6 +34,7 @@
       <div class="dropdown-parent half-width margin-right-big">
         <app-dropdown
           [list]="availableClasses"
+          [placeholder]="'-'"
           [displayedProperty]="'class_grade'"
           (elementHasBeenSelected)="handleInputChange($event, 'class_grade')"
           [appliedElement]="studyClass?.class_grade"
@@ -46,7 +47,7 @@
       <div class="dropdown-parent half-width">
         <app-dropdown
           [list]="classesAlphaLetters"
-          [displayedProperty]=""
+          [placeholder]="'-'"
           (elementHasBeenSelected)="handleInputChange($event, 'class_letter')"
           [appliedElement]="studyClass?.class_letter"
           [dropdownStyle]="'big'"
@@ -60,7 +61,7 @@
       <div class="label">Profil - Specializare / Domeniu*</div>
       <div class="dropdown-parent">
         <app-dropdown
-          [isDisabled]="!studyClass?.class_grade"
+          [isDisabled]="!studyClass?.class_grade || !academicProgramsList?.length"
           [list]="academicProgramsList"
           [displayedProperty]="'name'"
           (elementHasBeenSelected)="handleInputChange($event, 'academic_program_name')"
@@ -79,6 +80,9 @@
       <div class="label">Diriginte*</div>
       <div class="dropdown-parent">
         <app-dropdown
+          [withAddUserButton]="true"
+          [userRoleToAdd]="'TEACHER'"
+          (addUserModalCallbackFunction)="confirmAddingUser($event, true)"
           [list]="classMasterCandidates"
           [displayedProperty]="'full_name'"
           (elementHasBeenSelected)="handleInputChange($event, 'class_master')"
@@ -109,7 +113,11 @@
           <div class="label">Nume*</div>
           <div class="dropdown-parent">
             <app-dropdown
-              [list]="getAvailableTeachersForSubject(subject.subject_id)"
+              [withAddUserButton]="true"
+              [userRoleToAdd]="'TEACHER'"
+              [taughtSubjectId]="subject.subject_id"
+              (addUserModalCallbackFunction)="confirmAddingUser($event, false, i, subject.subject_name)"
+              [list]="availableTeachersForSubjects[subject.subject_name]"
               [displayedProperty]="'full_name'"
               (elementHasBeenSelected)="handleListInputChange($event, 'teachers_class_through', i)"
               [appliedElement]="studyClass.teachers_class_through[i]?.teacher"
@@ -134,7 +142,11 @@
           <div class="label">Nume*</div>
           <div class="dropdown-parent">
             <app-dropdown
-              [list]="getAvailableTeachersForSubject(subject.subject_id)"
+              [withAddUserButton]="true"
+              [userRoleToAdd]="'TEACHER'"
+              [taughtSubjectId]="subject.subject_id"
+              (addUserModalCallbackFunction)="confirmAddingUser($event, false, i, subject.subject_name)"
+              [list]="availableTeachersForSubjects[subject.subject_name]"
               [displayedProperty]="'full_name'"
               (elementHasBeenSelected)="handleListInputChange($event, 'teachers_class_through', i)"
               [appliedElement]="studyClass.teachers_class_through[i]?.teacher"
@@ -156,6 +168,9 @@
             <div class="label">Nume*</div>
             <div class="dropdown-parent">
               <app-dropdown
+                [withAddUserButton]="true"
+                [userRoleToAdd]="'STUDENT'"
+                (addUserModalCallbackFunction)="confirmAddingUser($event, false, i)"
                 [list]="studentList"
                 [displayedProperty]="'full_name'"
                 (elementHasBeenSelected)="handleListInputChange($event, 'students', i)"
@@ -182,19 +197,22 @@
             </div>
             <div class="right-container">
               <div class="text-button dark-text end mobile-margin" (click)="deleteStudent(i)">Sterge</div>
-              <div class="text-button dark-text end" (click)="openUserModal()">Muta</div>
+              <div class="text-button dark-text end" (click)="openUserModal('STUDENT')">Muta</div>
             </div>
           </div>
           <div *ngIf="i >= initialStudentNumber" class="row spaced unwrapped">
             <div class="label">Nume*</div>
             <div class="dropdown-parent">
               <app-dropdown
+                [withAddUserButton]="true"
+                [userRoleToAdd]="'STUDENT'"
+                (addUserModalCallbackFunction)="confirmAddingUser($event, false, i)"
                 [list]="studentList"
                 [displayedProperty]="'full_name'"
                 (elementHasBeenSelected)="handleListInputChange($event, 'students', i)"
                 [appliedElement]="student?.full_name"
-                [errorMessage]="studyClassErrors.students[i]?.full_name ? studyClassErrors.students[i]?.full_name : ''"
-                [error]="studyClassErrors.students[i]?.full_name ? studyClassErrors.students[i]?.full_name : ''"
+                [errorMessage]="studyClassErrors.students[studyClass.students.indexOf(student) - 1]?.full_name ? studyClassErrors.students[studyClass.students.indexOf(student) - 1]?.full_name : ''"
+                [error]="studyClassErrors.students[studyClass.students.indexOf(student) - 1]?.full_name ? studyClassErrors.students[studyClass.students.indexOf(student) - 1]?.full_name : ''"
                 [placeholder]="'-'"
                 [required]="true"
               ></app-dropdown>
@@ -210,5 +228,5 @@
     </ng-template>
   </div>
 
-  <app-add-new-user-modal #addNewUserModal></app-add-new-user-modal>
+  <app-add-user-modal #addNewUserModal></app-add-user-modal>
 </div>

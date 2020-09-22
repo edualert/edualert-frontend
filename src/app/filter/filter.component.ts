@@ -7,7 +7,7 @@ import {Component, Input} from '@angular/core';
 })
 export class FilterComponent {
   isOpen: boolean;
-  @Input() noCount?: boolean;
+  @Input() noCount?: boolean = true;  // Setting the default as we don't need the large filter button(for mobile mainly)
 
   constructor() {
     this.isOpen = false;

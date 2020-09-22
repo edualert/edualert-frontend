@@ -32,6 +32,10 @@
       .cell {
         margin-top: $margin-tiny;
         display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 600px;
 
         .title {
           font-size: $font-size-normal;
@@ -322,5 +326,11 @@
       display: flex;
       flex-direction: column;
     }
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .page-content .card .targets .receiver-info-wrapper .cell {
+    max-width: 75%;
   }
 }

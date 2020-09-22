@@ -38,13 +38,14 @@
                 <div class="label padded-text">Tip*</div>
                 <div class="dropdown-parent value">
                   <app-dropdown
+                    [required]="true"
+                    [withSearch]="true"
                     [errorMessage]="currentAcademicYearErrorMessages?.first_semester?.events[i].event_type"
                     [list]="eventTypesFirstSemester"
                     [appliedElement]="eventTypesFirstSemester[findEvent(event.event_type, 'eventTypesFirstSemester')]?.name ?
                      eventTypesFirstSemester[findEvent(event.event_type, 'eventTypesFirstSemester')].name : null"
                     displayedProperty="name"
                     (elementHasBeenSelected)="selectEventFirstSemester($event, i)"
-                    placeholder="-"
                   ></app-dropdown>
                 </div>
               </div>
@@ -96,13 +97,14 @@
                 <div class="label padded-text">Tip*</div>
                 <div class="dropdown-parent value">
                   <app-dropdown
+                    [required]="true"
+                    [withSearch]="true"
                     [errorMessage]="currentAcademicYearErrorMessages?.second_semester?.events[i].event_type"
                     [list]="eventTypesSecondSemester"
                     [appliedElement]="eventTypesSecondSemester[findEvent(event.event_type, 'eventTypesSecondSemester')] ?
                      eventTypesSecondSemester[findEvent(event.event_type, 'eventTypesSecondSemester')] : null"
                     displayedProperty="name"
                     (elementHasBeenSelected)="selectEventSecondSemester($event, i)"
-                    placeholder="-"
                   ></app-dropdown>
                 </div>
               </div>
@@ -145,13 +147,14 @@
                 <div class="label padded-text">Tip*</div>
                 <div class="dropdown-parent value">
                   <app-dropdown
+                    [required]="true"
                     [errorMessage]="currentAcademicYearErrorMessages?.events[i].event_type"
                     [list]="eventTypesOtherEvents"
                     [appliedElement]="eventTypesOtherEvents[findEvent(event.event_type, 'eventTypesOtherEvents')] ?
                      eventTypesOtherEvents[findEvent(event.event_type, 'eventTypesOtherEvents')] : null"
                     displayedProperty="name"
                     (elementHasBeenSelected)="selectEventOtherEvent($event, i)"
-                    placeholder="-"
+                    [withSearch]="true"
                   ></app-dropdown>
                 </div>
               </div>

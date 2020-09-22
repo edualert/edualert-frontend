@@ -49,7 +49,6 @@ export class StudentCatalogComponent implements OnInit {
         labels: response.labels,
         parents: response.parents
       };
-      console.log(this.student)
       this.studyClass = response.study_class;
       this.catalog = this.formatCatalog(response.catalogs_per_subjects);
       this.rip = false;
@@ -82,7 +81,6 @@ export class StudentCatalogComponent implements OnInit {
   }
 
   addSingleAbsence(value: { absence: { date: Date, isFounded: boolean }, id: number, semester: string }): void {
-    console.log(value);
     const request = this.httpClient.post(
       `catalogs/${value.id}/absences/`,
       {
@@ -93,13 +91,11 @@ export class StudentCatalogComponent implements OnInit {
     this.modifyCatalog(request);
   }
   deleteAbsence(absence: any): void {
-    console.log(absence);
     const request = this.httpClient.delete(`absences/${absence.id}/`);
     this.modifyCatalog(request);
   }
 
   authorizeAbsence(absence: any): void {
-    console.log(absence);
     const request = this.httpClient.post(`absences/${absence.id}/authorize/`, {});
     this.modifyCatalog(request);
   }

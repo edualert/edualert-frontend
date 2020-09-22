@@ -15,6 +15,10 @@ export class ExpandedCellComponent implements OnInit {
   @Input() data: any;
   @Input() identifier: CellIdentifier;
   @Input() isEditable: boolean;
+
+  @Input() isClassMaster: boolean = false;
+  @Input() tableLayoutAsIdentifier: string;
+  @Input() loggedUserRole: string;
   @Output() addGrade: EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number }> = new EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number }>();
   @Output() addAbsence: EventEmitter<any> = new EventEmitter<any>();
   @Output() deleteGrade: EventEmitter<Grade> = new EventEmitter<Grade>();
@@ -31,12 +35,14 @@ export class ExpandedCellComponent implements OnInit {
   ngOnInit(): void {
     if (['grades_sem_1', 'grades_sem_2'].includes(this.identifier)) {
       this.data.grades = this.data.grades.map((grade: Grade) => ({...grade, minutesSinceCreation: this.getMinutesDiff(grade.created)}));
+      if (!this.data?.thesis?.hasOwnProperty('minutesSinceCreation')) {
+        this.data.thesis['minutesSinceCreation'] = this.data?.thesis ? this.getMinutesDiff(this.data?.thesis?.created) : null;
+      }
     }
 
     if (['abs_sem_1', 'abs_sem_2'].includes(this.identifier)) {
       this.data = this.data.map((absence: Absence) => ({...absence, minutesSinceCreation: this.getMinutesDiff(absence.created)}));
     }
-    this.getMinutesDiff('18-06-2020T12:29:00');
   }
 
   displayDate(dateString: string): string {
@@ -55,7 +61,7 @@ export class ExpandedCellComponent implements OnInit {
     return absencesList.filter(absence => !absence.is_founded).length;
   }
 
-  gradeSubmitted(data: { selectedGrade: number, selectedDate: Date, id: number }): void {
+  gradeSubmitted(data: { selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }): void {
     this.addGrade.emit(data);
     this.singleGradeModal.close();
   }
@@ -95,11 +101,12 @@ export class ExpandedCellComponent implements OnInit {
     });
   }
 
-  openGradeOverlay(event: Event, grade?: any): void {
-    this.singleGradeModal.open(event.target, this.root.nativeElement, grade);
+  openGradeOverlay(event: Event, isThesis: boolean, grade?: any): void {
+    this.singleGradeModal.open(event.target, this.root.nativeElement, grade, isThesis);
   }
 
   openAbsenceOverlay(event: Event, absence?: any): void {
+    debugger
     this.singleAbsenceModal.open(event.target, this.root.nativeElement, absence);
   }
 

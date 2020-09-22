@@ -1,8 +1,5 @@
-import {Component, HostListener, Injector, Input} from '@angular/core';
+import {Component, HostListener, Injector, Input, ViewChild} from '@angular/core';
 import {SchoolCategory, SchoolDetail, SchoolDetailRequiredFields} from '../../../models/school-details';
-import {cities} from '../../../data/cities';
-import {districts} from '../../../data/districts';
-import {capitalizeString} from '../../../shared/utils';
 import {findIndex} from 'lodash';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Params, Router} from '@angular/router';
@@ -14,6 +11,9 @@ import {SchoolProfilesService} from '../../../services/school-profiles-service';
 import {IdName} from '../../../models/id-name';
 import {IdText} from '../../../models/id-text';
 import {InputValidator} from '../../../services/field-validation';
+import {AddUserModalComponent} from '../../manage-users/add-user-modal/add-user-modal.component';
+import {UserDetailsBase} from '../../../models/user-details-base';
+import {IdFullname} from '../../../models/id-fullname';
 
 class DropdownData {
   districts: IdText[];
@@ -38,6 +38,7 @@ export class AddEditSchoolsComponent {
   readonly schoolProfilesService: SchoolProfilesService;
   readonly schoolPrincipalsService: SchoolPrincipalsService;
   @Input() isEditable: boolean;
+  @ViewChild('addNewUserModal', {'static': false}) addNewUserModal: AddUserModalComponent;
 
   schoolDetails: SchoolDetail;
   schoolDetailsError = new SchoolDetailRequiredFields();
@@ -187,7 +188,7 @@ export class AddEditSchoolsComponent {
             }
           }
         } else {
-          requiredFields[key] = 'Acest camp este obligatoriu.';
+          requiredFields[key] = 'Acest câmp este obligatoriu.';
           this.hasUnfilledFields = true;
         }
       });
@@ -212,5 +213,12 @@ export class AddEditSchoolsComponent {
         this.schoolDetails.academic_profile = null;
       }
     });
+  }
+
+  confirmAddingUser(response: UserDetailsBase) {
+    const newPrincipal = new SchoolPrincipal(response);
+    this.data.school_principals.push(newPrincipal);
+    const newParentIndex = findIndex(this.data.school_principals, {id: response.id});
+    this.handleInputChange({element: newPrincipal, index: newParentIndex}, 'school_principal');
   }
 }

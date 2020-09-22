@@ -12,7 +12,6 @@
   <div class="custom-label">
     <div class="label">Nume utilizator*</div>
     <div class="vertical">
-      <div class="error-message red-text">{{errors?.username}}</div>
       <div class="row">
         <span class="radio-container" (click)="addInput(false, 'use_phone_as_username')">
           <div class="radio-button" [class.checked]="!userDetails?.use_phone_as_username"></div>
@@ -27,8 +26,52 @@
       </div>
     </div>
   </div>
+  <div class="detail-element-container" *ngIf="!isEdit">
+    <div class="label-container fixed-width">Parolă</div>
+    <div class="value-container full-width">
+      <app-input-new
+        (inputChange)="addInput($event, 'password')"
+        value="{{userDetails?.password}}"
+        [error]="errors?.password"
+        inputType="password"
+        #newUserPassword
+      ></app-input-new>
+      <div class="show-password-button" [class.is-showing]="newUserPassword.inputType === 'text'" (click)="showHidePassword(newUserPassword)"></div>
+    </div>
+  </div>
+  <div class="detail-element-container header blue-text bold" *ngIf="isEdit">
+    <div class="label-container full-width">Modificare parolă</div>
+  </div>
+  <div class="border-left bottom-margin" *ngIf="isEdit">
+    <div class="detail-element-container margin-top-small">
+      <div class="label-container fixed-width">Parolă nouă</div>
+      <div class="value-container full-width">
+        <app-input-new
+          (inputChange)="addInput($event, 'new_password')"
+          value="{{newPassword.new_password}}"
+          [error]="errors?.new_password ? errors?.new_password : (backendErrors.hasOwnProperty('password') ? backendErrors['password'] : '')"
+          inputType="password"
+          #newPass
+        ></app-input-new>
+        <div class="show-password-button" [class.is-showing]="newPass.inputType === 'text'" (click)="showHidePassword(newPass)"></div>
+      </div>
+    </div>
+    <div class="detail-element-container margin-top-small">
+      <div class="label-container fixed-width">Repetare parolă nouă</div>
+      <div class="value-container full-width">
+        <app-input-new
+          (inputChange)="addInput($event, 'repeatNewPassword')"
+          value="{{newPassword.repeatNewPassword}}"
+          [error]="errors?.repeatNewPassword"
+          inputType="password"
+          #newPassRepeat
+        ></app-input-new>
+        <div class="show-password-button" [class.is-showing]="newPassRepeat.inputType === 'text'" (click)="showHidePassword(newPassRepeat)"></div>
+      </div>
+    </div>
+  </div>
   <hr class="margin-list">
-  <div class="custom-label">
+  <div class="custom-label align-center">
     <div class="label">Rol utilizator*</div>
     <div class="vertical">
       <div class="dropdown-parent value">
@@ -52,7 +95,7 @@
     <div class="label-container fixed-width">Stare</div>
     <div class="value-container bold {{userDetails?.is_active ? 'green-text' : 'red-text' }}">{{userDetails?.is_active ? 'Activă' : 'Inactivă'}}</div>
   </div>
-  <div *ngIf="this.availableFields?.labels" class="custom-label">
+  <div *ngIf="labels?.length > 0" class="custom-label">
     <div class="label">Etichete</div>
     <div class="vertical flex-row flex-wrap">
       <div
@@ -66,22 +109,22 @@
   </div>
   <hr class="margin-list">
   <div class="detail-element-container margin-top-small">
-    <div class="label-container fixed-width">Număr de telefon*</div>
+    <div class="label-container fixed-width">Număr de telefon{{userDetails?.use_phone_as_username ? '*' : ''}}</div>
     <div class="value-container full-width">
       <app-input-new
         (inputChange)="addInput($event, 'phone_number')"
-        [error]="errors?.phone_number"
+        [error]="errors?.phone_number || (userDetails?.use_phone_as_username ? errors?.username : null)"
         [value]="userDetails?.phone_number"
       ></app-input-new>
     </div>
   </div>
   <div class="detail-element-container margin-top-small">
-    <div class="label-container fixed-width">Adresă de email*</div>
+    <div class="label-container fixed-width">Adresă de email{{userDetails?.use_phone_as_username ? '' : '*'}}</div>
     <div class="value-container full-width">
       <app-input-new
         [value]="userDetails?.email"
         (inputChange)="addInput($event, 'email')"
-        [error]="errors?.email"
+        [error]="errors?.email || (!userDetails?.use_phone_as_username ? errors?.username : null)"
       ></app-input-new>
     </div>
   </div>
@@ -93,46 +136,6 @@
         (inputChange)="addInput($event, 'address')"
         [error]="errors?.address"
       ></app-input-new>
-    </div>
-  </div>
-
-  <div class="detail-element-container" *ngIf="!isEdit">
-    <div class="label-container fixed-width">Parolă</div>
-    <div class="value-container full-width">
-      <app-input-new
-        (inputChange)="addInput($event, 'password')"
-        value="{{userDetails?.password}}"
-        [error]="errors?.password"
-        inputType="password"
-      ></app-input-new>
-    </div>
-  </div>
-
-  <div class="detail-element-container subheader" *ngIf="isEdit">
-    <div class="label-container">Modificare parolă</div>
-  </div>
-  <div class="border-left bottom-margin" *ngIf="isEdit">
-    <div class="detail-element-container margin-top-small">
-      <div class="label-container fixed-width">Parolă nouă</div>
-      <div class="value-container full-width">
-        <app-input-new
-          (inputChange)="addInput($event, 'new_password')"
-          value="{{newPassword.new_password}}"
-          [error]="errors?.new_password ? errors?.new_password : (backendErrors.hasOwnProperty('password') ? backendErrors['password'] : '')"
-          inputType="password"
-        ></app-input-new>
-      </div>
-    </div>
-    <div class="detail-element-container margin-top-small">
-      <div class="label-container fixed-width">Repetare parolă nouă</div>
-      <div class="value-container full-width">
-        <app-input-new
-          (inputChange)="addInput($event, 'repeatNewPassword')"
-          value="{{newPassword.repeatNewPassword}}"
-          [error]="errors?.repeatNewPassword"
-          inputType="password"
-        ></app-input-new>
-      </div>
     </div>
   </div>
 
@@ -149,7 +152,7 @@
 
   <div class="detail-element-container margin-top-small {{availableFields?.birthDate ? '' : 'display-none'}}">
     <div class="label-container fixed-width">Dată naștere</div>
-    <div class="value-container datepicker-container">
+    <div class="value-container">
       <div class="datepicker-input-wrapper">
         <input
           class="date custom-date {{errors?.birth_date ? 'error-input' : ''}}"
@@ -168,6 +171,7 @@
           </app-datepicker>
         </div>
         <div class="red-text error-message">{{errors?.birth_date}}</div>
+        <div class="clear-field-button action-button" (click)="clearBirthDateField()"></div>
       </div>
     </div>
   </div>
@@ -183,6 +187,9 @@
           <p>Nume</p>
           <div class="parent-dropdown-container">
             <app-dropdown
+              [withAddUserButton]="true"
+              [userRoleToAdd]="'PARENT'"
+              (addUserModalCallbackFunction)="confirmAddingUser($event, i)"
               [list]="parents"
               [displayedProperty]="'full_name'"
               [identifierProperty]="'id'"
@@ -215,7 +222,7 @@
       <app-input label="Număr de telefon" type="regular" [value]="userDetails?.educator_phone_number"
                  [errorMessage]="errors?.educator_phone_number" (inputChange)="addInput($event, 'educator_phone_number')" >
       </app-input>
-      <app-input label="Andresă de email" type="regular" [value]="userDetails?.educator_email"
+      <app-input label="Adresă de email" type="regular" [value]="userDetails?.educator_email"
                  [errorMessage]="errors?.educator_email" (inputChange)="addInput($event, 'educator_email')">
       </app-input>
     </div>
@@ -224,7 +231,7 @@
   <div *ngIf="this.availableFields?.taughtSubjects">
     <hr class="margin-list">
     <div class="detail-element-container header blue-text bold">
-      <div class="label-container fixed-width">Materii Predate</div>
+      <div class="label-container fixed-width">Materii predate</div>
     </div>
     <div class="border-left bold">
       <div *ngFor="let item of subjects" class="custom-label flex-row-mobile">

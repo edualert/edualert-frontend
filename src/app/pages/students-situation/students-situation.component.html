@@ -2,8 +2,9 @@
   <app-header>
     <h1 id="header-title">Situație elevi</h1>
     <div id="header-filter">
-      <app-filter>
-        <ng-container *ngIf="!this.requestInProgress; else loadingListCountMobile" id="list-count-mobile">
+      <app-filter
+      [noCount]="false">
+        <ng-container *ngIf="!this.requestInProgress" id="list-count-mobile">
           <div class="list-count-mobile">
             {{students.length}} utilizatori afișați din {{studentsTotalCount}}
           </div>
@@ -51,6 +52,7 @@
             [placeholder]="'Sortează'"
           ></app-dropdown>
         </div>
+        <div class="text-button delete-filters-button" (click)="deleteFilters()">Șterge Filtre</div>
       </app-filter>
     </div>
     <div id="header-sort">
@@ -65,7 +67,7 @@
         ></app-dropdown>
       </div>
     </div>
-    <div id="header-top-right-container">
+    <div id="header-bottom-right-container">
       <div class="list-count">
         {{students.length}} utilizatori afișați din {{studentsTotalCount}}
       </div>
@@ -73,26 +75,27 @@
   </app-header>
 
   <div class="page-content">
+    <div *ngIf="!requestInProgress && !initialRequestInProgress; else loadingListCountMobile">
+      <ng-container [ngSwitch]="accountRole">
+        <app-students-situation-ors
+          *ngSwitchCase="'ADMINISTRATOR'"
+          [students]="students"
+        ></app-students-situation-ors>
+        <app-students-situation-teacher-principal
+          *ngSwitchCase="'TEACHER'"
+          (onLinkClick)="onLinkClick($event)"
+          [students]="students"
+        ></app-students-situation-teacher-principal>
+        <app-students-situation-teacher-principal
+          *ngSwitchCase="'SCHOOL_PRINCIPAL'"
+          (onLinkClick)="onLinkClick($event)"
+          [students]="students"
+        ></app-students-situation-teacher-principal>
+      </ng-container>
+    </div>
     <ng-template #loadingListCountMobile>
-      <div class="list-count-mobile">Se încarcă datele...</div>
+      <div class="list-count">Se încarcă datele...</div>
     </ng-template>
-
-    <ng-container [ngSwitch]="accountRole">
-      <app-students-situation-ors
-        *ngSwitchCase="'ADMINISTRATOR'"
-        [students]="students"
-      ></app-students-situation-ors>
-      <app-students-situation-teacher-principal
-        *ngSwitchCase="'TEACHER'"
-        (onLinkClick)="onLinkClick($event)"
-        [students]="students"
-      ></app-students-situation-teacher-principal>
-      <app-students-situation-teacher-principal
-        *ngSwitchCase="'SCHOOL_PRINCIPAL'"
-        (onLinkClick)="onLinkClick($event)"
-        [students]="students"
-      ></app-students-situation-teacher-principal>
-    </ng-container>
 
   </div>
 </div>

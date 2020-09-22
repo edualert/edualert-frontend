@@ -1,0 +1,42 @@
+<app-modal [headerColor]="'yellow'" #modal>
+  <div id="modal-header">
+    <div class="header">
+      <h2 class="title">{{title}}</h2>
+      <div class="description">{{description}}</div>
+    </div>
+  </div>
+  <div id="modal-body">
+    <div *ngFor="let subject of subjectsToRemove; let i = index" class="row">
+      <div class="label-value-container">
+        <div class="label">Clasă</div>
+        <div class="value">{{subject.teacher_class_through.class_grade}} {{subject.teacher_class_through.class_letter}}</div>
+      </div>
+      <div class="label-value-container">
+        <div class="label">Materie</div>
+        <div class="value">{{subject.name}}</div>
+      </div>
+      <div class="label-value-container">
+        <div class="label">Nume*</div>
+        <div class="dropdown-parent">
+          <app-dropdown
+            [withAddUserButton]="true"
+            [userRoleToAdd]="'TEACHER'"
+            [taughtSubjectId]="subject.id"
+            (addUserModalCallbackFunction)="confirmAddingUser($event, i, subject.name, subject.teacher_class_through.id)"
+            [list]="availableTeachersForSubjects[subject.name]"
+            [displayedProperty]="'full_name'"
+            (elementHasBeenSelected)="handleInputChange($event, i, subject.teacher_class_through.id)"
+            [appliedElement]="selectedTeachers[i]"
+            [placeholder]="'-'"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+      </div>
+      <hr *ngIf="i !== subjectsToRemove.length - 1">
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span class="text-button blue" (click)="confirmButtonAction()">{{confirmButtonText}}</span>
+    <span class="text-button dark-text" (click)="cancel()">{{cancelButtonText}}</span>
+  </div>
+</app-modal>

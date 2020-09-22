@@ -20,25 +20,33 @@ export class ReportsComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private router: Router) {
     this.activatedRoute.queryParams.subscribe((urlParam: any) => {
-      const top_tab =  urlParam['top_tab'];
+      const top_tab = urlParam['top_tab'];
       const bottom_tab = urlParam['bottom_tab'];
       if (bottom_tab && top_tab) {
         this.initialQueryParams = `${top_tab}-${bottom_tab}`;
       } else if (top_tab) {
         this.initialQueryParams = `${top_tab}`;
       } else {
-        this.initialQueryParams = ''
+        if (this.initialQueryParams && !top_tab && !bottom_tab) {
+          const split = this.initialQueryParams.split('-');
+          this.changeUrlParams({
+            top_tab: split.length > 0 ? split[0] : null,
+            bottom_tab: split.length > 1 ? split[1] : null,
+          });
+        }
       }
     });
   }
 
   ngOnInit(): void {
+    const selectedTab: orsTabs = 'enrolled_institutions';
     this.accountService.account.subscribe((account: UserDetails) => {
       this.accountRole = account.user_role;
-      if (this.initialQueryParams) return;
+      if (this.initialQueryParams) {
+        return;
+      }
       switch (this.accountRole) {
         case 'ADMINISTRATOR':
-          const selectedTab: orsTabs = 'enrolled_institutions';
           this.initialQueryParams = selectedTab;
           break;
         case 'SCHOOL_PRINCIPAL':

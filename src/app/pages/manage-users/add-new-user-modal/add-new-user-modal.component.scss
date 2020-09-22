@@ -45,6 +45,13 @@
   }
 }
 
+.uploaded-file-info {
+  align-self: center;
+  padding-left: 10px;
+  margin-left: 10px;
+  border-left: 1px solid $color-separator;
+}
+
 .text-button {
   &.disabled {
     color: $color-text-normal;

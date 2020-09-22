@@ -2,7 +2,7 @@ import {IdText} from './id-text';
 
 export enum userRoles {
   ADMINISTRATOR = 'Administrator',
-  SCHOOL_PRINCIPAL = 'Director',
+  SCHOOL_PRINCIPAL = 'Director de școală',
   TEACHER = 'Profesor',
   PARENT = 'Părinte',
   STUDENT = 'Elev',

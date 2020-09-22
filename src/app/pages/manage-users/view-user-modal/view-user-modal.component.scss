@@ -1,10 +1,33 @@
 @import "../../../../assets/styles/base";
 
+.close-button {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  margin-right: 10px;
+
+  background-color: white;
+  border-radius: $border-radius-normal;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url('../../../../assets/img/x-large.svg');
+  height: 30px;
+  width: 30px;
+  box-shadow: 0 1px 0 0 rgba(black, 0.2);
+
+  &:active {
+    box-shadow: 0 1px 2px 0 rgba(black, 0.4);
+  }
+
+}
+
 .modal-container {
   padding-top: $margin-default;
   min-width: 600px;
   @media (max-width: $mobile-screen-width-normal) {
     min-width: unset;
+    padding-top: unset;
   }
 }
 
@@ -20,7 +43,17 @@
 }
 
 .modal-body {
+  padding-bottom: $margin-big;
   height: $scrollable-modal-height;
+
+  @media screen and (max-height: 750px) { // Specific size given to handle all Galaxy devices
+    height: $scrollable-modal-height - 50px;
+  }
+
+  @media screen and (max-height: 670px) {
+    height: $scrollable-modal-height-small;
+  }
+
   overflow-y: scroll;
 }
 
@@ -29,8 +62,10 @@
 }
 .risk-alert-container {
   width: calc(100% - #{$fixed-width-column});
+  padding-right: $margin-default;
   @media (max-width: $mobile-screen-width-normal) {
     width: 100%;
+    padding-right: $margin-tiny;
   }
   display: flex;
   justify-content: flex-start;
@@ -43,11 +78,21 @@
     background-color: $color-red;
     color: white;
     border-radius: $border-radius-normal $border-radius-normal 0 0;
+    font-size: $font-size-bigish;
+    @media (max-width: $mobile-screen-width-normal) {
+      font-size: $font-size-small;
+    }
   }
   .risk-alert-container-content {
     background-color: $color-separator;
     padding: $margin-tiny $margin-default;
     border-radius: 0 0 $border-radius-normal $border-radius-normal;
+    @media (max-width: $mobile-screen-width-normal) {
+      padding-top: $margin-xsmall;
+      .margin-top-small {
+        margin-top: $margin-tiny;
+      }
+    }
   }
   .value-container {
     max-width: calc(100% - #{$fixed-width-column-small});
@@ -55,4 +100,29 @@
 }
 .margin-bottom-default {
   padding-bottom: $margin-default;
+}
+.value-container {
+  &.full-width-with-risk-alert {
+    width: calc(100% - 240px);
+    padding-left: $margin-tiny;
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .value-container {
+    &.full-width-with-risk-alert {
+      width: initial;
+      padding-left: initial;
+    }
+  }
+  .extra-data {
+    margin-top: $margin-xsmall;
+  }
+  .detail-element-container {
+    &.header {
+      &.margin-top-small {
+        margin-top: unset;
+      }
+    }
+  }
 }

@@ -12,6 +12,7 @@ import {AddAbsencesBulkModalModule} from '../../catalog/modals/add-absences-bulk
 import {CatalogModule} from '../../catalog/catalog.module';
 import {ToolbarComponent} from './class-list-detail/toolbar/toolbar.component';
 import {SettingsModalModule} from '../../catalog/settings-modal/settings-modal.module';
+import {ViewUserModalModule} from '../manage-users/view-user-modal/view-user-modal.module';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import {SettingsModalModule} from '../../catalog/settings-modal/settings-modal.m
     CatalogModule,
     AddGradesBulkModalModule,
     AddAbsencesBulkModalModule,
-    SettingsModalModule
+    SettingsModalModule,
+    ViewUserModalModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

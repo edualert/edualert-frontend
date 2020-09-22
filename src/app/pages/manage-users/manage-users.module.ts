@@ -11,11 +11,14 @@ import {FilterSearchModule} from '../../filter-search/filter-search.module';
 import {ModalModule} from '../../shared/modal/modal.module';
 import {AddNewUserModalModule} from './add-new-user-modal/add-new-user-modal.module';
 import {ConfirmationModalModule} from '../../shared/confirmation-modal/confirmation-modal.module';
-import {ViewUserModalModule} from "./view-user-modal/view-user-modal.module";
-import { AddUserComponent } from './add-edit-user-details/add-user/add-user.component';
-import { EditUserComponent } from './add-edit-user-details/edit-user/edit-user.component';
-import {DropdownModule} from "../../shared/dropdown/dropdown.module";
-import { AddEditUserDetailsComponent } from './add-edit-user-details/add-edit-user-details.component';
+import {ViewUserModalModule} from './view-user-modal/view-user-modal.module';
+import {AddUserComponent} from './add-edit-user-details/add-user/add-user.component';
+import {EditUserComponent} from './add-edit-user-details/edit-user/edit-user.component';
+import {DropdownModule} from '../../shared/dropdown/dropdown.module';
+import {AddEditUserDetailsComponent} from './add-edit-user-details/add-edit-user-details.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AddUsersBulkModule} from './add-users-bulk/add-users-bulk.module';
+import {ReplaceTeacherModalComponent} from './replace-teacher-modal/replace-teacher-modal.component';
 
 
 @NgModule({
@@ -25,10 +28,12 @@ import { AddEditUserDetailsComponent } from './add-edit-user-details/add-edit-us
     AddUserComponent,
     EditUserComponent,
     AddEditUserDetailsComponent,
+    ReplaceTeacherModalComponent,
   ],
   imports: [
     CommonModule,
     CoreModule,
+    FormsModule,
     AddUserModalModule,
     ViewUserModalModule,
     HeaderModule,
@@ -39,6 +44,9 @@ import { AddEditUserDetailsComponent } from './add-edit-user-details/add-edit-us
     ModalModule,
     AddNewUserModalModule,
     ConfirmationModalModule,
+    AddUsersBulkModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class ManageUsersModule {

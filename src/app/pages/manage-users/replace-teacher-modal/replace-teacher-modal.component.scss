@@ -1,0 +1,74 @@
+@import '../../../../assets/styles/base';
+
+.title, .description {
+  color: white;
+}
+
+.description {
+  margin-top: $margin-small;
+}
+
+.text-button + .text-button {
+  margin-left: $margin-big;
+}
+
+hr {
+  margin: $margin-default 0 $margin-default 0;
+}
+
+#modal-body {
+  padding-top: $margin-default;
+  padding-bottom: $margin-default;
+  max-height: 35vh;
+  overflow-y: scroll;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.label-value-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: $margin-small;
+}
+
+.label {
+  width: $fixed-width-column-large;
+}
+
+.value {
+  font-weight: bold;
+  margin-left: $margin-xsmall;
+}
+
+.dropdown-parent {
+  width: calc(100% - #{$fixed-width-column-large});
+}
+
+@media (max-width: $mobile-screen-width-small) {
+  .label-value-container {
+    flex-direction: column;
+
+    .dropdown-button {
+      margin-top: $margin-xsmall;
+    }
+
+    .dropdown-parent {
+      margin-top: $margin-xsmall;
+      width: 100%;
+    }
+
+    .value {
+      margin-top: $margin-xsmall;
+      margin-left: unset;
+    }
+  }
+
+  hr {
+    margin-top: $margin-xsmall;
+  }
+}

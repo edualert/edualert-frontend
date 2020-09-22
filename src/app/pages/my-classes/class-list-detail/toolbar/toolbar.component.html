@@ -3,7 +3,7 @@
   <div class="buttons">
     <ng-container *ngFor="let button of buttonsObjList">
       <div (click)="button.buttonCallbackFn()"
-           class="text-button bold white"
+           class="text-button bold white {{['Trimite mesaj clasă', 'Exportă catalog'].includes(button.text) ? 'disabled' : ''}}"
       >{{button.text}}
       </div>
     </ng-container>

@@ -10,6 +10,7 @@ export class FilterSearchComponent implements OnChanges {
   @Input() searchString: string;
   @Input() isWide?: boolean;
   currentSearchString: string;
+  isInputFocused: boolean = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     this.currentSearchString = changes.searchString.currentValue;
@@ -18,5 +19,9 @@ export class FilterSearchComponent implements OnChanges {
   formSubmit(event): void {
     event.preventDefault();
     this.searchSubmit.emit(this.currentSearchString);
+  }
+
+  clearInput() {
+    this.currentSearchString = '';
   }
 }

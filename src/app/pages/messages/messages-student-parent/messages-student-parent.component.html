@@ -2,7 +2,8 @@
   <app-header>
     <h1 id="header-title">Mesaje primite</h1>
     <div id="header-filter">
-      <app-filter>
+      <app-filter
+      [noCount]="false">
         <ng-container
           *ngIf="!this.requestInProgress; else loadingListCountMobile"
           id="list-count-mobile"
@@ -35,6 +36,7 @@
             </app-datepicker>
           </div>
         </div>
+        <div class="text-button delete-filters-button" (click)="deleteFilters()">Șterge Filtre</div>
       </app-filter>
     </div>
   </app-header>

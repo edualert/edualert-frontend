@@ -22,5 +22,9 @@
     [saveButton]="saveButton"
     [backendErrors]="errors"
     [isEdit]="true"
+    (subjectsAreEdited)="hasModifiedSubjects($event)"
   ></app-add-edit-user-details>
 </div>
+
+<app-replace-teacher-modal #replaceTeacherModal></app-replace-teacher-modal>
+

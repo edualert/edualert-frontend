@@ -6,7 +6,7 @@
       <button class="action-button" [routerLink]="['/manage-classes/add']">Adaugă o clasă nouă</button>
     </div>
     <div id="header-filter">
-      <app-filter noCount={{true}}>
+      <app-filter>
         <span class="mobile-title">Filtrează</span>
         <div class="dropdown-parent">
           <app-dropdown [list]="filterData.academicYears"
@@ -16,6 +16,7 @@
                         [required]="true"
                         (elementHasBeenSelected)="changeAcademicYear($event.element)"></app-dropdown>
         </div>
+        <div class="text-button delete-filters-button" (click)="deleteFilters()">Șterge Filtre</div>
       </app-filter>
     </div>
   </app-header>
@@ -27,11 +28,11 @@
                [class.hidden]="!section.value.length">
             <span class="section-title">Clasa {{section.key}}</span>
             <div>
-              <div class="card list-element-animation"
+              <div class="card list-element-animation" [routerLink]="['/manage-classes', studyClass.id, 'view']"
                    *ngFor="let studyClass of section.value"
                    [class.wide]="studyClass.academic_program_name">
                 <div class="card-left-container">
-                  <a class="card-title text-button" [routerLink]="['/manage-classes', studyClass.id, 'view']">
+                  <a class="card-title text-button">
                     {{studyClass.class_grade}} {{studyClass.class_letter}}
                   </a>
                   <div class="categories">
@@ -52,7 +53,7 @@
                       Editează
                     </div>
                     <div class="text-button dark-text"
-                         (click)="deleteClass(studyClass, section.key)">
+                         (click)="deleteClass(studyClass, section.key, $event)">
                       <!-- [class.disabled]="!isEditable || studyClass.has_previous_catalog_data" removed from above for Demo purposes -->
                       Șterge
                     </div>
@@ -78,3 +79,4 @@
 </div>
 
 <app-confirmation-modal #appConfirmationModal></app-confirmation-modal>
+<app-add-new-user-modal #addNewUserModal></app-add-new-user-modal>

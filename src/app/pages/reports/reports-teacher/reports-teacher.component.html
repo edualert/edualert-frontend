@@ -63,8 +63,8 @@
                   [xAxis]="true"
                   [yAxis]="true"
                   [scheme]="colorSchemeRed"
-                  [results]="data[activeTabTop][activeTabBottom].chartData"
-                  [xAxisTicks]="data[activeTabTop][activeTabBottom].xAxisTicks"
+                  [results]="data[activeTabTop][activeTabBottom][month].chartData"
+                  [xAxisTicks]="data[activeTabTop][activeTabBottom][month].xAxisTicks"
                 >
                   <ng-template #seriesTooltipTemplate let-model="model">
                     <div class="tooltip-content">
@@ -73,7 +73,7 @@
                           {{model[0].value}}
                         </div>
                         <div class="label">
-                          {{ data[activeTabTop][activeTabBottom]["chartData"][0]["name"] }}
+                          {{ data[activeTabTop][activeTabBottom][month]["chartData"][0]["name"] }}
                         </div>
                         <div class="bottom-tooltip more-bottom-tabs">
                           <div class="padded">{{ model[0].name }}</div>

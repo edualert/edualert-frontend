@@ -12,7 +12,7 @@
     <div id="header-top-right-container">
       <div class="button-container">
         <div class="text-button" (click)="onSubmit()">Salvează</div>
-        <div class="text-button dark-text" [routerLink]="['/manage-schools/' + schoolId + '/view']"
+        <div class="text-button dark-text" [routerLink]="['/manage-schools/']"
              (onClick)="onCancel()">Anulează
         </div>
       </div>
@@ -33,7 +33,7 @@
     </div>
     <div class="detail-element-container">
       <div class="label-container fixed-width">Stare</div>
-      <div class="value-container bold {{schoolDetails?.is_active ? 'green-text bold' : 'red-text bold' }}">{{schoolDetails?.is_active ? 'Activă' : 'Inactivă'}}</div>
+      <div class="value-container bold {{schoolDetails?.is_active ? 'green-text bold' : 'red-text bold' }}">{{schoolDetails?.is_active ? 'Activă' : 'Dezactivată'}}</div>
     </div>
     <hr>
     <div class="row">
@@ -102,6 +102,9 @@
       <div class="label">Director*</div>
       <div class="dropdown-parent value">
         <app-dropdown
+          [withAddUserButton]="true"
+          [userRoleToAdd]="'SCHOOL_PRINCIPAL'"
+          (addUserModalCallbackFunction)="confirmAddingUser($event)"
           [error]="schoolDetailsError?.school_principal"
           [errorMessage]="schoolDetailsError?.school_principal"
           [list]="data.school_principals"

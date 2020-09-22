@@ -297,6 +297,7 @@
   display: flex;
   font-size: $font-size-small;
   padding-left: $margin-tiny;
+  width: calc(100% - 20px);
 
   .tag {
     font-size: $font-size-small;
@@ -304,6 +305,9 @@
     height: 26px;
     padding: 0 6px;
     line-height: 26px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .plus-tags {
@@ -323,7 +327,7 @@
     left: -10px;
     top: -10px;
     height: auto;
-    width: calc(100% + 20px);
+    width: calc(100% + 100px);
     min-height: calc(100% + 20px);
     display: none;
     flex-wrap: wrap;

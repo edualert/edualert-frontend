@@ -19,6 +19,7 @@ export class HomeStudentComponent implements OnInit {
   @Input() userDetails: UserDetails;
   getDayOfTheWeek = getDayOfTheWeek;
   graphSubtitle: string;
+  currentMonth = moment().month();
 
   myOwnStatistics: ChildStatistics;
 
@@ -62,10 +63,10 @@ export class HomeStudentComponent implements OnInit {
         this.myOwnSubjectsAtRisk = response;
         this.generateMyOwnSubjectsAtRiskTable();
       });
-    this.myOwnAbsencesEvolutionService.getData(true)
+    this.myOwnAbsencesEvolutionService.getData(true, '', this.currentMonth)
       .subscribe(response => {
         this.displayChart = shouldDisplayChart(response);
-        this.myOwnAbsencesList = formatChartData(response, 'Absente', moment().month());
+        this.myOwnAbsencesList = formatChartData(response, 'Absente', this.currentMonth);
       });
   }
 

@@ -32,6 +32,9 @@ export class UserDetailsComponent implements OnInit {
     pedagogueSection?: boolean
   };
   formatPhoneNumber = formatPhoneNumber;
+  hasSchoolOrClass: boolean = false;
+  toastErrorMessage: string;
+  isUserInactive: boolean = false;
 
   constructor(private accountService: AccountService,
               private router: Router,
@@ -67,6 +70,9 @@ export class UserDetailsComponent implements OnInit {
       this.httpClient.get<UserDetails>('users/' + this.userId + '/').subscribe(response => {
         this.userDetails = new UserDetails(response);
         this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
+        if (response.last_online === null && response.is_active) {
+          this.isUserInactive = true;
+        }
       });
     });
   }
@@ -82,7 +88,7 @@ export class UserDetailsComponent implements OnInit {
       this.httpClient.delete('users/' + this.userDetails.id).subscribe((response) => {
         if (response === null) {this.router.navigate(['manage-users'])}
       });
-      return true
+      return true;
     } else {
       return false;
     }
@@ -94,23 +100,36 @@ export class UserDetailsComponent implements OnInit {
         this.httpClient.post('users/' + this.userDetails.id + '/deactivate/', {}).subscribe((response => {
           this.userDetails = new UserDetails(response);
           this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
-        }));
+        }), (error) => {
+          if (error.error.new_school_principal) {
+            this.hasSchoolOrClass = true;
+            this.toastErrorMessage = 'Acest director este alocat unei școli și nu poate fi dezactivat/șters.';
+          } else if (error.error.new_teachers) {
+            this.hasSchoolOrClass = true;
+            this.toastErrorMessage = 'Acest profesor este alocat unei/unor clase și nu poate fi dezactivat/șters.';
+          }
+        });
         return true
       } else {
         return false;
       }
     }
     if (state === 'activate') {
-      if (confirm(`Doriți să rezactivați contul utilizatorului ${this.userDetails.full_name}? Acest utilizator se va putea autentifica din nou în contul EduAlert.`)) {
+      if (confirm(`Doriți să reactivați contul utilizatorului ${this.userDetails.full_name}? Acest utilizator se va putea autentifica din nou în contul EduAlert.`)) {
         this.httpClient.post('users/' + this.userDetails.id + '/activate/', {}).subscribe((response => {
             this.userDetails = new UserDetails(response);
             this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
           })
         );
-        return true
+        return true;
       } else {
         return false;
       }
     }
+  }
+
+  hideErrorToast() {
+    this.toastErrorMessage = '';
+    this.hasSchoolOrClass = false;
   }
 }

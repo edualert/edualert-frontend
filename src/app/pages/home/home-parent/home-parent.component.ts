@@ -18,6 +18,7 @@ export class HomeParentComponent implements OnInit {
 
   @Input() userDetails: UserDetails;
   getDayOfTheWeek = getDayOfTheWeek;
+  currentMonth = moment().month();
   graphSubtitle: string;
 
   childStatistics: ChildStatistics;
@@ -74,10 +75,10 @@ export class HomeParentComponent implements OnInit {
         this.childSubjectsAtRisk = response;
         this.generateChildSubjectsAtRiskTable();
       });
-    this.ownChildAbsencesEvolutionService.getData(true, childId)
+    this.ownChildAbsencesEvolutionService.getData(true, '', childId, this.currentMonth)
       .subscribe(response => {
         this.displayChart = shouldDisplayChart(response);
-        this.childAbsencesList = formatChartData(response, 'Absențe', moment().month());
+        this.childAbsencesList = formatChartData(response, 'Absențe', this.currentMonth);
       });
   }
 

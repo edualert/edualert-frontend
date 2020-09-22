@@ -1,5 +1,31 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnDestroy, OnChanges, SimpleChanges, HostListener} from '@angular/core';
 import {nodeIsDescendant} from '../node-is-descendant';
+import {userRoles} from '../../models/user-roles';
+import {AddUserModalComponent} from '../../pages/manage-users/add-user-modal/add-user-modal.component';
+import {UserDetailsBase} from '../../models/user-details-base';
+import {SchoolCategory} from '../../models/school-details';
+import {findIndex} from 'lodash';
+
+export const dropdownValidations = {
+  'category_level': (selection: { element: SchoolCategory, index: number }[], initialList) => {
+    dropdownValidations['error'].message = '';
+    dropdownValidations['error'].index = '';
+    if (selection.length === 1) {
+      return;
+    }
+    const formattedSelection = selection.map(category => category.element);
+    formattedSelection.forEach((category: any, index: number) => {
+      const tempList = formattedSelection;
+      tempList.splice(index, 1);
+      const hasDuplicate = findIndex(tempList, {category_level: category.category_level});
+      if (hasDuplicate !== -1) {
+        dropdownValidations['error'].message = 'Nu puteți selecta mai multe opțiuni din aceeași categorie.';
+        dropdownValidations['error'].index = findIndex(initialList, {id: tempList[hasDuplicate].id});
+      }
+    });
+  },
+  'error': {message: '', index: null}
+};
 
 @Component({
   selector: 'app-dropdown',
@@ -18,13 +44,20 @@ export class DropdownComponent implements OnDestroy, OnChanges {
   // SINGLE-CHOICE.
   @Input() appliedElement: any; // Must be of the same type as the elements in the list
   @Input() withSearch?: boolean = false;
+  @Input() withAddUserButton?: boolean = false;
+  @Input() userRoleToAdd?: string;
+  @Input() taughtSubjectId?: number = null;
+  @Output() addUserModalCallbackFunction: EventEmitter<UserDetailsBase> = new EventEmitter();
   @Output() elementHasBeenSelected: EventEmitter<{ element, index }> = new EventEmitter();
+  @Input() addNewUser: string;
+  @Output() openNewUserModal: EventEmitter<any> = new EventEmitter();
   // END SINGLE-CHOICE
 
   // MULTI-CHOICE
   @Input() withMultipleSelection?: boolean = false;
   @Input() showCurrentSelection?: boolean = false;
   @Input() appliedSelection?: any[];
+  @Input() validationKey?: string;
   @Output() selectionHasBeenConfirmed?: EventEmitter<{ element, index }[]> = new EventEmitter();
   // END MULTI-CHOICE
 
@@ -37,27 +70,39 @@ export class DropdownComponent implements OnDestroy, OnChanges {
   @ViewChild('root') root: ElementRef;
   @ViewChild('listContainer') listContainer: ElementRef;
   @ViewChild('search') search: ElementRef;
+  @ViewChild('appAddUserModal', {'static': false}) appAddUserModal: AddUserModalComponent;
 
   isOpen: boolean;
 
   indexSelection: number[] = []; // array of indexes;
   viewIndexSelection: boolean[] = []; // array of @Input() list's length, with true/false for selected/unselected elements (used only in view)
   currentFullSelection: any[] = []; // array of selected full objects
+  dropdownErrors: { message: string, index: number } = null;  // Object which contains the error if the dropdown is multiple choice
 
   searchString: string = '';
   displayedList: any[]; // used for searching (is equal to full list if not withSearch)
 
   highlightIndex: number = -1; // used for navigating with arrows
 
-  constructor() {
+  readonly userRoles = userRoles;
+
+  constructor(private elementRef: ElementRef) {
     this.handleClick = this.handleClick.bind(this);
     this.handleKeyboard = this.handleKeyboard.bind(this);
+    this.confirmAddingUser = this.confirmAddingUser.bind(this);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.list) {
       this.searchString = '';
       this.displayedList = changes.list.currentValue;
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleOutsideClick($event) {
+    if (!this.elementRef.nativeElement.contains($event.target)) {
+      this.close();
     }
   }
 
@@ -137,7 +182,6 @@ export class DropdownComponent implements OnDestroy, OnChanges {
     }
   }
 
-
   private initialiseInternalMultipleSelections() {
     this.indexSelection = [];
     this.viewIndexSelection = [];
@@ -179,8 +223,8 @@ export class DropdownComponent implements OnDestroy, OnChanges {
     event.stopPropagation();
   }
 
-
   elementFromSelectionClicked(index) {
+    this.dropdownErrors = null;
     this.modifyIndexSelection(index);
   }
 
@@ -206,8 +250,19 @@ export class DropdownComponent implements OnDestroy, OnChanges {
   }
 
   confirmSelection() {
-    this.selectionHasBeenConfirmed.emit(this.currentFullSelection);
-    this.close();
+    if (this.validationKey) {
+      dropdownValidations[this.validationKey](this.currentFullSelection, this.list);
+      if (dropdownValidations['error'].index) {
+        this.dropdownErrors = dropdownValidations['error'];
+      } else {
+        this.dropdownErrors = null;
+        this.selectionHasBeenConfirmed.emit(this.currentFullSelection);
+        this.close();
+      }
+    } else {
+      this.selectionHasBeenConfirmed.emit(this.currentFullSelection);
+      this.close();
+    }
   }
 
   searchChange(value: string) {
@@ -215,6 +270,7 @@ export class DropdownComponent implements OnDestroy, OnChanges {
     this.highlightIndex = -1;
     this.filterList(value);
   }
+
 
   filterList(search: string) {
     this.displayedList = this.list.map((element, index) => {
@@ -225,6 +281,15 @@ export class DropdownComponent implements OnDestroy, OnChanges {
       const searchString = replaceLowerCaseDiacritics(search.toLowerCase());
       return elementString.includes(searchString);
     });
+  }
+
+  openAddUserModal(modalData) {
+    this.appAddUserModal.open(modalData);
+  }
+
+  confirmAddingUser(response: UserDetailsBase) {
+    this.addUserModalCallbackFunction.emit(response);
+    this.appAddUserModal.cancel();
   }
 }
 
