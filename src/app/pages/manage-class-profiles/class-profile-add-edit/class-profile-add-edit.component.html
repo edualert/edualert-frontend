@@ -1,5 +1,13 @@
 <div class="animated-page">
   <app-header>
+    <div id="error-alert">
+      <div class="error-toast" *ngIf="errorOnOtherTab?.length > 0">
+        <div class="request-error">
+          {{ errorOnOtherTab }}
+        </div>
+        <div class="close-error" (click)="hideErrorToast()"></div>
+      </div>
+    </div>
     <a id="header-back-button" [routerLink]="['/manage-class-profiles']">
       <div class="arrow left"></div>
       <div class="blue-text bold column">Gestionare profile clase</div>
@@ -10,18 +18,20 @@
         {{page === 'edit' ? academicProgram?.academic_year + ' - ' + (academicProgram?.academic_year + 1)
         : currentAcademicYear.academic_year + ' - ' + (currentAcademicYear.academic_year + 1)}}
       </ng-container>
-      <ng-template #loading>Se încarcă datele</ng-template>
+      <ng-template #loading>Se încarcă datele...</ng-template>
     </h2>
     <div id="header-top-right-container">
-      <div class="button-container">
+      <div *ngIf="!requestInProgress"
+           class="button-container">
         <div class="text-button" (click)="submit()">Salvează</div>
         <div class="text-button dark-text" (click)="cancel()">Anulează</div>
       </div>
     </div>
   </app-header>
   <div class="page-content">
+    <ng-container *ngIf="!this.requestInProgress; else loadingList">
     <div class="detail-element-container header blue-text">
-      <div class="label-container fixed-large-column">Nume {{page === 'add' ? '*' : ''}}</div>
+      <div class="label-container fixed-large-column">Nume{{page === 'add' ? '*' : ''}}</div>
       <div class="value-container bold" *ngIf="page === 'edit'">{{academicProgram.name}}</div>
       <div class="value-container profile-name" *ngIf="page === 'add'">
         <app-dropdown
@@ -30,13 +40,15 @@
           [displayedProperty]="'name'"
           [appliedElement]="academicProgram.id ? academicProgram : null"
           [dropdownStyle]="'big'"
+          [error]="errors.academicProgram"
+          [errorMessage]="errors.academicProgram"
           (elementHasBeenSelected)="selectAcademicProgram($event.element.id)"
         ></app-dropdown>
       </div>
     </div>
 
     <div class="detail-element-container" *ngIf="this.hasCoreSubject">
-      <div class="label-container fixed-large-column bold">Disciplină de specialitate</div>
+      <div class="label-container fixed-large-column bold">Disciplină de specialitate{{page === 'add' ? '*' : ''}}</div>
       <div class="value-container">
         <app-dropdown [list]="coreSubjectsList"
                       [displayedProperty]="'subject_name'"
@@ -116,6 +128,7 @@
         </div>
       </div>
     </ng-container>
+    </ng-container>
     <ng-template #noDataMessage>
 
       <div class="no-results" *ngIf="!academicProgram.id">
@@ -124,6 +137,11 @@
       </div>
       <div class="no-results red-text" *ngIf="academicProgram.id && !yearGradesTabList.length">
         Acest profil nu are ani alocați.
+      </div>
+    </ng-template>
+    <ng-template #loadingList>
+      <div class="list-count">
+        Se încarcă datele...
       </div>
     </ng-template>
   </div>

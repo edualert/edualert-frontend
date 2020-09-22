@@ -137,4 +137,30 @@
     opacity: 0.5;
   }
 
+  &.delete-filters-button {
+    height: 30px;
+    margin-left: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    @media (max-width: $mobile-screen-width-normal) {
+      color: white;
+      margin-top: 10px;
+      margin-left: 8px;
+      margin-bottom: -5px;
+      &:hover, &:focus {
+        &:before {
+          background-color: rgba(white, 0.3);
+        }
+      }
+
+      &:active {
+        &:before {
+          background-color: rgba(white, 0.4);
+        }
+      }
+    }
+  }
+
 }

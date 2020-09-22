@@ -1,14 +1,23 @@
 <div class="animated-page">
   <app-header>
-    <h1 id="header-title">Gestionare Utilizatori</h1>
+    <div id="error-alert">
+      <div class="error-toast" *ngIf="hasSchoolOrClass">
+        <div class="request-error">
+          {{ toastErrorMessage }}
+        </div>
+        <div class="close-error" (click)="hideErrorToast()"></div>
+      </div>
+    </div>
+    <h1 id="header-title">Gestionare utilizatori</h1>
     <div id="header-top-right-container">
       <button class="action-button" (click)="openAddNewUserModal()">Adaugă un utilizator nou</button>
     </div>
     <div id="header-filter">
-      <app-filter>
+      <app-filter
+        [noCount]="false">
         <ng-container *ngIf="!this.requestInProgress; else loadingListCountMobile" id="list-count-mobile">
           <div class="list-count-mobile">
-            {{users.length}} unități afișate din {{totalCount}}
+            {{users.length}} utilizatori afișați din {{totalCount}}
           </div>
         </ng-container>
         <span class="mobile-title">Filtreaza</span>
@@ -38,6 +47,7 @@
             [withSearch]="true"
           ></app-dropdown>
         </div>
+        <div class="text-button delete-filters-button" (click)="deleteFilters()">Șterge Filtre</div>
       </app-filter>
     </div>
   </app-header>
@@ -48,9 +58,11 @@
           {{users.length}} utilizatori afișați din {{totalCount}}
         </div>
         <div class="list">
-          <div class="card list-element-animation" *ngFor="let user of users">
+          <div class="card list-element-animation"
+               *ngFor="let user of users"
+               [routerLink]="['/manage-users/' + user.id + '/view']">
             <div class="card-left-container">
-              <span class="card-title text-button" [routerLink]="['/manage-users/' + user.id + '/view']">{{user.full_name}}</span>
+              <span class="card-title text-button">{{user.full_name}}</span>
               <div class="role">
                 <div class="role-icon {{user.user_role}}"></div>
                 <div class="role-name">{{userRolesEnum[user.user_role]}}</div>
@@ -65,12 +77,19 @@
                      [ngClass]="user.last_online === null && user.is_active ? 'grey' : user.is_active ? 'green' : 'red'">
                   <span>{{user.last_online === null && user.is_active ? 'Inactiv' : user.is_active ? 'Activ' : 'Dezactivat'}}</span>
                   <hr class="vertical">
-                  <span class="bold text-button white"
-                        (click)="openDeActivateUserModal(user)">{{user.is_active ? 'Dezactivează' : 'Reactivează'}}</span>
+                  <div class="bold text-button white"
+                       (click)="openDeActivateUserModal(user, $event)">{{user.is_active ? 'Dezactivează' : 'Reactivează'}}</div>
                 </div>
               </div>
               <hr class="vertical visible-on-desktop">
-              <div class="text-button edit" [routerLink]="['/manage-users/' + user.id + '/edit']">Editează</div>
+              <div class="right-button-container">
+                <div class="text-button edit" [routerLink]="['/manage-users/' + user.id + '/edit']">Editează</div>
+                <div *ngIf="user.last_online === null && user.is_active"
+                     class="text-button dark-text"
+                     (click)="openDeleteUserModal(user, $event)"
+                >Șterge
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -94,7 +113,7 @@
     </ng-template>
     <ng-template #noResultsText>
       <div class="no-results">
-        Niciun rezultat găsit
+        Lista este goală
       </div>
     </ng-template>
     <ng-template #loadingListCountMobile>
@@ -105,7 +124,14 @@
   </div>
 </div>
 
-<app-add-new-user-modal #addNewUserModal></app-add-new-user-modal>
+<app-add-new-user-modal #addNewUserModal (usersListUploaded)="uploadUsersList($event)"></app-add-new-user-modal>
 <app-confirmation-modal #appConfirmationModal></app-confirmation-modal>
+<app-add-users-bulk
+  #appAddUsersBulk
+  [responseErrors]="bulkUserErrors"
+  [responseHasErrors]="bulkUserAddHasErrors"
+  [requestInProgress]="requestInProgress"
+  [successMessage]="bulkUsersSuccess">
+</app-add-users-bulk>
 
 

@@ -4,6 +4,8 @@ import {userRoles} from "../../../models/user-roles";
 import {UserDetails} from "../../../models/user-details";
 import {HttpClient} from "@angular/common/http";
 import * as moment from 'moment';
+import {AccountService} from '../../../services/account.service';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-view-user-modal',
@@ -14,6 +16,7 @@ export class ViewUserModalComponent {
   @ViewChild('modal', {static: false}) modal: ModalComponent;
   @Input() user?: UserDetails;
   readonly userRoles = userRoles;
+  accountRole: string;
   availableFields: {
     studyClass?: boolean,
     labels?: boolean,
@@ -40,7 +43,14 @@ export class ViewUserModalComponent {
     };
   }
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient,
+              private accountService: AccountService,
+              private router: Router,
+              private activatedRoute: ActivatedRoute) {
+    this.accountService.account.subscribe((account: UserDetails) => {
+      this.accountRole = account.user_role;
+    });
+  }
 
   getLabelsString(): string {
     let result = '';
@@ -50,7 +60,16 @@ export class ViewUserModalComponent {
 
   getAlertsFormattedString(): string {
     let response = '';
-    this.user.risk_alerts.dates.map(el => {response += moment(el).format('DD.MM') + ' '});
+    const datesCount = this.user.risk_alerts.dates.length;
+    let index = 0;
+    this.user.risk_alerts.dates.map(el => {
+      index++;
+      if (datesCount > 1 && index < datesCount) {
+        response += moment(el).format('DD.MM') + ', ';
+      } else if (datesCount === 1 || datesCount === index) {
+        response += moment(el).format('DD.MM');
+      }
+    });
     return response;
   }
 
@@ -65,9 +84,25 @@ export class ViewUserModalComponent {
     return;
   }
 
-  cancel() : void {
+  cancel(): void {
     this.modal.close();
     return;
+  }
+
+  onClassNameClick() {
+    if (this.accountRole === 'SCHOOL_PRINCIPAL') {
+      if (this.activatedRoute.snapshot.url[0].path.includes('manage-classes')) {
+        this.modal.close();
+      } else {
+        this.router.navigate(['/manage-classes', this.user.class_id, 'view']);
+      }
+    } else {
+      if (this.activatedRoute.snapshot.url[0].path.includes('my-classes')) {
+        this.modal.close();
+      } else {
+        this.router.navigate(['/my-classes', this.user.class_id, 'class-detail']);
+      }
+    }
   }
 
 }

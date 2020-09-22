@@ -2,9 +2,21 @@
   [ngClass]="page"
   (submit)="handleSubmit($event)">
   <div id="error-alert">
-    <div class="error-toast" *ngIf="forgotPasswordError?.length > 0">
+    <div class="error-toast"
+         [class.success-toast]="forgotPasswordSuccess?.length > 0"
+         *ngIf="forgotPasswordError?.length > 0 || forgotPasswordSuccess?.length > 0">
       <div class="request-error">
         {{ forgotPasswordError }}
+      </div>
+      <div class="request-success">
+        {{ forgotPasswordSuccess }}
+      </div>
+      <div class="close-error" (click)="hideErrorToast()"></div>
+    </div>
+    <div class="error-toast"
+         *ngIf="resetPasswordError?.length > 0">
+      <div class="request-error">
+        {{ resetPasswordError }}
       </div>
       <div class="close-error" (click)="hideErrorToast()"></div>
     </div>
@@ -78,15 +90,20 @@
       Parolă
       <input type="password" id="password" name="password"
              [attr.disabled]="page !== 'login' && page !== 'reset-password' ? '' : null"
-             [(ngModel)]="password" class="{{ errorLogin !== '' && errorLogin !== undefined ? 'error-input' : ''}}">
+             [(ngModel)]="password" class="{{ errorLogin !== '' && errorLogin !== undefined ? 'error-input' : ''}}"
+              #pass>
+      <div class="show-password-button-login" [class.is-showing]="pass.type === 'text'" (click)="showHidePassword(pass)"></div>
     </label>
+    <div *ngIf="errorLogin" class="error-message red-text">{{errorLogin}}</div>
     <label for="repeat-password" [class.hidden]="page !== 'reset-password'">
       Repetare parolă nouă
       <input type="password" id="repeat-password" name="repeat-password"
              [attr.disabled]="page !== 'reset-password' ? '' : null"
-             [(ngModel)]="repeatPassword">
+             [(ngModel)]="repeatPassword" class="{{ errorRepeatPassword !== '' && errorRepeatPassword !== undefined ? 'error-input' : ''}}"
+              #passRepeat>
+      <div class="show-password-button-login" [class.is-showing]="passRepeat.type === 'text'" (click)="showHidePassword(passRepeat)"></div>
     </label>
-    <div *ngIf="errorLogin" class="error-message red-text">{{errorLogin}}</div>
+    <div *ngIf="errorRepeatPassword" class="error-message red-text">{{errorLogin}}</div>
   </ng-template>
 
   <div class="horizontal">

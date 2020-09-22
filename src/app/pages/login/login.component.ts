@@ -23,14 +23,20 @@ export class LoginComponent implements OnInit {
   username: string = '';
   password: string = '';
   repeatPassword: string = '';
-  errorLogin: string | null = '';
+  errorLogin: string = '';
+  errorRepeatPassword: string = '';
   forgotPasswordError: string = '';
+  forgotPasswordSuccess: string = '';
+  resetPasswordError: string = '';
+  accessKeyResetPassword: string = '';
 
   @ViewChild('submitButton') submitButton: ElementRef;
 
   constructor(injector: Injector, private router: Router, private activatedRoute: ActivatedRoute, private accountService: AccountService,
               private authService: AuthService) {
-    this.page = this.router.url.replace('/', '');
+    const page = this.router.url.replace('/', '').split('/');
+    this.page = page[0];
+    this.accessKeyResetPassword = page.length >= 2 ? page[1] : '';
     this.schoolNamesService = injector.get(SchoolNamesService);
 
     this.initialiseLoginPage()
@@ -50,6 +56,7 @@ export class LoginComponent implements OnInit {
         this.schoolId = LocalStorageService.getSchoolId();
         this.schoolNamesService.getCustomData(false, true).subscribe((response) => {
           this.schools = response;
+          if (this.schools.length > 0) this.handleSchoolChange({element: this.schools[0], index: 0});
 
           if (this.schoolId) {
             this.selectedSchool = this.schools.find(element => element.id.toString() === this.schoolId);
@@ -101,7 +108,7 @@ export class LoginComponent implements OnInit {
       this.router.navigateByUrl('');
     }, (error) => {
       if (error.error.error === 'invalid_grant' || error.error.error === 'invalid_request') {
-        this.errorLogin = 'Nume utilizator sau parolă incorecte!';
+        this.errorLogin = 'Credențiale incorecte sau cont dezactivat. Contactați un administrator.';
       } else {{
         this.errorLogin = error.error.errorMessage;
       }}
@@ -110,14 +117,77 @@ export class LoginComponent implements OnInit {
 
   resetPassword(event): void {
     event.preventDefault();
-    // TODO do the request and handle the error from the backend when implemented
-    this.forgotPasswordError = 'Acest nume de utilizator nu este asociat unui cont de utilizator.';
+    let sent_username = this.username;
+    if (this.isFaculty) {
+      if (this.schoolId) {
+        sent_username = `${this.schoolId}_${this.username}`;
+      }
+      else {
+        this.router.navigateByUrl(getLoginPageRoute());
+      }
+    }
+    this.authService.forgotPassword(sent_username).subscribe((response: any) => {
+      this.forgotPasswordSuccess = 'Un email pentru resetarea parolei a fost trimis!';
+      this.forgotPasswordError = null;
+      },
+      (error) => {
+      this.forgotPasswordError = error.error.message;
+      this.forgotPasswordSuccess = null;
+    });
   }
 
   saveNewPassword(event): void {
     event.preventDefault();
-    this.router.navigateByUrl(getLoginPageRoute());
+    if (!this.isResetPasswordFormValid()) { return }
+    this.authService.resetPassword(this.accessKeyResetPassword, this.password).subscribe((response) => {
+      this.router.navigateByUrl(getLoginPageRoute());
+    }, (error1) => {
+      this.forgotPasswordError = error1.error.message
+    });
+  }
 
+  isResetPasswordFormValid() : boolean {
+    if (!this.password && !this.repeatPassword) {
+      this.resetPasswordError = 'Aceste câmpuri sunt obligatori.';
+      this.errorLogin = ' ';
+      this.errorRepeatPassword = ' ';
+      return false;
+    } else {
+      if (!this.password) {
+        this.resetPasswordError = 'Câmpul (Parolă) este obligatoriu.';
+        this.errorLogin = ' ';
+        return false;
+      }
+      if (!this.repeatPassword) {
+        this.resetPasswordError = 'Câmpul (Repetare parolă nouă) este obligatoriu.';
+        this.errorRepeatPassword = ' ';
+        return false;
+      }
+    }
+    if ((this.repeatPassword.length < 6 || this.repeatPassword.length > 128) && (this.password.length < 6 || this.password.length > 128)) {
+      this.resetPasswordError = 'Format incorect. Scrieți minim 6, maxim 128 caractere, fără spații.';
+      this.errorLogin = ' ';
+      this.errorRepeatPassword = ' ';
+      return false;
+    } else {
+      if (this.password.length < 6 || this.password.length > 128) {
+        this.resetPasswordError = 'Format incorect pentru câmpul (Parolă). Scrieți minim 6, maxim 128 caractere, fără spații.';
+        this.errorLogin = ' ';
+        return false;
+      }
+      if (this.repeatPassword.length < 6 || this.repeatPassword.length > 128) {
+        this.resetPasswordError = 'Format incorect pentru câmpul (Repetare parolă nouă). Scrieți minim 6, maxim 128 caractere, fără spații.';
+        this.errorRepeatPassword = ' ';
+        return false;
+      }
+    }
+    if (this.password !== this.repeatPassword) {
+      this.resetPasswordError = 'Cele două parole (Parolă nouă și Repetare parolă nouă) trebuie sa fie identice.';
+      this.errorLogin = ' ';
+      this.errorRepeatPassword = ' ';
+      return false;
+    }
+    return true;
   }
 
   switchToForgotPassword(event): void {
@@ -130,6 +200,8 @@ export class LoginComponent implements OnInit {
     this.username = '';
     this.password = '';
     this.forgotPasswordError = '';
+    this.forgotPasswordSuccess = null;
+    this.forgotPasswordError = null;
     event.preventDefault();
     this.router.navigateByUrl(getLoginPageRoute());
   }
@@ -156,5 +228,13 @@ export class LoginComponent implements OnInit {
 
   hideErrorToast() {
     this.forgotPasswordError = '';
+    this.forgotPasswordSuccess = '';
+    this.resetPasswordError = '';
+    this.errorLogin = '';
+    this.errorRepeatPassword = '';
+  }
+
+  showHidePassword(element) {
+    element.type = element.type === 'password' ? 'text' : 'password';
   }
 }

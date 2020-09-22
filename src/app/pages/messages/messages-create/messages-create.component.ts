@@ -54,6 +54,11 @@ export class MessagesCreateComponent implements OnInit {
       this.message.target_user = Number(queryParams['userId']);
       const userData = {element: {id: this.message.target_user, text: queryParams['userName']}};
       this.handleDropdownSelection(userData);
+    } else if (queryParams['classId']) {
+      this.message.receiver_type = this.receiverClassStudents;
+      this.message.target_user = Number(queryParams['classId']);
+      const userData = {element: {id: this.message.target_user, text: queryParams['className']}};
+      this.handleDropdownSelection(userData);
     } else {
       this.message.receiver_type = this.receiverClassStudents;
     }

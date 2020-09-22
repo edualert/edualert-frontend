@@ -4,7 +4,7 @@ export class Subject {
   id: number;
   name: string;
   is_coordination: boolean;
-  allow_exemption: boolean;
+  allows_exemption: boolean;
   is_optional: boolean;
 
   constructor(object: any) {
@@ -12,7 +12,7 @@ export class Subject {
       this.id = object.id;
       this.name = object.name;
       this.is_coordination = object.is_coordination;
-      this.allow_exemption = object.allow_exemption;
+      this.allows_exemption = object.allows_exemption;
       this.is_optional = object.is_optional;
     }
   }

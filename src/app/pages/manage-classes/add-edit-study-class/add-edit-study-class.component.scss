@@ -18,6 +18,10 @@
   align-items: flex-end;
   height: 100%;
   padding-bottom: $margin-default;
+
+  > .text-button {
+    margin-left: 0;
+  }
 }
 
 .text-button {
@@ -112,25 +116,15 @@ hr {
   border-radius: $border-radius-normal;
 }
 
-.close-error {
-  align-self: center;
-  background: url('../../../../assets/img/x-white.svg');
-  width: 15px;
-  height: 15px;
-  padding-bottom: 16px;
-  margin-left: 10px;
-}
-
-.close-error:hover {
-  cursor: pointer;
-}
-
-
 .request-error {
   padding: 10px 0 10px;
 }
 
-@media screen and (max-width: $mobile-screen-width-small) {
+@media screen and (max-width: $mobile-screen-width-normal) {
+
+  .tabs-container {
+    position: unset;
+  }
 
   .half-width {
     flex-grow: 1;

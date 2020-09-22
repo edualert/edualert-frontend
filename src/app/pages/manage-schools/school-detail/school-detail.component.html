@@ -13,7 +13,7 @@
       <div class="button-container">
         <div class="text-button {{ school?.is_active ? 'red-text' : 'green-text' }}"
              (click)="openDeActivateSchoolModalSchoolModal(school)" [routerLink]="['/manage-schools/' + schoolId + '/view']">
-          {{ school?.is_active ? 'Dezactiveaza' : 'Activeaza' }}</div>
+          {{ school?.is_active ? 'Dezactivează' : 'Activează' }}</div>
         <div class="text-button" [routerLink]="['/manage-schools/' + schoolId + '/edit']">Editează</div>
       </div>
     </div>

@@ -26,7 +26,6 @@ input {
   font-size: $font-size-small;
   margin-top: 3px;
   animation: appearMessage 0.1s 0s $ease-out 1 backwards;
-  white-space: nowrap;
 
   @keyframes appearMessage {
     0% {

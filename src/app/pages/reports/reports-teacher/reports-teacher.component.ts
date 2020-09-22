@@ -51,7 +51,7 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   tabs_bottom: { name: string, id: string }[] = this.tabs_bottom_my_classes;
   activeTabTop: string = 'my_classes';
   activeTabBottom: string = 'study_classes_at_risk';
-  month: number = -10;
+  month: number = moment().month();
   loading: boolean = false;
 
   data = {
@@ -105,6 +105,7 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       top_tab: this.activeTabTop,
       bottom_tab: this.activeTabBottom
     });
+    this.month = moment().month();
   }
 
   changeMonth(event: string): void {
@@ -179,8 +180,8 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       requests = {...notClassMasterRequests};
     }
 
+    const req = requests[`${id_top}-${id_bottom}`];
     if (id_bottom === 'own_students_risk_evolution') {
-      const req = requests[`${id_top}-${id_bottom}`];
       if (this.month === -10) {
         return;
       }
@@ -203,7 +204,6 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       return;
     }
 
-    const req = requests[`${id_top}-${id_bottom}`];
     req.request.subscribe((response) => {
       this.data[id_top][id_bottom] = response;
       this.loading = false;
@@ -388,7 +388,6 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.fetchTeacherInfo();
     this.changeUrlParamsEvent.next({
       top_tab: this.activeTabTop,
       bottom_tab: this.activeTabBottom
@@ -408,7 +407,12 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       if (this.activeTabTop === 'class_mastery') {
         this.tabs_bottom = this.tabs_bottom_class_mastery;
       }
-      this.fetchTeacherInfo();
+
+      if (this.isTeacherClassMaster === undefined) {
+        this.fetchTeacherInfo();
+      } else {
+        this.fetchData(this.activeTabTop, this.activeTabBottom);
+      }
     }
   }
 

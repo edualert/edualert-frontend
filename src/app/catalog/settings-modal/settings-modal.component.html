@@ -39,7 +39,7 @@
                 Simulări
             </span>
           </div>
-          <div *ngIf="allowExemption" class="column">
+          <div *ngIf="allowsExemption" class="column">
             <span class="column radio-container">
                 <div class="checkbox-button"
                      [class.checked]="isGloballySelected?.is_exempted"
@@ -81,7 +81,7 @@
                  (click)="changeValue(studentSettings, 'wants_simulation', i)"
             ></div>
         </span>
-        <span *ngIf="allowExemption" class="column checkbox-container">
+        <span *ngIf="allowsExemption" class="column checkbox-container">
             <div class="checkbox-button"
                  [class.checked]="studentSettings.is_exempted"
                  (click)="changeValue(studentSettings, 'is_exempted', i)"

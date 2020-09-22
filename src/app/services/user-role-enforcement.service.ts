@@ -19,7 +19,7 @@ export class UserRoleEnforcementService implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return this.accountService.account.pipe(switchMap((user: UserDetails, index: number) => {
       const currentRoute = route.url?.join('/');
-      if (this.lastRoute == currentRoute) {
+      if (this.lastRoute === currentRoute) {
         this.lastRouteRepeatCount++;
       } else {
         this.lastRoute = currentRoute;
@@ -33,7 +33,7 @@ export class UserRoleEnforcementService implements CanActivate {
       } else if (menuLinks[user.user_role]?.findIndex(element => element.path === route.url[0].path) > 0) {
         return of<boolean>(true);
       } else {
-        return of<boolean>(false);
+        return of<UrlTree>(this.router.parseUrl(''));
       }
     }));
   }

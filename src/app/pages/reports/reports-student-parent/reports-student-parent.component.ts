@@ -138,19 +138,16 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
         generate: this.generateStudentSubjectsAtRiskTable
       },
       student_absences_evolution: {
-        request: this.ownChildAbsencesEvolutionService.getData(true, '', childId, months_students.current),
-        requestPrevious: this.ownChildAbsencesEvolutionService.getData(true, '', childId, months_students.prev)
+        request: this.ownChildAbsencesEvolutionService.getData(true, '', childId, months_students.current, true),
+        requestPrevious: this.ownChildAbsencesEvolutionService.getData(true, '', childId, months_students.prev, true)
       },
       student_statistics: {
         request: this.childStatisticsService.getData(false, childId)
       },
     };
 
+    const req = requests[`${id}`];
     if (id === 'student_absences_evolution') {
-      const req = requests[`${id}`];
-      if (this.month === -10) {
-        return;
-      }
       req.request.subscribe((response) => {
         const chartGraphs = [];
         chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
@@ -165,31 +162,22 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
         const chartGraphs = [];
         chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
         chartGraphs.push(formatChartData(response, 'Nemotivate', moment().month(), 'unfounded_count'));
-        this.data[id][this.month] = chartGraphs;
+        this.data[id][this.month - 1] = chartGraphs;
         this.loading = false;
       }, error => {
         this.data[id][this.month - 1] = error.detail;
         this.loading = false;
       });
       return;
-    }
-
-    const req = requests[`${id}`];
-    req.request.subscribe((response) => {
-      if (id === 'student_absences_evolution') {
-        const chartGraphs = [];
-        chartGraphs.push(formatChartData(response, 'Elevi', moment().month(), 'founded_count'));
-        chartGraphs.push(formatChartData(response, 'Elevi', moment().month(), 'unfounded_count'));
-        this.data[id][this.month] = chartGraphs;
-        this.displayChart = shouldDisplayChart(response);
-      } else {
+    } else {
+      req.request.subscribe((response) => {
         this.data[id] = response;
-      }
-      this.loading = false;
-      if (req.generate) {
-        req.generate();
-      }
-    });
+        this.loading = false;
+        if (req.generate) {
+          req.generate();
+        }
+      });
+    }
   }
 
   fetchDataChild(id: string) {
@@ -215,19 +203,16 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
         generate: this.generateStudentSubjectsAtRiskTable
       },
       student_absences_evolution: {
-        request: this.myOwnAbsencesEvolutionService.getData(false, '', months_students.current),
-        requestPrevious: this.myOwnAbsencesEvolutionService.getData(false, '', months_students.prev)
+        request: this.myOwnAbsencesEvolutionService.getData(false, '', months_students.current, true),
+        requestPrevious: this.myOwnAbsencesEvolutionService.getData(false, '', months_students.prev, true)
       },
       student_statistics: {
         request: this.myOwnStatisticsService.getData(false)
       },
     };
 
+    const req = requests[`${id}`];
     if (id === 'student_absences_evolution') {
-      const req = requests[`${id}`];
-      if (this.month === -10) {
-        return;
-      }
       req.request.subscribe((response) => {
         const chartGraphs = [];
         chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
@@ -242,31 +227,22 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
         const chartGraphs = [];
         chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
         chartGraphs.push(formatChartData(response, 'Nemotivate', moment().month(), 'unfounded_count'));
-        this.data[id][this.month] = chartGraphs;
+        this.data[id][this.month - 1] = chartGraphs;
         this.loading = false;
       }, error => {
         this.data[id][this.month - 1] = error.detail;
         this.loading = false;
       });
       return;
-    }
-
-    const req = requests[`${id}`];
-    req.request.subscribe((response) => {
-      if (id === 'student_absences_evolution') {
-        const chartGraphs = [];
-        chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
-        chartGraphs.push(formatChartData(response, 'Nemotivate', moment().month(), 'unfounded_count'));
-        this.data[id][this.month] = chartGraphs;
-        this.displayChart = shouldDisplayChart(response);
-      } else {
+    } else {
+      req.request.subscribe((response) => {
         this.data[id] = response;
-      }
-      this.loading = false;
-      if (req.generate) {
-        req.generate();
-      }
-    });
+        this.loading = false;
+        if (req.generate) {
+          req.generate();
+        }
+      });
+    }
   }
 
   generateStudentActivityTable() {

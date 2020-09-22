@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   InactiveInstitutionsService, InstitutionsAbsencesService,
   InstitutionsAtRiskService, InstitutionsAverageService,
@@ -10,19 +10,19 @@ import * as moment from 'moment';
 import {orsTabs} from '../reports-tabs';
 import {formatChartData, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
 import {findIndex} from 'lodash';
-import {map} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {ScrollableList} from '../../list-page/scrollable-list';
+
 
 @Component({
   selector: 'app-reports-ors',
   templateUrl: './reports-ors.component.html',
   styleUrls: ['./reports-ors.component.scss', '../reports.component.scss']
 })
-export class ReportsOrsComponent implements OnInit, OnChanges {
+export class ReportsOrsComponent extends ScrollableList implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Output() changeUrlParamsEvent = new EventEmitter<object>();
+  @Input() initialQueryParams: string;
   graphSubtitle: string;
   findIndex = findIndex;
-  @Input() initialQueryParams: string;
 
   institutionsAtRiskTable: Column[] = [];
   inactiveInstitutionsTable: Column[] = [];
@@ -64,10 +64,25 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
     },
   };
 
+  currentPages = {
+    institutions_at_risk: 1,
+    inactive_institutions: 1,
+    institutions_average: 1,
+    institutions_absences: 1
+  };
+  scrollPositions: {
+    institutions_at_risk: 0,
+    inactive_institutions: 0,
+    institutions_average: 0,
+    institutions_absences: 0
+  };
+  page_size: number = 50;
+
   activeTab: orsTabs = 'enrolled_institutions';
   month_enrolled_institutions: number = moment().month();
   month_students_risk_evolution: number =  moment().month();
   loading: boolean = false;
+  tableIsGenerated: boolean = false;
 
   changeMonth(event: string, type: string): void {
     if (type === 'enrolled_institutions') {
@@ -80,7 +95,13 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
 
   changeTab(event: orsTabs): void {
     this.activeTab = event;
+    if (!['students_risk_evolution', 'enrolled_institutions'].includes(event)) {
+      if (this.data[this.activeTab] === null) { this.currentPages[this.activeTab] = 1; }
+      this.page = this.currentPages[this.activeTab];
+    }
     this.changeUrlParamsEvent.next({top_tab: this.activeTab});
+    this.month_enrolled_institutions = moment().month();
+    this.month_students_risk_evolution = moment().month();
   }
 
   constructor(private institutionsAtRiskService: InstitutionsAtRiskService,
@@ -89,10 +110,15 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
               private inactiveInstitutionsService: InactiveInstitutionsService,
               private institutionsAverageService: InstitutionsAverageService,
               private institutionsAbsencesService: InstitutionsAbsencesService) {
+    super();
     this.generateInstitutionsAtRiskTable = this.generateInstitutionsAtRiskTable.bind(this);
     this.generateInactiveInstitutionsTable = this.generateInactiveInstitutionsTable.bind(this);
     this.generateInstitutionsAveragesTable = this.generateInstitutionsAveragesTable.bind(this);
     this.generateInstitutionsAbsencesTable = this.generateInstitutionsAbsencesTable.bind(this);
+
+    this.scrollHandle = this.scrollHandle.bind(this);
+    this.requestDataFunc = this.fetchData;
+    this.initialBodyHeight = document.body.getBoundingClientRect().height;
   }
 
   getPreviousCurrentAndNextMonth(month: number) {
@@ -105,8 +131,15 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
   }
 
   fetchData(id: string) {
-    // if (this.data[this.data.map(el => {return el.id}).indexOf(id)].data !== null) return;
     this.loading = true;
+    this.currentPages[this.activeTab] = this.page;
+
+    this.tableIsGenerated = !(this.data[id] === null);
+    if (this.data[id] === null) {
+      this.tableIsGenerated = false;
+      document.body.removeEventListener('scroll',  this.scrollHandle);
+      document.body.addEventListener('scroll',  this.scrollHandle);
+    }
 
     const months_enrolled = this.getPreviousCurrentAndNextMonth(this.month_enrolled_institutions);
     const months_students = this.getPreviousCurrentAndNextMonth(this.month_students_risk_evolution);
@@ -117,20 +150,24 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
         requestPrevious: months_enrolled.prev ? this.institutionsEnrollmentService.getData(true, '', months_enrolled.prev) : null
       },
       institutions_at_risk: {
-        request: this.institutionsAtRiskService.getData(false),
-        generate: this.generateInstitutionsAtRiskTable
+        request: this.institutionsAtRiskService.getData(true, null, this.page_size, this.page),
+        generate: this.generateInstitutionsAtRiskTable,
+        getTotalCount: this.institutionsAtRiskService.getTotalCount
       },
       inactive_institutions: {
-        request: this.inactiveInstitutionsService.getData(false),
-        generate: this.generateInactiveInstitutionsTable
+        request: this.inactiveInstitutionsService.getData(true, null,  this.page_size, this.page),
+        generate: this.generateInactiveInstitutionsTable,
+        getTotalCount: this.inactiveInstitutionsService.getTotalCount
       },
       institutions_average: {
-        request: this.institutionsAverageService.getData(false),
-        generate: this.generateInstitutionsAveragesTable
+        request: this.institutionsAverageService.getData(true, null, this.page_size, this.page),
+        generate: this.generateInstitutionsAveragesTable,
+        getTotalCount: this.institutionsAverageService.getTotalCount
       },
       institutions_absences: {
-        request: this.institutionsAbsencesService.getData(false),
-        generate: this.generateInstitutionsAbsencesTable
+        request: this.institutionsAbsencesService.getData(true, null, this.page_size, this.page),
+        generate: this.generateInstitutionsAbsencesTable,
+        getTotalCount: this.institutionsAbsencesService.getTotalCount
       },
       students_risk_evolution: {
         request: this.studentsRiskEvolutionService.getData(true, '', months_students.current),
@@ -146,7 +183,7 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
 
     // If we already have data for that id don't make a request
     if (!['students_risk_evolution', 'enrolled_institutions'].includes(id)) {
-      if (this.data[id] !== null) {
+      if (this.data[id] !== null && (this.listEnded || this.totalCount === this.data[id].length) ) {
         return;
       }
     } else {
@@ -168,11 +205,20 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
 
     if (!['students_risk_evolution', 'enrolled_institutions'].includes(id)) {
       const req = requests[`${id}`];
+      this.initialRequestInProgress = true;
       req.request.subscribe((response) => {
-        this.data[id] = response;
+        if (this.data[id] === null) {
+          this.data[id] = [];
+        }
+        response.map(result => this.data[id].push(result));
+        this.totalCount = req.getTotalCount();
+        this.elementCount = this.data[id]?.length;
+        this.initialRequestInProgress = false;
         this.loading = false;
-        if (req.generate) {
+
+        if (req.generate && !this.tableIsGenerated) {
           req.generate();
+          this.tableIsGenerated = true;
         }
       });
       return;
@@ -279,6 +325,7 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.isOnReportsPage = true;
     this.changeUrlParamsEvent.next({top_tab: this.activeTab});
     window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
     this.month_students_risk_evolution = moment().month();
@@ -286,15 +333,32 @@ export class ReportsOrsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+
     if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
       this.activeTab = changes.initialQueryParams.currentValue;
-      this.fetchData(this.activeTab);
+      document.body.scrollTo(0, this.scrollPositions[this.activeTab]);
+      if (!['students_risk_evolution', 'enrolled_institutions'].includes(this.activeTab)) {
+        this.elementCount = this.data[this.activeTab]?.length;
+        if (this.currentPages[this.activeTab] === 1 && this.data[this.activeTab] === null) {
+          this.fetchData(this.activeTab);
+        }
+      } else {
+        this.fetchData(this.activeTab);
+      }
     }
   }
 
   @HostListener('window:resize', ['$event'])
   resizeChart(event) {
     this.generalChartView = handleChartWidthHeight(window.innerHeight);
+  }
+
+  ngAfterViewInit(): void {
+    document.body.addEventListener('scroll', this.scrollHandle);
+  }
+
+  ngOnDestroy(): void {
+    document.body.removeEventListener('scroll',  this.scrollHandle);
   }
 
 }

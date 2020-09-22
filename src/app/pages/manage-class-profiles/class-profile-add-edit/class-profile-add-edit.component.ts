@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {cloneDeep} from 'lodash';
 import {HttpClient} from '@angular/common/http';
@@ -8,10 +8,12 @@ import {IdName} from '../../../models/id-name';
 import {AcademicYearGrade} from '../../../models/academic-year-grade';
 import {AcademicSubject} from '../../../models/academic-subject';
 import {IdText} from '../../../models/id-text';
-import {getCurrentAcademicYear} from '../../../shared/utils';
+import {compareSubjectsName, getCurrentAcademicYear} from '../../../shared/utils';
 import {SchoolDetailsService} from '../../../services/school-details.service';
 import {findIndex} from 'lodash';
 import {AcademicYearCalendarService} from '../../../services/academic-year-calendar.service';
+import {CanComponentDeactivate} from '../../../services/can-leave-guard.service';
+import {Subscription} from 'rxjs';
 
 class SubjectError {
   subject_name?: string;
@@ -37,8 +39,10 @@ class UpdatableSubject {
 
 class UpdatableProgram {
   optional_subjects: UpdatableSubject[];
+  core_subject: any;
 
   constructor(details: AcademicProgramDetails) {
+    this.core_subject = details?.core_subject ? (typeof details?.core_subject === 'object' ? details?.core_subject?.subject_id : details?.core_subject) : null;
     this.optional_subjects = (Object.keys(details.subjects).map((key: YearGrades) => {
       return details.subjects[key].optional_subjects.map((subject: AcademicSubject) => {
         return new UpdatableSubject({...subject, class_grade: key});
@@ -81,11 +85,11 @@ class CreatableProgram {
   templateUrl: './class-profile-add-edit.component.html',
   styleUrls: ['./class-profile-add-edit.component.scss', '../../../shared/label-styles.scss']
 })
-export class ClassProfileAddEditComponent implements OnInit {
+export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactivate, OnDestroy {
   page: 'add' | 'edit';
   academicProgram: AcademicProgramDetails = new AcademicProgramDetails();
   yearGradesTabList: IdName[] = [];
-  yearGradeActiveTab = 'IX';
+  yearGradeActiveTab: string;
   subjectsTabsList: IdName[] = [
     {name: 'Materii obligatorii', id: 'mandatory_subjects'},
     {name: 'Materii opționale', id: 'optional_subjects'}
@@ -100,14 +104,22 @@ export class ClassProfileAddEditComponent implements OnInit {
   coreSubjectsList: AcademicSubject[];
   currentAcademicYear: any;
 
-  errors: any;
+  hasUnsavedData: boolean = false;
+  hasModifiedData: boolean = false;
+  hasUnfilledFields: boolean = false;
+
+  errors: any = {};
+  errorOnOtherTab: string;
+
+  sub: Subscription;
+  requestInProgress: boolean;
 
   constructor(private router: Router,
               private activatedRoute: ActivatedRoute,
               private httpClient: HttpClient,
               private ownSchoolUnit: SchoolDetailsService,
               private academicYearCalendarService: AcademicYearCalendarService) {
-    this.router.events.subscribe((val) => {
+    this.sub = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         if (val.url.includes('add')) {
           this.initialiseAdd();
@@ -120,7 +132,7 @@ export class ClassProfileAddEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.ownSchoolUnit.getData(true).subscribe(school => {
-      this.hasCoreSubject = ['Artistic', 'Sportiv'].includes(school.academic_profile.name);
+      this.hasCoreSubject = ['Artistic', 'Sportiv'].includes(school?.academic_profile?.name);
       this.coreSubjectsList = [];
     });
   }
@@ -134,18 +146,23 @@ export class ClassProfileAddEditComponent implements OnInit {
   private initialiseEdit(): void {
     this.page = 'edit';
     const id = this.activatedRoute.snapshot.params.id;
+    this.requestInProgress = true;
 
     this.httpClient.get(`academic-programs/${id}/`).subscribe((resp: any) => {
       this.academicProgram = new AcademicProgramDetails(resp);
       this.initialiseTabs(resp.subjects);
       this.initialiseErrors();
-      this.getCoreSubject();
-      this.listAllMandatorySubjects(this.academicProgram);
+      if (this.hasCoreSubject) {
+        this.getCoreSubject();
+        this.listAllMandatorySubjects(this.academicProgram);
+      }
+      this.requestInProgress = false;
     });
   }
 
   private initialiseTabs(subjects: { [yearGrade: string]: AcademicYearGrade }): void {
     this.yearGradesTabList = Object.keys(subjects).map((yearGrade: string) => ({id: yearGrade, name: YearGrades[yearGrade]}));
+    this.yearGradeActiveTab = this.yearGradesTabList[0].id.toString();
   }
 
   private getCoreSubject() {
@@ -159,7 +176,7 @@ export class ClassProfileAddEditComponent implements OnInit {
 
   private getCurrentAcademicYear() {
     this.academicYearCalendarService.getData(true)
-      .subscribe( response => {
+      .subscribe(response => {
         this.currentAcademicYear = response;
       });
   }
@@ -174,6 +191,8 @@ export class ClassProfileAddEditComponent implements OnInit {
   selectCoreSubject(subject: any) {
     this.coreSubject = subject;
     this.academicProgram.core_subject = subject;
+    this.errors.core_subject = null;
+    this.inputChanged();
   }
 
   selectAcademicProgram(id: number | string): void {
@@ -196,6 +215,7 @@ export class ClassProfileAddEditComponent implements OnInit {
         }
       });
     }
+    this.inputChanged();
   }
 
   weeklyHoursSum(yearGrade: string, selectedProgram: number) {
@@ -248,26 +268,32 @@ export class ClassProfileAddEditComponent implements OnInit {
   subjectNameChange(index: number, value: string): void {
     this.academicProgram.subjects[this.yearGradeActiveTab].optional_subjects[index].subject_name = value;
     this.errors[this.yearGradeActiveTab].optional_subjects[index].subject_name = '';
+    this.inputChanged();
   }
 
   weeklyHoursChange(index: number, value: string): void {
     this.selectedOptionalSubject = index;
     this.academicProgram.subjects[this.yearGradeActiveTab].optional_subjects[index].weekly_hours_count = parseInt(value || '0', 10);
     this.errors[this.yearGradeActiveTab].optional_subjects[index].weekly_hours_count = '';
+    this.inputChanged();
   }
 
   deleteSubject(index: number): void {
     this.academicProgram.subjects[this.yearGradeActiveTab].optional_subjects.splice(index, 1);
     this.errors[this.yearGradeActiveTab].optional_subjects.splice(index, 1);
+    this.inputChanged();
   }
 
   addSubject(): void {
     this.academicProgram.subjects[this.yearGradeActiveTab].optional_subjects.push(new AcademicSubject({subject_name: null, weekly_hours_count: null, subject_id: null, id: null}));
     this.errors[this.yearGradeActiveTab].optional_subjects.push({});
+    this.inputChanged();
   }
 
 
   submit(): void {
+    this.hasUnsavedData = false;
+    this.hasModifiedData = false;
     if (this.page === 'add') {
       this.create();
     } else {
@@ -285,13 +311,20 @@ export class ClassProfileAddEditComponent implements OnInit {
         }
       });
     });
+    this.coreSubjectsList.sort(compareSubjectsName);
   }
 
   private checkErrors(): boolean {
     let hasErrors = false;
+    if (!this.academicProgram.id) {
+      this.errors.academicProgram = 'Acest câmp este obligatoriu';
+      hasErrors = true;
+      return hasErrors;
+    }
     if (this.hasCoreSubject && !this.academicProgram.core_subject) {
       this.errors.core_subject = 'Acest câmp este obligatoriu';
       hasErrors = true;
+      return hasErrors;
     }
     Object.keys(this.academicProgram.subjects).forEach((key: string) => {
       const grade = this.academicProgram.subjects[key];
@@ -310,30 +343,65 @@ export class ClassProfileAddEditComponent implements OnInit {
         } else {
           error.weekly_hours_count = null;
         }
+
+        if (grade.optional_subjects.filter(duplicate => duplicate.subject_name === item.subject_name).length > 1) {
+          error.subject_name = 'Numele materiei opționale trebuie sa fie unic!';
+          hasErrors = true;
+        }
+
+        if (this.weeklyHoursSum(key, index) > this.academicProgram?.optional_subjects_weekly_hours[key]) {
+          error.weekly_hours_count = `Numărul de ore săptămânale al materiei trebuie sa fie cel mult egal cu ${this.academicProgram?.optional_subjects_weekly_hours[key] === 1 ?
+            this.academicProgram?.optional_subjects_weekly_hours[key] + ' ora' :
+            this.academicProgram?.optional_subjects_weekly_hours[key] + ' ore'}.`;
+          hasErrors = true;
+        }
       });
     });
     return hasErrors;
   }
 
+  private isErrorOnOtherTab() {
+    Object.keys(this.academicProgram.subjects).forEach((key: string) => {
+      const grade = this.academicProgram.subjects[key];
+      grade.optional_subjects.forEach((item, index) => {
+        if ((this.errors[key].optional_subjects[index].subject_name ||
+          this.errors[key].optional_subjects[index].weekly_hours_count) &&
+          this.yearGradeActiveTab !== key) {
+          this.errorOnOtherTab = `Aveti o eroare la clasa a ${key}-a, materii opționale.`;
+        }
+      });
+    });
+  }
+
+  hideErrorToast() {
+    this.errorOnOtherTab = '';
+  }
+
   private create(): void {
     if (this.checkErrors()) {
+      this.isErrorOnOtherTab();
       return;
     }
 
     const creatableObject = new CreatableProgram(this.academicProgram);
     this.httpClient.post(`years/${this.defaultAcademicYear.id}/academic-programs/`, creatableObject).subscribe((resp: AcademicProgramDetails) => {
-      this.router.navigate([`manage-class-profiles/${resp.id}/view`]);
+      this.router.navigate([`manage-class-profiles`]);
+    }, err => {
+      this.isErrorOnOtherTab();
     });
   }
 
   private update(): void {
     if (this.checkErrors()) {
+      this.isErrorOnOtherTab();
       return;
     }
     //TODO: Complete the update() once the backend team finds the courage and spirit to implement the PATCH properly
     const updatableObject = new UpdatableProgram(this.academicProgram);
     this.httpClient.patch(`academic-programs/${this.academicProgram.id}/`, updatableObject).subscribe((resp) => {
-      this.router.navigateByUrl(`manage-class-profiles/${this.academicProgram.id}/view`);
+      this.router.navigateByUrl(`manage-class-profiles`);
+    }, err => {
+      this.isErrorOnOtherTab();
     });
   }
 
@@ -344,6 +412,31 @@ export class ClassProfileAddEditComponent implements OnInit {
     } else {
       this.router.navigateByUrl(`/manage-class-profiles/${this.academicProgram.id}/view`);
     }
+  }
+
+  canDeactivate(): boolean {
+    if (this.hasModifiedData && (this.hasUnsavedData || this.hasUnfilledFields)) {
+      if (confirm('Doriti sa continuati? Datele introduse vor fi pierdute.')) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @HostListener('window:beforeunload')
+  refreshGuard() {
+    return !this.hasModifiedData;
+  }
+
+  inputChanged(): void {
+    this.hasUnsavedData = true;
+    this.hasModifiedData = true;
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 
 }

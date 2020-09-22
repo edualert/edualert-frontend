@@ -4,10 +4,14 @@ $cell-height: 66px;
 
 
 .scrollable-container {
-  max-width: 100%;
+  max-width: calc(100vw - #{465px});
   min-height: calc(100vh - 280px);
 
   overflow-x: auto;
+
+  @media (max-width: $mobile-screen-width-normal) {
+    max-width: calc(100vw - #{50px});
+  }
 
   &::-webkit-scrollbar-track {
     background: rgba(#67778A, 0.1);

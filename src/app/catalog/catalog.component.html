@@ -36,6 +36,8 @@
             (onLinkClick)="onLinkClick.emit({cellIdentifier: layoutCell.identifier, dataRow: dataRow})"
             (onExpandCell)="expandCell(rowIndex, colIndex)"
             (onCloseExpand)="closeExpand()"
+            [pivotPoint]="layoutCell.pivotPoint"
+            [exceptionRule]="dataRow[layoutCell.exceptionRuleKey]"
           ></app-table-cell>
         </div>
       </div>
@@ -43,8 +45,10 @@
       <div class="expanded-row" *ngIf="expandedCell?.rowIndex === rowIndex" #expandedCellElem>
         <app-expanded-cell
           [data]="expandedCell?.data"
+          [isClassMaster]="isClassMaster"
           [identifier]="expandedCell?.identifier"
           [isEditable]="editableCells[expandedCell.rowIndex][expandedCell.colIndex]"
+          [tableLayoutAsIdentifier]="tableLayout"
           (addGrade)="addGrade($event, rowIndex, expandedCell?.identifier)"
           (addAbsence)="addAbsence($event, rowIndex, expandedCell?.identifier)"
           (deleteGrade)="deleteGrade.emit($event)"

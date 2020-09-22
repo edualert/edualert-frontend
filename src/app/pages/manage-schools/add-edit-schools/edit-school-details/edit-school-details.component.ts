@@ -62,7 +62,7 @@ export class EditSchoolDetailsComponent extends AddEditSchoolsComponent implemen
         response => {
           if (response) {
             this.hasUnsavedData = false;
-            this.router.navigate(['manage-schools/' + this.schoolId + '/view']);
+            this.router.navigate(['manage-schools/']);
           }
         },
         error => {

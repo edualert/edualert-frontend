@@ -1,4 +1,4 @@
-import {Component, Injector, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Injector, OnDestroy, ViewChild} from '@angular/core';
 import {AccountService} from '../../services/account.service';
 import {ListPage} from '../list-page/list-page';
 import {HttpClient} from '@angular/common/http';
@@ -10,18 +10,25 @@ import {userRolesArray, userRoles} from '../../models/user-roles';
 import {findIndex} from 'lodash';
 import {ConfirmationModalComponent} from '../../shared/confirmation-modal/confirmation-modal.component';
 import BaseRequestParameters from '../list-page/base-request-parameters';
+import {AddUsersBulkService} from '../../services/add-users-bulk.service';
+import {FormBuilder} from '@angular/forms';
+import {AddUsersBulkComponent} from './add-users-bulk/add-users-bulk.component';
 
 
 class RequestParams extends BaseRequestParameters {
   readonly search: string;
   readonly user_role: number;
   readonly is_active: boolean;
+  readonly page_size: number;
+  readonly page: number;
 
-  constructor(newObj: { search?, user_role?, is_active? }) {
+  constructor(newObj: { search?, user_role?, is_active?, page_size?, page? }) {
     super();
     this.search = newObj?.search;
     this.user_role = newObj?.user_role;
     this.is_active = newObj?.is_active;
+    this.page_size = newObj?.page_size;
+    this.page = newObj?.page;
   }
 }
 
@@ -30,19 +37,38 @@ class RequestParams extends BaseRequestParameters {
   templateUrl: './manage-users.component.html',
   styleUrls: ['./manage-users.component.scss']
 })
-export class ManageUsersComponent extends ListPage {
+export class ManageUsersComponent extends ListPage implements AfterViewInit, OnDestroy {
   users: ListUser[] = [];
-  totalCount: number;
   userRolesEnum = userRoles;
+  hasSchoolOrClass: boolean = false;
+  toastErrorMessage: string;
+
+  bulkUserAddHasErrors: boolean;
+  bulkUserErrors: any = null;
+  bulkUsersSuccess: string = null;
+
+  requestInProgress: boolean = false;
+  afterDelete: boolean = false;
+
   @ViewChild('addNewUserModal', {static: false}) addNewUserModal: AddNewUserModalComponent;
   @ViewChild('appConfirmationModal', {static: false}) appConfirmationModal: ConfirmationModalComponent;
+  @ViewChild('appAddUsersBulk', {static: false}) appAddUsersBulkModal: AddUsersBulkComponent;
 
   constructor(injector: Injector,
               private http: HttpClient,
-              private accountService: AccountService) {
+              private accountService: AccountService,
+              private bulkAddUsersService: AddUsersBulkService,
+              private formBuilder: FormBuilder) {
     super(injector);
 
+    this.scrollHandle = this.scrollHandle.bind(this);
+    this.requestDataFunc = this.requestData;
+    this.initialBodyHeight = document.body.getBoundingClientRect().height;
+
     this.activatedRoute.queryParams.subscribe((urlParams: Params) => {
+      this.users = [];
+      this.requestedPageCount = 1;
+      this.activeUrlParams = urlParams;
       this.requestData(urlParams);
     });
 
@@ -61,15 +87,34 @@ export class ManageUsersComponent extends ListPage {
     });
   }
 
+  ngAfterViewInit(): void {
+    document.body.addEventListener('scroll', this.scrollHandle);
+  }
+
+  ngOnDestroy(): void {
+    document.body.removeEventListener('scroll',  this.scrollHandle);
+  }
 
   requestData(urlParams?: Params): void {
-    this.requestInProgress = true;
-    const httpParams = new RequestParams(urlParams).getHttpParams();
+    this.requestInProgress = !this.keepOldList;
+    this.initialRequestInProgress = true;
+    let httpParams;
+    if (this.afterDelete) {
+      httpParams = new RequestParams({...urlParams}).getHttpParams();
+    } else {
+      httpParams = new RequestParams({...urlParams, page_size: 10}).getHttpParams();
+    }
     const path = 'users/';
     this.http.get(path, {params: httpParams}).subscribe((response: NetworkingListResponse) => {
-      this.users = response.results.map(result => new ListUser(result));
       this.totalCount = response.count;
+      response.results.map(result => {
+        this.users.push(result);
+      });
+      this.elementCount = this.users.length;
+      this.initialRequestInProgress = false;
       this.requestInProgress = false;
+      this.keepOldList = false;
+      this.afterDelete = false;
     });
   }
 
@@ -88,13 +133,22 @@ export class ManageUsersComponent extends ListPage {
     const path = `users/${userId}/deactivate/`;
     this.http.post(path, null).subscribe((response: any) => {
       this.users[findIndex(this.users, {id: userId})].is_active = response.is_active;
+    }, (error) => {
+      if (error.error.new_school_principal) {
+        this.hasSchoolOrClass = true;
+        this.toastErrorMessage = 'Acest director este alocat unei școli și nu poate fi dezactivat/șters.';
+      } else if (error.error.new_teachers) {
+        this.hasSchoolOrClass = true;
+        this.toastErrorMessage = 'Acest profesor este alocat unei/unor clase și nu poate fi dezactivat/șters.';
+      }
     });
   }
 
-  openDeActivateUserModal(user: ListUser) {
+  openDeActivateUserModal(user: ListUser, event?: any) {
+    event.stopPropagation();
     const modalData = {
       title: `Doriți să ${user.is_active ? 'dezactivați' : 'activați'} contul utilizatorului ${user.full_name}?`,
-      description: `Acest utilizator ${user.is_active ? 'nu' : ''} se va mai putea autentifica ${user.is_active ? '' : 'din nou'} în contul EduAlert.`,
+      description: `Acest utilizator ${user.is_active ? 'nu' : ''} se va ${user.is_active ? 'mai' : ''} putea autentifica ${user.is_active ? '' : 'din nou'} în contul EduAlert.`,
       cancelButtonText: 'NU',
       confirmButtonText: 'DA',
       confirmButtonCallback: () => {
@@ -107,4 +161,68 @@ export class ManageUsersComponent extends ListPage {
     };
     this.appConfirmationModal.open(modalData);
   }
+
+  openDeleteUserModal(user: ListUser, event?: any) {
+    event.stopPropagation();
+    const modalData = {
+      title: `Doriți să ștergeți contul utilizatorului ${user.full_name}?`,
+      cancelButtonText: 'NU',
+      confirmButtonText: 'DA',
+      confirmButtonCallback: () => {
+        this.http.delete('users/' + user.id).subscribe((response) => {
+          if (response === null) {
+            this.users.splice(findIndex(this.users, {id: user.id}), 1);
+            this.totalCount -= 1;
+            if (this.users.length < this.totalCount) {
+              this.afterDelete = true;
+              this.requestData({...this.activeUrlParams, page_size: 1, page: this.users.length + 1});
+            }
+          }
+        });
+      }
+    };
+    this.appConfirmationModal.open(modalData);
+  }
+
+  hideErrorToast() {
+    this.toastErrorMessage = '';
+    this.hasSchoolOrClass = false;
+  }
+
+  uploadUsersList(usersList: File) {
+    const uploadForm = this.createUploadForm(usersList);
+    this.requestInProgress = true;
+    this.bulkAddUsersService.uploadFile(uploadForm).subscribe( response => {
+      this.setModalStateFromResponse(response);
+      this.appAddUsersBulkModal.open();
+      this.requestInProgress = false;
+    }, err => {
+      this.setModalStateFromResponse(err);
+      this.appAddUsersBulkModal.open();
+      this.requestInProgress = false;
+    });
+  }
+
+  private setModalStateFromResponse(response: any) {
+    if (response.hasOwnProperty('errors') && Object.keys(response?.errors).length > 0 || response.hasOwnProperty('message')) {
+      this.bulkUserAddHasErrors = true;
+      this.bulkUserErrors = response.hasOwnProperty('errors') ? response?.errors : response?.message;
+      this.bulkUsersSuccess = response?.report;
+    } else if (response.hasOwnProperty('report') && !Object.keys(response?.errors).length) {
+      this.bulkUserAddHasErrors = false;
+      this.bulkUsersSuccess = response?.report;
+    }
+  }
+
+  private createUploadForm(usersList: File): FormData {
+    const uploadForm = this.formBuilder.group({
+      file: ['']
+    });
+    uploadForm.get('file').setValue(usersList);
+
+    const formData = new FormData();
+    formData.append('file', uploadForm.get('file').value);
+    return formData;
+  }
+
 }

@@ -55,4 +55,16 @@ hr {
   .text-button {
     margin-left: unset;
   }
+
+  .detail-element-container {
+    flex-direction: column!important;
+
+    .label-container {
+      align-self: unset!important;
+    }
+
+    &:first-of-type {
+      margin-top: 0!important;
+    }
+  }
 }

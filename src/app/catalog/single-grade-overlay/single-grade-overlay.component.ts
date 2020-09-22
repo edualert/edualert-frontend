@@ -9,11 +9,12 @@ import {DatepickerComponent} from '../../shared/datepicker/datepicker.component'
   styleUrls: ['./single-grade-overlay.component.scss', '../grade-absence-overlay.scss']
 })
 export class SingleGradeOverlayComponent extends OpenCloseable {
-  @Output() save: EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number }> = new EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number }>();
+  @Output() save: EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }> = new EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }>();
   readonly grades = new Array(10).fill(null).map((val, i) => i + 1);
   selectedGrade: number;
   selectedDate: Date;
   existingId: number;
+  isThesis: boolean;
   @ViewChild('datepicker', {static: false}) datepicker: DatepickerComponent;
 
   constructor(private elRef: ElementRef) {
@@ -28,10 +29,11 @@ export class SingleGradeOverlayComponent extends OpenCloseable {
     this.selectedDate = date;
   }
 
-  open(target?: EventTarget, containerElement?: HTMLElement, existingGrade?: any) {
+  open(target?: EventTarget, containerElement?: HTMLElement, existingGrade?: any, isThesis?: boolean) {
     super.open();
     this.resetData(existingGrade);
     this.setPosition((target as HTMLElement), containerElement);
+    this.isThesis = isThesis ? isThesis : null;
   }
 
   private setPosition(target: HTMLElement, containerElement: HTMLElement) {
@@ -79,6 +81,6 @@ export class SingleGradeOverlayComponent extends OpenCloseable {
   }
 
   saveClick(): void {
-    this.save.emit({selectedGrade: this.selectedGrade, selectedDate: this.selectedDate, id: this.existingId});
+    this.save.emit({selectedGrade: this.selectedGrade, selectedDate: this.selectedDate, id: this.existingId, isThesis: this.isThesis ? this.isThesis : null});
   }
 }

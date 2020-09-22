@@ -2,6 +2,10 @@
 
 .page-content {
   position: relative;
+
+  @media (max-width: $mobile-screen-width-normal) {
+    padding-top: $margin-tiny;
+  }
 }
 
 #header-top-right-container {
@@ -13,6 +17,12 @@
     height: 98px;
     align-items: flex-end;
     padding-bottom: calc(#{$margin-small} + 1px);
+
+    @media screen and (max-width: $mobile-screen-width-normal)  {
+      height: unset;
+      padding-bottom: 0;
+      padding-top: $margin-xsmall;
+    }
   }
 
   .text-button + .text-button {
@@ -21,7 +31,7 @@
 }
 
 .tabs-container {
-  margin-top: 40px;
+  margin-top: $margin-big;
   margin-bottom: $margin-tiny;
   position: sticky;
   top: 148px;
@@ -37,9 +47,26 @@
   font-weight: $font-weight-bold;
   color: $color-text-light;
 
+  @media screen and (max-width: $mobile-screen-width-normal) {
+    padding-left: 0;
+  }
+
   &.error {
     color: $color-red;
   }
+}
+
+.close-error {
+  align-self: center;
+  background: url('../../../../assets/img/x-white.svg');
+  width: 15px;
+  height: 15px;
+  padding-bottom: 16px;
+  margin-left: 10px;
+}
+
+.close-error:hover {
+  cursor: pointer;
 }
 
 .detail-element-container {
@@ -63,6 +90,11 @@
     align-self: center;
     display: flex;
     height: 100%;
+
+    @media screen and (max-width: $mobile-screen-width-normal) {
+      width: 100%;
+      align-self: flex-start;
+    }
 
     &.profile-name {
       flex: 1;

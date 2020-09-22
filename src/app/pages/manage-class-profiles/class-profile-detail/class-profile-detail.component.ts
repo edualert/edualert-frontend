@@ -81,7 +81,7 @@ export class ClassProfileDetailComponent implements OnInit {
   }
 
   deleteAcademicProgram(programId) {
-    this.httpClient.delete(`academic-programs/${programId}`).subscribe(() => {
+    this.httpClient.delete(`academic-programs/${programId}/`).subscribe(() => {
       this.router.navigateByUrl('/manage-class-profiles');
     });
   }

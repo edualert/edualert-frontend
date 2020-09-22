@@ -1,0 +1,25 @@
+<app-modal [headerColor]="'dark'" #modal>
+  <div id="modal-header">
+    <div class="header">
+      <h2 class="title">Observații</h2>
+      <div class="description">Johnny Doe</div>
+      <!--<div class="description">{{studentName}}</div>-->
+    </div>
+  </div>
+  <div id="modal-body">
+    <div class="body">
+      <div class="textarea-container">
+        <textarea [(ngModel)]="value" [class.error]="error" name="value" rows="14" cols="77" required class="remarks-textarea"
+                  placeholder="Adaugă observațiile aici" (input)="handleChange($event)">
+        </textarea>
+        <div class="textarea-label" [class.error]="error">
+          Maxim 500 caractere
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-footer">
+    <span class="text-button margin-right-30" (click)="submit()">Salvează</span>
+    <span class="text-button dark-text" (click)="close()">Închide</span>
+  </div>
+</app-modal>

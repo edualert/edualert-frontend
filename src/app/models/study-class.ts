@@ -7,10 +7,12 @@ export class ClassSubject {
 
   subject_id: number;
   subject_name: string;
+  is_mandatory: boolean;
 
   constructor(object?: any) {
-    this.subject_id = object.id;
-    this.subject_name = object.name;
+    this.subject_id = object?.id;
+    this.subject_name = object?.name;
+    this.is_mandatory = object?.is_mandatory;
   }
 }
 
@@ -86,6 +88,7 @@ export class StudyClassErrors {
     this.academic_program_name = '';
     this.teachers_class_through = [];
     this.class_master = '';
+    this.students = [];
   }
 
 }

@@ -14,7 +14,7 @@
     </div>
     <div class="detail-element-container header blue-text">
       <div class="label-container fixed-width">Rol Utilizator</div>
-      <div class="value-container">{{ userRoles[account?.user_role] }}</div>
+      <div class="value-container bold">{{ userRoles[account?.user_role] }}</div>
     </div>
     <div *ngIf="this.availableFields?.class" class="detail-element-container">
       <div class="label-container fixed-width">Clasă</div>
@@ -22,8 +22,12 @@
     </div>
     <div class="detail-element-container">
       <div class="label-container fixed-width">Nume utilizator</div>
-      <div class="extra-data margin-right gray-text">{{ account?.use_phone_as_username ? 'Număr de telefon: ' : 'Adresă de email: '}}</div>
-      <div class="value-container bold">{{ account?.use_phone_as_username ? account.phone_number : account.email }}</div>
+      <div class="row">
+        <div
+          class="extra-data margin-right gray-text">{{ account?.use_phone_as_username ? 'Număr de telefon: ' : 'Adresă de email: '}}</div>
+        <div
+          class="value-container bold">{{ account?.use_phone_as_username ? account.phone_number : account.email }}</div>
+      </div>
     </div>
     <hr class="margin-list">
     <div class="detail-element-container subheader">
@@ -76,6 +80,6 @@
       <div class="checkbox-button uncheckable" [class.checked]="account.push_notifications_enabled"></div>
     </div>
     <hr class="margin-list">
-    <div class="text-button arrow-right" [routerLink]="['/']">Ajutor</div>
+    <div class="text-button arrow-right disabled">Ajutor</div>
   </div>
 </div>

@@ -5,7 +5,6 @@
   margin-left: $margin-small;
 }
 
-
 .page-content {
   position: relative;
 }
@@ -26,7 +25,7 @@
     font-size: $font-size-big;
     color: $color-text-normal;
     overflow: hidden;
-    max-width: 200px;
+    max-width: 150px;
     display: inline-block;
     white-space: pre-wrap;
     padding: 5px 8px;
@@ -84,12 +83,15 @@
 
     .tags-and-status-container {
       display: flex;
+      justify-content: flex-end;
+      align-items: center;
 
       .tags {
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
         flex-wrap: wrap;
+        max-width: 450px;
       }
 
       .user-status {
@@ -165,6 +167,34 @@
   }
 }
 
+.error-toast {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  margin-left: $margin-small;
+  margin-right: $margin-small;
+}
+
+.close-error {
+  align-self: center;
+  background: url('../../../assets/img/x-white.svg');
+  width: 15px;
+  height: 15px;
+  padding-bottom: 16px;
+  padding-right: $margin-tiny;
+  margin-left: $margin-tiny;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.right-button-container {
+  .text-button + .text-button {
+    margin-top: $margin-small;
+  }
+}
+
 @media (max-width: 1360px) {
   .card {
     padding: $margin-big;
@@ -192,81 +222,7 @@
   }
 }
 
-@media (max-width: 1130px) {
-  .card {
-    padding: $margin-default $margin-big;
-
-    .card-right-container .tags-and-status-container {
-      flex-direction: column;
-      align-items: flex-end;
-
-      .tags {
-        flex-direction: row;
-
-        .tag {
-          margin-right: unset;
-          margin-left: 3px;
-          padding-left: 8px;
-          padding-right: 8px;
-          border-radius: 5px;
-
-          &:last-of-type {
-            margin-bottom: 3px;
-          }
-        }
-      }
-    }
-
-    .user-status {
-      border-radius: 5px;
-
-      .text-button:before {
-        border-radius: 5px;
-      }
-    }
-  }
-}
-
-@media (max-width: $mobile-screen-width-normal) {
-  .card:first-of-type {
-    margin-top: 0;
-  }
-
-  .page-content {
-    padding-bottom: $margin-xbig;
-
-    .card {
-      .card-right-container .tags-and-status-container {
-        flex-direction: row;
-        align-items: center;
-
-        .tags {
-          flex-direction: column;
-
-          .tag {
-            margin-right: $margin-default;
-            border-radius: $border-radius-normal;
-            margin-bottom: 3px;
-
-            &:last-of-type {
-              margin-bottom: 0;
-            }
-          }
-        }
-
-        .user-status {
-          border-radius: $border-radius-normal 3px 3px $border-radius-normal;
-
-          .text-button:before {
-            border-radius: 3px;
-          }
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: $mobile-screen-width-intermediate) {
+@media (max-width: 1220px) {
   .page-content {
     padding: $margin-xsmall $margin-default $margin-xbig;
 
@@ -310,6 +266,7 @@
           .tags {
             flex-direction: row;
             justify-content: flex-start;
+            max-width: unset;
 
             .tag {
               border-radius: 5px;
@@ -329,6 +286,16 @@
           margin-right: $margin-small;
         }
       }
+    }
+  }
+
+  .right-button-container {
+    display: flex;
+    flex-direction: row;
+
+    .text-button + .text-button {
+      margin-top: unset;
+      margin-left: $margin-default;
     }
   }
 }

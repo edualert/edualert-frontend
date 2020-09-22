@@ -12,7 +12,7 @@ export const MY_OWN_SCHOOL_CATEGORY_LEVELS_GRADES = [
   },
   {
     category: 'PRIMARY_SCHOOL',
-    classes: ['0', 'I', 'II', 'III', 'IV']
+    classes: ['P', 'I', 'II', 'III', 'IV']
   }
 ];
 

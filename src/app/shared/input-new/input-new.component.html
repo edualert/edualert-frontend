@@ -1,5 +1,6 @@
 <div class="input-container" [class.input-error]="error">
-  <input [ngModel]="value"
+  <input class="modal-input"
+         [ngModel]="value"
          [class.error]="error"
          (input)="sendValue($event)"
          [type]="inputType"

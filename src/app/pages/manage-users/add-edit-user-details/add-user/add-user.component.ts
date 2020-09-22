@@ -1,7 +1,7 @@
 import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {UserDetails} from '../../../../models/user-details';
 import {HttpClient} from '@angular/common/http';
-import {get} from 'lodash'
+import {get} from 'lodash';
 import {Router} from '@angular/router';
 
 @Component({
@@ -9,7 +9,7 @@ import {Router} from '@angular/router';
   templateUrl: './add-user.component.html',
   styleUrls: ['./add-user.component.scss']
 })
-export class AddUserComponent implements OnInit {
+export class AddUserComponent {
   errors: any = {};
   userDetails: UserDetails = new UserDetails({is_active: true, use_phone_as_username: false});
   hasModifiedData: boolean = false;
@@ -20,15 +20,26 @@ export class AddUserComponent implements OnInit {
 
   submitData(userDetails) {
     if (userDetails !== null) {
+      for (const key of Object.keys(userDetails)) {
+        if (userDetails[key] === '') {
+          userDetails[key] = null;
+        }
+      }
+
       let requestBody = {...userDetails};
       requestBody.labels = requestBody.labels.map(el => el.id);
       requestBody.parents = requestBody.parents.map(el => el.id);
       requestBody.taught_subjects = requestBody.taught_subjects.map(el => el.id);
+      Object.keys(requestBody).forEach((elem) => {
+        if (requestBody[elem] === '') {
+          requestBody[elem] = null;
+        }
+      });
       this.httpClient.post('users/', requestBody).subscribe((response) => {
         this.hasUnsavedData = false;
         this.router.navigate(['manage-users']);
-      },(error) => {
-        this.errors = error['error']
+      }, (error) => {
+        this.errors = error['error'];
       });
     }
   }
@@ -41,11 +52,10 @@ export class AddUserComponent implements OnInit {
   }
 
   hasModifiedDataEvent(hasModifiedData) {
-    this.hasModifiedData = hasModifiedData
+    this.hasModifiedData = hasModifiedData;
   }
 
-  constructor(private httpClient: HttpClient, private router: Router) {}
-
-  ngOnInit(): void {}
+  constructor(private httpClient: HttpClient, private router: Router) {
+  }
 
 }

@@ -122,9 +122,27 @@ button.hidden {
 label {
   height: 55px;
   margin-bottom: 17px;
+  position: relative;
 
   &:last-of-type {
     margin-bottom: 0;
+  }
+
+  .show-password-button-login {
+    background-image: url(../../../assets/img/password-show.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: inherit;
+    position: absolute;
+    display: block;
+    height: 23px;
+    width: 23px;
+    right: 10px;
+    transform: translateY(-115%);
+
+    &.is-showing {
+      background-image: url(../../../assets/img/password-hide.svg);
+    }
   }
 }
 
@@ -191,6 +209,15 @@ label {
   padding: 10px 0 10px;
 }
 
+.success-toast {
+  background-color: #00AE17;
+}
+
+.request-success {
+  padding: $margin-tiny 0 $margin-tiny;
+  background-color: #00AE17;
+}
+
 @media (max-width: $mobile-screen-width-normal) {
   :host {
     height: calc(100% - 99px);
@@ -226,6 +253,8 @@ label {
       &:last-of-type {
         margin-bottom: $margin-big;
       }
+
+
     }
 
     input {

@@ -14,8 +14,10 @@ import {findIndex} from 'lodash';
 import {TeacherClassThrough} from '../../../models/teacher-class-through';
 import {HttpClient} from '@angular/common/http';
 import {getCurrentAcademicYear} from '../../../shared/utils';
-import {AddNewUserModalComponent} from '../../manage-users/add-new-user-modal/add-new-user-modal.component';
 import {MY_OWN_SCHOOL_CATEGORY_LEVELS_GRADES, SchoolDetail} from '../../../models/school-details';
+import {UserDetailsBase} from '../../../models/user-details-base';
+import {Student} from '../../../models/student';
+import {AddUserModalComponent} from '../../manage-users/add-user-modal/add-user-modal.component';
 
 @Component({
   selector: 'app-add-edit-study-class',
@@ -33,6 +35,7 @@ export class AddEditStudyClassComponent implements OnInit {
   classMasterCandidates: Teacher[];
   availableSchoolTeachers: Teacher[] = [];
   academicProgramsList: IdName[];
+  availableTeachersForSubjects: {} = {};
 
   isEdit: boolean;
   activeTab: string = 'teachers';
@@ -52,7 +55,7 @@ export class AddEditStudyClassComponent implements OnInit {
 
   initialStudentNumber: number;
 
-  @ViewChild('addNewUserModal', {'static': false}) addNewUserModal: AddNewUserModalComponent;
+  @ViewChild('addNewUserModal', {'static': false}) addNewUserModal: AddUserModalComponent;
 
   constructor(private activatedRoute: ActivatedRoute,
               private schoolDetailsService: SchoolDetailsService,
@@ -96,6 +99,9 @@ export class AddEditStudyClassComponent implements OnInit {
         response.forEach(teacher => {
           this.availableSchoolTeachers.push(new Teacher(teacher));
         });
+        if (this.isEdit) {
+          this.getAvailableTeachersForSubject();
+        }
       }
     );
     this.studentService.getData(true).subscribe(response => {
@@ -103,7 +109,7 @@ export class AddEditStudyClassComponent implements OnInit {
     });
     if (this.isEdit) {
       this.academicProgramsListService.getData(true, '', this.studyClass.class_grade).subscribe(response => {
-        this.academicProgramsList = response;
+        this.academicProgramsList = response.length > 0 ? response : [];
       });
     }
   }
@@ -153,11 +159,13 @@ export class AddEditStudyClassComponent implements OnInit {
       if (this.studyClass.academic_program) {
         this.subjectsListService.getData(true, this.studyClass.academic_program, this.studyClass.class_grade).subscribe(response => {
           response.forEach(classSubject => {
-            this.studyClassErrors.teachers_class_through.push({teacher: ''});
             this.studyClass.teachers_class_through.push(new TeacherClassThrough(
-              {subject_id: classSubject.subject_id, subject_name: classSubject.subject_name, teacher: new IdFullname({full_name: '-'})}
+              {
+                subject_id: classSubject.subject_id, subject_name: classSubject.subject_name, teacher: new IdFullname({full_name: '-'}), is_mandatory: classSubject.is_mandatory,
+              }
             ));
           });
+          this.getAvailableTeachersForSubject();
         });
       }
     }
@@ -170,6 +178,9 @@ export class AddEditStudyClassComponent implements OnInit {
   addStudent() {
     if (this.studyClass.students && this.studyClass.students.length > 0) {
       this.studyClass.students.push(new IdFullname(null));
+      if (!this.studyClassErrors.students) {
+        this.studyClassErrors.students = [];
+      }
       this.studyClassErrors.students.push(new IdFullname(null));
     } else {
       this.studyClass.students = [];
@@ -248,6 +259,15 @@ export class AddEditStudyClassComponent implements OnInit {
           this.hasUnfilledFields = true;
           return;
         }
+        if (key === 'students' && data && data.length > 0) {
+          data.forEach(student => {
+            if ([undefined, ''].includes(student.full_name)) {
+              requiredFields[key][data.indexOf(student) - 1].full_name = 'Acest câmp este obligatoriu.';
+              this.hasUnfilledFields = true;
+              return;
+            }
+          });
+        }
         if (requiredFields.hasOwnProperty(key) && data) {
           if (typeof data === 'object' && requiredFields[key]) {
             if (Array.isArray(data)) {
@@ -265,7 +285,9 @@ export class AddEditStudyClassComponent implements OnInit {
 
   checkArray(array, requiredFields) {
     array.forEach((item, index) => {
-      this.checkObject(item, requiredFields[index]);
+      Object.keys(item).forEach(key => {
+        if (item[key] !== undefined) this.checkObject(item, requiredFields[index]);
+      });
     });
   }
 
@@ -309,10 +331,14 @@ export class AddEditStudyClassComponent implements OnInit {
       this.studentList.push(this.studyClass.students[index]);
     }
     this.studyClass.students.splice(index, 1);
+
+    if (this.studyClassErrors.students.indexOf(this.studyClass.students[index])) {
+      this.studyClassErrors.students.splice(this.studyClassErrors.students.indexOf(this.studyClass.students[index]), 1);
+    }
   }
 
-  openUserModal() {
-    this.addNewUserModal.open();
+  openUserModal(userRole: 'ORS' | 'SCHOOL_PRINCIPAL' | 'TEACHER' | 'PARENT' | 'STUDENT') {
+    this.addNewUserModal.open({user_role: userRole, confirmButtonCallback: null});
   }
 
   @HostListener('window:beforeunload')
@@ -323,14 +349,19 @@ export class AddEditStudyClassComponent implements OnInit {
     return true;
   }
 
-  getAvailableTeachersForSubject(subjectId: number): Teacher[] {
-    const teachersForSubject = [];
-    this.availableSchoolTeachers.forEach(teacher => {
-      if (teacher.taught_subjects.includes(subjectId)) {
-        teachersForSubject.push(teacher);
+  getAvailableTeachersForSubject() {
+    this.studyClass.teachers_class_through.forEach(subject => {
+      if (subject.is_mandatory) {
+        this.availableSchoolTeachers.forEach(teacher => {
+          if (teacher.taught_subjects.includes(subject.subject_id)) {
+            this.availableTeachersForSubjects[subject.subject_name] = !this.availableTeachersForSubjects[subject.subject_name] ? [] : this.availableTeachersForSubjects[subject.subject_name];
+            this.availableTeachersForSubjects[subject.subject_name].push(teacher);
+          }
+        });
+      } else {
+        this.availableTeachersForSubjects[subject.subject_name] = this.availableSchoolTeachers;
       }
     });
-    return teachersForSubject;
   }
 
   hideErrorToast() {
@@ -340,6 +371,29 @@ export class AddEditStudyClassComponent implements OnInit {
   cancel() {
     this.hasUnfilledFields = false;
     this.router.navigate([`manage-classes/`]);
+  }
+
+  confirmAddingUser(response: UserDetailsBase, isClassMasterCandidate?: boolean, index?: number, subject_name?: string) {
+    if (!this.availableTeachersForSubjects[subject_name]) {
+      this.availableTeachersForSubjects[subject_name] = [];
+    }
+    let newUser;
+    if (isClassMasterCandidate) {
+      newUser = new Teacher(response);
+      this.classMasterCandidates.push(newUser);
+      const newUserIndex = findIndex(this.classMasterCandidates, {id: response.id});
+      this.handleInputChange({element: newUser, index: newUserIndex}, 'class_master');
+    } else if (response.user_role === 'TEACHER' && !isClassMasterCandidate) {
+      newUser = new Teacher(response);
+      this.availableTeachersForSubjects[subject_name].push(newUser);
+      const newUserIndex = findIndex(this.availableTeachersForSubjects[subject_name], {id: response.id});
+      this.handleListInputChange({element: newUser, index: newUserIndex}, 'teachers_class_through', index);
+    } else if (response.user_role === 'STUDENT') {
+      newUser = new Student(response);
+      this.studentList.push(newUser);
+      const newUserIndex = findIndex(this.studentList, {id: response.id});
+      this.handleListInputChange({element: newUser, index: newUserIndex}, 'students', index);
+    }
   }
 
 }

@@ -113,6 +113,13 @@
   }
 }
 
+.tabs-container {
+  position: sticky;
+  top: 123px;
+  background-color: $color-background;
+  z-index: 1;
+}
+
 @media(max-width: $mobile-screen-width-normal) {
   .row {
     margin-top: unset;
@@ -154,5 +161,9 @@
 
   .body {
     padding-top: 2px;
+  }
+
+  .tabs-container {
+    position: initial;
   }
 }

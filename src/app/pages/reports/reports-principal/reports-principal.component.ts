@@ -131,9 +131,9 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
     }
     if (type === 'bottom') {
       this.activeTabBottom = event;
-      this.fetchData(this.activeTabTop, this.activeTabBottom);
       this.changeUrlParamsEvent.next({bottom_tab: this.activeTabBottom});
     }
+    this.month = moment().month();
   }
 
   changeMonth(event: string) {
@@ -170,11 +170,10 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
   }
 
   fetchData(id_top: string, id_bottom: string) {
-    // If we already have data for that id don't make a request
     if (this.data[id_top] !== undefined && this.data[id_top][id_bottom] !== null && id_bottom !== 'students_risk_evolution') {
       return;
     }
-    if (this.data['students'] !== undefined && this.data['students']['students_risk_evolution'][this.month - 1] && this.data['students']['students_risk_evolution'][this.month]) {
+    if (id_top === 'students' && this.data['students'] !== undefined && this.data['students']['students_risk_evolution'][this.month - 1] && this.data['students']['students_risk_evolution'][this.month]) {
       this.displayChart = shouldDisplayChart(this.data['students']['students_risk_evolution'][this.month]['chartData'][0]['series']);
       return;
     }
@@ -221,8 +220,8 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       }
     };
 
+    const req = requests[`${id_top}-${id_bottom}`];
     if (id_bottom === 'students_risk_evolution') {
-      const req = requests[`${id_top}-${id_bottom}`];
       if (this.month === -11) {
         return;
       }
@@ -244,7 +243,6 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       return;
     }
 
-    const req = requests[`${id_top}-${id_bottom}`];
     req.request.subscribe((response) => {
      if (id_bottom === 'study_classes_absences') {
         this.data[id_top][id_bottom] = response.map(item => new Absences(
@@ -363,9 +361,9 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       backgroundColor: '#EDF0F5',
       name: 'Nume elev',
       dataKey: 'student_full_name',
-      columnType: 'link-button',
+      columnType: 'user-details-modal',
       link: (value: StudentAtRisk) => {
-        return `manage-users/${value.student.id}/view`;
+        return value.student.id;
       },
       minWidth: '210'
     }));

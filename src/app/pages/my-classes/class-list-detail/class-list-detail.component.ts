@@ -1,5 +1,5 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Component, Injector, OnInit, ViewChild} from '@angular/core';
+import {Params} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {ClassDetails, Subject} from '../../../models/class-details';
 import {AddGradesBulkModalComponent} from '../../../catalog/modals/add-grades-bulk-modal/add-grades-bulk-modal.component';
@@ -10,6 +10,19 @@ import {IdName} from '../../../models/id-name';
 import {forkJoin, Observable} from 'rxjs';
 import * as moment from 'moment';
 import {cloneDeep} from 'lodash';
+import {ListPage} from '../../list-page/list-page';
+import {IdText} from '../../../models/id-text';
+import BaseRequestParameters from '../../list-page/base-request-parameters';
+import {ViewUserModalComponent} from '../../manage-users/view-user-modal/view-user-modal.component';
+
+class RequestParams extends BaseRequestParameters {
+  readonly ordering: string;
+
+  constructor(newObj?: any) {
+    super();
+    this.ordering = newObj?.ordering;
+  }
+}
 
 class TableTab extends IdName {
   tableLayout: 'class_master' | 'class_students' | string;
@@ -25,7 +38,7 @@ class TableTab extends IdName {
   templateUrl: './class-list-detail.component.html',
   styleUrls: ['./class-list-detail.component.scss']
 })
-export class ClassListDetailComponent implements OnInit {
+export class ClassListDetailComponent extends ListPage implements OnInit {
   private classId: string;
 
   classDetails: ClassDetails;
@@ -33,39 +46,72 @@ export class ClassListDetailComponent implements OnInit {
   subjectsDataList: { studentListData: any, subjectId: number }[];
 
   tabs: TableTab[];
-  activeTab: TableTab;
+  activeTab: any;
   tableData: any;
+  tabsInitialised: boolean = false;
+  initialSortCriteria: any = null;
 
   @ViewChild('addGradesBulkModal', {static: false}) addGradesBulkModal: AddGradesBulkModalComponent;
   @ViewChild('addAbsencesBulkModal', {static: false}) addAbsencesBulkModal: AddAbsencesBulkModalComponent;
   @ViewChild('settingsModal', {static: false}) settingsModal: SettingsModalComponent;
+  @ViewChild('appViewUserModal', {'static': false}) appViewUserModal: ViewUserModalComponent;
+
+  readonly defaultSortingCriterion: IdText = new IdText({id: 'student_name', text: 'Nume'});
+  urlParams = {'ordering': this.defaultSortingCriterion?.id};
 
   // The Own Pupils tab (only for class master) will always have id 0
   readonly classPupilsTab: string | number = 0;
   classMasterTab: string | number = -1;
 
-  constructor(private activatedRoute: ActivatedRoute,
-              private httpClient: HttpClient,
-              private router: Router) {
+  constructor(injector: Injector,
+              private httpClient: HttpClient) {
+    super(injector);
+    this.sendClassMessageList = this.sendClassMessageList.bind(this);
+
+    this.initFilters({
+      sortCriteria: null
+    });
+
+    this.customUrlParamsChange({'ordering': this.defaultSortingCriterion?.id});
+
+    this.activatedRoute.queryParams.subscribe((urlParams: Params) => {
+      if ( Object.keys(urlParams).length === 0 ) {
+        urlParams = {'ordering': this.defaultSortingCriterion?.id};
+        this.customUrlParamsChange(urlParams);
+      }
+      this.activeUrlParams = urlParams;
+      this.fetchClassData(urlParams);
+    });
   }
 
   ngOnInit(): void {
     this.classId = this.activatedRoute.snapshot.params['id'];
     this.tabs = [];
-    this.fetchClassData();
+    if (this.initialSortCriteria === null) this.initialSortCriteria = this.filterData.sortCriteria;
+    this.fetchClassData(this.urlParams);
   }
 
-  private fetchClassData(): void {
+  private fetchClassData(urlParams?): void {
 
     this.httpClient.get(`own-study-classes/${this.classId}/`).subscribe(response => {
-      console.log(response);
       this.classDetails = new ClassDetails(response);
-      this.initialiseTabs();
+      if (this.classDetails.is_class_master ) {
+        const gradesCountIndex = findIndex(this.filterData.sortCriteria, ({id: 'grades_count', text: 'Număr note'}));
+        const lastGradeDateIndex = findIndex(this.filterData.sortCriteria, ({id: 'last_grade_date', text: 'Data ultimei note'}));
+        if (gradesCountIndex !== -1 && lastGradeDateIndex !== 1) {
+          this.filterData.sortCriteria.splice(findIndex(this.filterData.sortCriteria, ({id: 'grades_count', text: 'Număr note'})), 1);
+          this.filterData.sortCriteria.splice(findIndex(this.filterData.sortCriteria, ({id: 'last_grade_date', text: 'Data ultimei note'})), 1);
+        }
+      } else if (this.filterData.sortCriteria.length === 3) {
+        this.filterData.sortCriteria.push(...[{id: 'grades_count', text: 'Număr note'}, {id: 'last_grade_date', text: 'Data ultimei note'}]);
+      }
+
+      if (!this.tabsInitialised) this.initialiseTabs();
 
       if (this.classDetails.is_class_master) {
-        this.fetchOwnPupilData();
+        this.fetchOwnPupilData(urlParams);
       }
-      this.fetchCatalogData();
+      this.fetchCatalogData(urlParams);
     });
   }
 
@@ -81,26 +127,29 @@ export class ClassListDetailComponent implements OnInit {
           this.classMasterTab = subject.id;
         }
         const tableLayout = subject.is_coordination ? 'class_master' : '';
+        this.tabsInitialised = true;
         return new TableTab({id: subject.id, name: subject.name, tableLayout});
       })
     );
     this.activeTab = this.tabs[0];
   }
 
-  private fetchOwnPupilData() {
+  private fetchOwnPupilData(urlParams?: Params) {
+    const httpParams = new RequestParams({...urlParams}).getHttpParams();
     const dataPath = 'own-study-classes/' + this.classId + '/pupils/';
-    this.httpClient.get(dataPath).subscribe((response: any[]) => {
+    this.httpClient.get(dataPath, {params: httpParams}).subscribe((response: any[]) => {
       this.ownPupilsData = response;
     });
   }
 
-  private fetchCatalogData(): void {
+  private fetchCatalogData(urlParams?: Params): void {
     this.subjectsDataList = [];
     const requests: { [key: string]: Observable<any> } = {};
+    const httpParams = new RequestParams({...urlParams}).getHttpParams();
 
     // Prepare requests for all the taught subjects
     this.classDetails.taught_subjects.forEach((subject) => {
-      requests[subject.id] = this.httpClient.get(`own-study-classes/${this.classId}/subjects/${subject.id}/catalogs/`);
+      requests[subject.id] = this.httpClient.get(`own-study-classes/${this.classId}/subjects/${subject.id}/catalogs/`, {params: httpParams});
     });
     // Make all requests, populate the internal data with the results
     forkJoin(requests).subscribe((responses) => {
@@ -119,7 +168,7 @@ export class ClassListDetailComponent implements OnInit {
     if (tab === this.classPupilsTab && this.classDetails?.is_class_master) {
       this.tableData = this.ownPupilsData;
     } else {
-      this.tableData = cloneDeep(this.subjectsDataList[findIndex(this.subjectsDataList, {subjectId: parseInt(tab, 10)})].studentListData);
+      this.tableData = cloneDeep(this.subjectsDataList[findIndex(this.subjectsDataList, {subjectId: parseInt(tab, 10)})]?.studentListData);
     }
   }
 
@@ -127,17 +176,17 @@ export class ClassListDetailComponent implements OnInit {
     if (this.classDetails?.is_class_master && this.classPupilsTab === this.activeTab.id) {
       return [{
         text: 'Trimite mesaj clasă',
-        buttonCallbackFn: this.sendClassMessageList
+        buttonCallbackFn: this.sendClassMessageList.bind(this)
       },
         {
           text: 'Exportă catalog',
-          buttonCallbackFn: this.openAddBulkGradesModal
+          buttonCallbackFn: this.catalogExport.bind(this)
         }
       ];
     } else if (this.classDetails?.is_class_master && this.classMasterTab === this.activeTab.id) {
       return [{
         text: 'Trimite mesaj clasă',
-        buttonCallbackFn: this.sendClassMessageList
+        buttonCallbackFn: this.sendClassMessageList.bind(this)
       },
         {
           text: 'Adaugă absențe',
@@ -145,13 +194,13 @@ export class ClassListDetailComponent implements OnInit {
         },
         {
           text: 'Exportă catalog',
-          buttonCallbackFn: this.openAddBulkGradesModal
+          buttonCallbackFn: this.catalogExport.bind(this)
         }
       ];
     }
     return [{
       text: 'Trimite mesaj clasă',
-      buttonCallbackFn: this.sendClassMessageList
+      buttonCallbackFn: this.sendClassMessageList.bind(this)
     },
       {
         text: 'Adaugă note',
@@ -170,13 +219,17 @@ export class ClassListDetailComponent implements OnInit {
       ,
       {
         text: 'Exportă catalog',
-        buttonCallbackFn: this.openAddBulkGradesModal
+        buttonCallbackFn: this.catalogExport.bind(this)
       }
     ];
   }
 
   sendClassMessageList() {
-    console.log('Trimite mesaj clasă');
+   this.router.navigateByUrl(`/messages/create?classId=${this.classId}&className=${this.classDetails?.class_grade} ${this.classDetails?.class_letter}`)
+  }
+
+  catalogExport() {
+    console.log('Exportă catalog');
   }
 
   openAddBulkGradesModal() {
@@ -221,7 +274,7 @@ export class ClassListDetailComponent implements OnInit {
     this.settingsModal.open(this.activeTab.id, this.classDetails);
   }
 
-  private modifyCatalog(request: Observable<any>): void {
+  private modifyCatalog(request: Observable<any>, changesCatalogContent?: boolean): void {
 
     // Remember the tab and its associated data before the request.
     const tabBeforeRequest = this.activeTab.id;
@@ -237,10 +290,15 @@ export class ClassListDetailComponent implements OnInit {
       if (this.activeTab.id === tabBeforeRequest) {
         this.tableData = cloneDeep(this.subjectsDataList[findIndex(this.subjectsDataList, {subjectId: tabBeforeRequest})].studentListData);
       }
+
+      // Invalidate "Elevii Clasei" content due to the addition/removal of grades/absences, so we have to request the data for that tab again
+      if ( changesCatalogContent ) {
+        this.fetchOwnPupilData();
+      }
     });
   }
 
-  saveSingleGrade(value: { grade: { selectedGrade: number, selectedDate: Date, id: number }, id: number, semester: string }) {
+  saveSingleGrade(value: { grade: { selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }, id: number, semester: string }) {
     let request;
     if (value.grade.id) {
       request = this.httpClient.put(
@@ -248,7 +306,7 @@ export class ClassListDetailComponent implements OnInit {
         {
           grade: value.grade.selectedGrade,
           taken_at: moment(value.grade.selectedDate).format('DD-MM-YYYY'),
-          grade_type: 'REGULAR'
+          grade_type: value.grade.isThesis ? 'THESIS' : 'REGULAR'
         }
       );
     } else {
@@ -257,11 +315,11 @@ export class ClassListDetailComponent implements OnInit {
         {
           grade: value.grade.selectedGrade,
           taken_at: moment(value.grade.selectedDate).format('DD-MM-YYYY'),
-          grade_type: 'REGULAR'
+          grade_type: value.grade.isThesis ? 'THESIS' : 'REGULAR'
         }
       );
     }
-    this.modifyCatalog(request);
+    this.modifyCatalog(request, true);
   }
 
   addSingleAbsence(value: { absence: { date: Date, isFounded: boolean }, id: number, semester: string }): void {
@@ -269,20 +327,20 @@ export class ClassListDetailComponent implements OnInit {
       `catalogs/${value.id}/absences/`,
       {
         taken_at: moment(value.absence.date).format('DD-MM-YYYY'),
-        isFounded: value.absence.isFounded
+        is_founded: value.absence.isFounded
       }
     );
-    this.modifyCatalog(request);
+    this.modifyCatalog(request, true);
   }
 
   deleteGrade(grade: any): void {
     const request = this.httpClient.delete(`grades/${grade.id}/`);
-    this.modifyCatalog(request);
+    this.modifyCatalog(request, true);
   }
 
   deleteAbsence(absence: any): void {
     const request = this.httpClient.delete(`absences/${absence.id}/`);
-    this.modifyCatalog(request);
+    this.modifyCatalog(request, true);
   }
 
   authorizeAbsence(absence: any): void {
@@ -296,6 +354,11 @@ export class ClassListDetailComponent implements OnInit {
         this.router.navigateByUrl(`/my-classes/${this.classId}/students/${event.dataRow.student.id}/catalog`);
       }
     }
+  }
+
+  openUserModal(event, id) {
+    event.stopPropagation();
+    this.appViewUserModal.open(id);
   }
 
 }

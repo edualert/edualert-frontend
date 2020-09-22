@@ -77,7 +77,6 @@ export class EditMyAccountComponent implements OnInit {
         return;
       }
     });
-    console.log(this.errors);
     return resp;
   }
 
@@ -136,6 +135,10 @@ export class EditMyAccountComponent implements OnInit {
       this.account = new Account(user);
       this.availableFields = EditMyAccountComponent.constructAvailableFields(this.account?.user_role);
     });
+  }
+
+  showHidePassword(element) {
+    element.inputType = element.inputType === 'password' ? 'text' : 'password';
   }
 
 }

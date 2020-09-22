@@ -7,6 +7,7 @@
     </div>
     <div id="header-filter">
       <app-filter>
+        <span class="mobile-title">Filtreaza</span>
         <div class="dropdown-parent">
           <app-dropdown [list]="filterData.academicYears"
                         [appliedElement]="filterParams.academicYear || defaultAcademicYear"
@@ -15,6 +16,7 @@
                         [required]="true"
                         (elementHasBeenSelected)="changeAcademicYear($event.element)"></app-dropdown>
         </div>
+        <div class="text-button delete-filters-button" (click)="deleteFilters()">Șterge Filtre</div>
       </app-filter>
     </div>
   </app-header>
@@ -22,9 +24,11 @@
     <ng-container *ngIf="!this.requestInProgress; else loadingList">
       <ng-container *ngIf="this.schoolProfiles?.length; else noResultsText">
         <div class="list">
-          <div class="card list-element-animation" *ngFor="let profile of schoolProfiles">
+          <div class="card list-element-animation"
+               *ngFor="let profile of schoolProfiles"
+               routerLink="{{profile.id + '/view'}}">
             <div class="card-left-container">
-              <a routerLink="{{profile.id + '/view'}}" class="card-title text-button">{{profile.name}}</a>
+              <a class="card-title text-button">{{profile.name}}</a>
               <div class="detail-element-container margin-top-small">
                 <div class="label-container margin-right">Clase cu acest profil:</div>
                 <div class="value-container bold dark-text">{{profile.classes_count.toString(10)}}</div>
@@ -34,7 +38,9 @@
               <hr class="vertical visible-on-desktop">
               <div class="row">
                 <a routerLink="{{profile.id + '/edit'}}" class="text-button edit spaced-out">Editează</a>
-                <div class="text-button dark-text" (click)="deleteSchoolProfile(profile)">
+                <div class="text-button dark-text"
+                     *ngIf="profile?.classes_count === 0"
+                     (click)="deleteSchoolProfile(profile, $event)">
                   Șterge
                 </div>
               </div>

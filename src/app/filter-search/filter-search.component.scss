@@ -19,7 +19,7 @@ input::placeholder {
   font-weight: $font-weight-regular;
 }
 
-input[type="submit"] {
+.search-button {
   position: absolute;
   display: block;
   height: 27px;
@@ -43,5 +43,9 @@ input[type="submit"] {
 
   &:active {
     background-color: rgba($color-text-normal, 0.1);
+  }
+
+  &.clear-button {
+    background-image: url("../../assets/img/x.svg");
   }
 }

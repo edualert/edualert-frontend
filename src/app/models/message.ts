@@ -9,14 +9,14 @@ export class CompressedStudyClass {
 
   constructor(obj) {
     if (obj) {
-     this.id = obj.id;
-     this.class_grade = obj.class_grade;
-     this.class_letter = obj.class_letter;
+      this.id = obj.id;
+      this.class_grade = obj.class_grade;
+      this.class_letter = obj.class_letter;
     }
   }
 }
 
-export class UsersChildren extends IdFullname{
+export class UsersChildren extends IdFullname {
   study_class: CompressedStudyClass;
 
   constructor(obj) {
@@ -47,17 +47,17 @@ export class SentStatus {
 
   constructor(obj) {
     if (obj) {
-     this.sent_to_count = obj.sent_to_count;
-     this.read_by_count = obj.read_by_count;
+      this.sent_to_count = obj.sent_to_count;
+      this.read_by_count = obj.read_by_count;
     }
   }
 }
 
 export enum ReceiverTypes {
-  CLASS_STUDENTS = "Class students",
-  CLASS_PARENTS = "Class parents",
-  ONE_STUDENT = "One student",
-  ONE_PARENT = "One parent"
+  CLASS_STUDENTS = 'Class students',
+  CLASS_PARENTS = 'Class parents',
+  ONE_STUDENT = 'One student',
+  ONE_PARENT = 'One parent'
 }
 
 export class Message {
@@ -69,7 +69,7 @@ export class Message {
     if (obj) {
       this.id = obj.id;
       this.title = obj.title;
-      this.created = moment(obj.created, "DD-MM-YYYY");
+      this.created = moment(obj.created, 'DD-MM-YYYY hh:mm');
     }
   }
 }

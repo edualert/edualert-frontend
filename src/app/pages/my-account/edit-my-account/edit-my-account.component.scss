@@ -88,6 +88,14 @@
 .unmargined-top {
 }
 
+.value-container {
+  position: relative;
+}
+
+.show-password-button {
+  transform: translateY(-50%);
+}
+
 @media screen and (max-width: $mobile-screen-width-normal){
   .full-width {
     width: 100%!important;

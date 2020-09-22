@@ -40,10 +40,10 @@
 .horizontal + .horizontal {
   padding-top: $margin-default;
   border-top: 1px solid #E5EAF0;
-}
 
-.horizontal:last-of-type {
-  padding-bottom: 0;
+  &:last-of-type {
+    margin-bottom: 5px;
+  }
 }
 
 .elements {

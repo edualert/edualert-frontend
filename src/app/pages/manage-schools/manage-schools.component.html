@@ -14,7 +14,7 @@
             {{schools.length}} unități afișate din {{totalCount}}
           </div>
         </ng-container>
-        <span class="mobile-title">Filtreaza</span>
+        <span class="mobile-title">Filtrează</span>
         <app-filter-search
           [searchString]="filterParams.search"
           (searchSubmit)="changeSearch($event)"
@@ -49,6 +49,7 @@
             (elementHasBeenSelected)="changeSchoolCategory($event.element)"
             [appliedElement]="filterParams.schoolCategory"
             [placeholder]="'Categorie'"
+            [withSearch]="true"
           ></app-dropdown>
         </div>
         <div class="dropdown-parent school-profiles">
@@ -58,8 +59,10 @@
             (elementHasBeenSelected)="changeSchoolProfile($event.element)"
             [appliedElement]="filterParams.schoolProfile"
             [placeholder]="'Profil'"
+            [withSearch]="true"
           ></app-dropdown>
         </div>
+        <div class="text-button delete-filters-button" (click)="deleteFilters()">Șterge Filtre</div>
       </app-filter>
     </div>
   </app-header>
@@ -129,4 +132,5 @@
   </div>
 </div>
 
+<app-add-new-user-modal #addNewUserModal></app-add-new-user-modal>
 <app-confirmation-modal #appConfirmationModal></app-confirmation-modal>

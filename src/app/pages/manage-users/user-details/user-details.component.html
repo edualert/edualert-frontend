@@ -1,5 +1,13 @@
 <div class="animated-page">
   <app-header>
+    <div id="error-alert">
+      <div class="error-toast" *ngIf="hasSchoolOrClass">
+        <div class="request-error">
+          {{ toastErrorMessage }}
+        </div>
+        <div class="close-error" (click)="hideErrorToast()"></div>
+      </div>
+    </div>
     <a id="header-back-button" [routerLink]="['/manage-users']">
       <div class="arrow left"></div>
       <div class="blue-text bold column">
@@ -9,39 +17,60 @@
     <h1 id="header-title">Detalii utilizator</h1>
     <div id="header-top-right-container">
       <div class="button-container">
-        <div *ngIf="userDetails?.is_active" class="text-button red-text" (click)="changeUserStateButtonClicked('deactivate')">Dezactivează</div>
-        <div *ngIf="!userDetails?.is_active" class="text-button green-text" (click)="changeUserStateButtonClicked('activate')">Activare</div>
+        <div *ngIf="userDetails?.is_active" class="text-button red-text"
+             (click)="changeUserStateButtonClicked('deactivate')">Dezactivează
+        </div>
+        <div *ngIf="!userDetails?.is_active" class="text-button green-text"
+             (click)="changeUserStateButtonClicked('activate')">Activare
+        </div>
         <div class="text-button" [routerLink]="['/manage-users/' + userDetails?.id + '/edit']">Editează</div>
-        <div class="text-button dark-text" (click)="deleteUserButtonClicked()">Șterge</div>
+        <div
+          *ngIf="isUserInactive"
+          class="text-button dark-text"
+          (click)="deleteUserButtonClicked()"
+        >Șterge
+        </div>
       </div>
     </div>
   </app-header>
   <div class="page-content">
-    <div class="detail-element-container header blue-text bold">
+    <div class="detail-element-container header blue-text">
       <div class="label-container fixed-width">Nume</div>
-      <div class="value-container">{{ userDetails?.full_name }}</div>
+      <div class="value-container bold">{{ userDetails?.full_name }}</div>
     </div>
     <div class="detail-element-container">
       <div class="label-container fixed-width">Nume utilizator</div>
-      <div class="extra-data margin-right gray-text">{{ userDetails?.use_phone_as_username ? 'Număr de telefon: ' : 'Adresă de email: '}}</div>
-      <div class="value-container bold">{{ userDetails?.use_phone_as_username ? userDetails.phone_number : userDetails?.email }}</div>
+      <div class="row">
+        <div
+          class="extra-data margin-right margin-top gray-text">{{ userDetails?.use_phone_as_username ? 'Număr de telefon: ' : 'Adresă de email: '}}</div>
+        <div
+          class="value-container bold">{{ userDetails?.use_phone_as_username ? userDetails.phone_number : userDetails?.email }}</div>
+      </div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Parolă</div>
+      <div class="value-container bold password">************</div>
     </div>
     <hr class="margin-list">
     <div class="detail-element-container">
       <div class="label-container fixed-width">Rol utilizator</div>
       <div class="value-container bold">{{ userRoles[userDetails?.user_role] }}</div>
     </div>
-    <div *ngIf="this.availableFields?.studyClass && userDetails?.class_grade && userDetails?.class_letter" class="detail-element-container">
+    <div *ngIf="this.availableFields?.studyClass && userDetails?.class_grade && userDetails?.class_letter"
+         class="detail-element-container">
       <div class="label-container fixed-width">Clasă</div>
-      <a [routerLink]="['/manage-classes', userDetails.class_id, 'view']" class="value-container bold blue-text arrow-right">{{userDetails?.class_grade + ' ' + userDetails?.class_letter}}</a>
+      <a [routerLink]="['/manage-classes', userDetails.class_id, 'view']"
+         class="value-container bold blue-text arrow-right">{{userDetails?.class_grade + ' ' + userDetails?.class_letter}}</a>
     </div>
     <div class="detail-element-container">
       <div class="label-container fixed-width">Stare</div>
-      <div class="value-container bold {{userDetails?.is_active ? 'green-text' : 'red-text' }}">{{userDetails?.is_active ? 'Activă' : 'Inactivă'}}</div>
+      <div
+        class="value-container bold {{userDetails?.is_active ? 'green-text' : 'red-text' }}">{{userDetails?.is_active ? 'Activă' : 'Inactivă'}}</div>
     </div>
     <div *ngIf="this.availableFields?.labels" class="detail-element-container">
       <div class="label-container fixed-width">Etichete</div>
-      <div class="value-container bold {{ getLabelsString() ? '' : 'red-text' }}">{{ getLabelsString().length > 0 ? getLabelsString() : 'Nu există etichete.'}}</div>
+      <div
+        class="value-container bold {{ getLabelsString() ? '' : 'red-text' }}">{{ getLabelsString().length > 0 ? getLabelsString() : 'Nu există etichete.'}}</div>
     </div>
     <hr class="margin-list">
     <div class="detail-element-container">
@@ -73,7 +102,8 @@
         <div *ngFor="let item of userDetails?.parents; let i = index">
           <div class="detail-element-container">
             <div class="label-container fixed-width">Părinte</div>
-            <div class="value-container bold blue-text arrow-right" (click)="openViewUserModal(item.id)">{{item.full_name}}</div>
+            <div class="value-container bold blue-text arrow-right"
+                 (click)="openViewUserModal(item.id)">{{item.full_name}}</div>
           </div>
           <hr *ngIf="i + 1 !== userDetails?.parents.length" class="margin-list">
         </div>

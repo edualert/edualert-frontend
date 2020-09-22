@@ -9,6 +9,7 @@ import {ConfirmationModalComponent} from '../../shared/confirmation-modal/confir
 import * as moment from 'moment';
 import {IdText} from '../../models/id-text';
 import {findIndex} from 'lodash';
+import {AddNewUserModalComponent} from '../manage-users/add-new-user-modal/add-new-user-modal.component';
 
 
 @Component({
@@ -21,6 +22,7 @@ export class ManageClassesComponent extends ListPage {
   isEditable: boolean;
   readonly defaultAcademicYear: IdText = new IdText({id: getCurrentAcademicYear(), text: `${getCurrentAcademicYear()} - ${getCurrentAcademicYear() + 1}`});
   @ViewChild('appConfirmationModal', {static: false}) appConfirmationModal: ConfirmationModalComponent;
+  @ViewChild('addNewUserModal', {static: false}) addNewUserModal: AddNewUserModalComponent;
 
   constructor(injector: Injector, private http: HttpClient) {
     super(injector);
@@ -38,12 +40,13 @@ export class ManageClassesComponent extends ListPage {
 
   keepOrder = a => a;
 
-  deleteClass(studyClass: StudyClass, sectionId: string): void {
+  deleteClass(studyClass: StudyClass, sectionId: string, event?: any): void {
     // TODO: To be uncommented after demo
     // if (studyClass.has_previous_catalog_data || !this.isEditable) {
     //   return;
     // }
 
+    event.stopPropagation();
     const modalData = {
       title: 'Vă rugăm confirmați',
       description: `Doriți să ștergeți clasa ${studyClass.class_grade} ${studyClass.class_letter}?`,

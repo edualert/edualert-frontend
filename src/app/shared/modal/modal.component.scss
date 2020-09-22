@@ -8,18 +8,45 @@
   height: 100vh;
   background-color: rgba(#0a0a10, 0.6);
   z-index: 1000000;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  animation: fadein 0.5s;
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 .modal {
   min-height: 100px;
   min-width: 200px;
   height: auto;
-  width: auto;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   box-shadow: 0 5px 30px 0 rgba(#0a0a10, 0.05);
+
+  animation: fadein 0.5s;
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media screen and (max-height: 750px) { // Specific size given to handle all Galaxy devices
+    top: calc(50% - 25px);
+  }
+
+  @media screen and (max-height: 650px) {
+    top: 50%;
+  }
 }
 
 .header {
@@ -27,6 +54,7 @@
   min-height: 50px;
   background-color: $color-background;
   padding: $margin-big $margin-xbig $margin-default;
+
   &.dark {
     background-color: $color-text-normal;
   }

@@ -1,4 +1,4 @@
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Injector} from '@angular/core';
 import {cities} from '../../data/cities';
 import {districts} from '../../data/districts';
@@ -11,13 +11,17 @@ import {userStatuses} from '../../models/user-statuses';
 import {AccountService} from '../../services/account.service';
 import {IdName} from '../../models/id-name';
 import {IdText} from '../../models/id-text';
-import {catchError} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {cloneDeep} from 'lodash';
 import * as moment from 'moment';
 import {SchoolUnitsProfilesService} from '../../services/school-units-profiles.service';
 import {GenericAcademicProgramsService} from '../../services/generic-academic-programs.service';
 import {studentsSituationSortCriteria} from '../../data/studets-situation-sort-criteria';
-import {StudentsSituationAvailableClassGradesService} from '../../services/students-situation-available-class-grades.service';
+import {AvailableClassNamesService} from '../../services/available-class-names.service';
+import {ScrollableList} from './scrollable-list';
+import {classListDetailSortCriteria} from '../../data/class-detail-sort-criteria';
+import {CurrentAcademicYearService} from '../../services/current-academic-year.service';
+import {AcademicYearCalendar} from '../../models/academic-year-calendar';
 
 class FilterData {
   districts: IdText[] = null;
@@ -48,14 +52,15 @@ class FilterParams {
 }
 
 // All subclasses of ListPage need to call super(injector) for the base class's services to work
-export class ListPage {
+export class ListPage extends ScrollableList {
   readonly router: Router;
   readonly activatedRoute: ActivatedRoute;
   readonly schoolCategoriesService: SchoolCategoriesService;
   readonly schoolUnitsProfilesService: SchoolUnitsProfilesService;
   readonly userService: AccountService;
-  readonly studyClassAvailableGradesService: StudentsSituationAvailableClassGradesService;
+  readonly studyClassAvailableGradesService: AvailableClassNamesService;
   readonly genericAcademicProgramsService: GenericAcademicProgramsService;
+  readonly currentAcademicYearService: CurrentAcademicYearService;
 
   private readonly defaultFilterData;
 
@@ -64,30 +69,58 @@ export class ListPage {
   requestInProgress: boolean;
   academicYearToRequest: string = getCurrentAcademicYear().toString();
 
+  // Fields for scrollHandle:
+  initialBodyHeight: number;
+  elementCount: number;
+  totalCount: number;
+  initialRequestInProgress: boolean;
+  requestedPageCount: number = 1;
+  activeUrlParams: Params;
+  requestDataFunc: any;
+  keepOldList: boolean = false;
+
+
   constructor(injector: Injector) {
+    super();
+
+
     this.router = injector.get(Router);
     this.activatedRoute = injector.get(ActivatedRoute);
     this.schoolCategoriesService = injector.get(SchoolCategoriesService);
     this.schoolUnitsProfilesService = injector.get(SchoolUnitsProfilesService);
     this.userService = injector.get(AccountService);
-    this.studyClassAvailableGradesService = injector.get(StudentsSituationAvailableClassGradesService);
+    this.studyClassAvailableGradesService = injector.get(AvailableClassNamesService);
     this.genericAcademicProgramsService = injector.get(GenericAcademicProgramsService);
+    this.currentAcademicYearService = injector.get(CurrentAcademicYearService);
+
+    this.currentAcademicYearService.getData().subscribe((academicYearCalendar: AcademicYearCalendar) => {
+      this.academicYearToRequest = academicYearCalendar.academic_year.toString();
+    });
 
     this.defaultFilterData = {
       // Commented for MVP (just 'Cluj' district and 'Cluj-Napoca' city should be available)
       // districts: Object.keys(districts).map((districtName) => ({id: districtName, text: capitalizeString(districtName, [' ', '-'])})),
       // cities: cities,
       districts: [{id: 'cluj', text: 'Cluj'}],
-      cities: [{'id':'cluj-napoca','text':'Cluj-Napoca','district':'cluj'}],
+      cities: [{'id': 'cluj-napoca', 'text': 'Cluj-Napoca', 'district': 'cluj'}],
       schoolCategories: this.schoolCategoriesService.getData(true).pipe(catchError(() => of(null))),
       schoolProfiles: this.schoolUnitsProfilesService.getData(true).pipe(catchError(() => of(null))),
       academicYears: getAvailableAcademicYears().map(element => ({id: element, text: `${element} - ${element + 1}`})),
       userRoles: userRolesArray,
       userStatuses: userStatuses,
-      studyClassGrades: this.studyClassAvailableGradesService.getData(true, this.academicYearToRequest).pipe(catchError(() => of(null))),
+      studyClassGrades: this.studyClassAvailableGradesService.getData(true).pipe(map(response => {
+        response.forEach((element, index) => {
+          const tempArray = response.slice(index, response.length - 1);
+          if (tempArray.includes(element)) {
+            response.splice(index, 1);
+          }
+        });
+        return response;
+      }), catchError(() => of(null))),
       genericAcademicPrograms: this.genericAcademicProgramsService.getData(true).pipe(catchError(() => of(null))),
-      sortCriteria: studentsSituationSortCriteria
+      sortCriteria: this.activatedRoute.snapshot.url[2]?.path === 'class-detail' ? classListDetailSortCriteria : studentsSituationSortCriteria
     };
+
   }
 
 
@@ -110,7 +143,6 @@ export class ListPage {
     // if Observables were found, subscribe to them and set their results into this.filterData
     if (Object.keys(dataToRequest).length) {
       forkJoin(dataToRequest).subscribe((results: object) => {
-        // debugger;
         Object.keys(results).forEach((filterKey) => {
           this.filterData[filterKey] = results[filterKey];
         });
@@ -137,13 +169,16 @@ export class ListPage {
       this.filterParams.userRole = urlParams.user_role && this.filterData.userRoles[findIndex(this.filterData.userRoles, {id: urlParams.user_role})];
       this.filterParams.userStatus = urlParams.is_active && this.filterData.userStatuses[findIndex(this.filterData.userStatuses, {key: urlParams?.is_active !== undefined ? Boolean(JSON.parse(urlParams?.is_active)) : undefined})];
       this.filterParams.studyClassGrade = urlParams.studyClassGrade;
-      this.filterParams.genericAcademicProgram = urlParams.academicProfile && this.filterData.genericAcademicPrograms[findIndex(this.filterData.genericAcademicPrograms, {id: parseInt(urlParams.academicProfile, 10)})];
+      this.filterParams.genericAcademicProgram = urlParams.academicProgram && this.filterData.genericAcademicPrograms[findIndex(this.filterData.genericAcademicPrograms, {id: parseInt(urlParams.academicProgram, 10)})];
       this.filterParams.sortCriterion = urlParams.ordering && this.filterData.sortCriteria[findIndex(this.filterData.sortCriteria, {id: urlParams.ordering})];
     });
   }
 
   // Methods to change the url params:
   changeSearch(search: string): void {
+    if (search.length === 0) {
+      search = null;
+    }
     this.changeUrlParams({search: search});
   }
 
@@ -184,15 +219,21 @@ export class ListPage {
   }
 
   changeGenericAcademicProfile(value): void {
-    this.changeUrlParams({'academicProfile': value?.id});
+    this.changeUrlParams({'academicProgram': value?.id});
   }
 
   changeSortingCriterion(value): void {
     this.changeUrlParams({'ordering': value?.id});
   }
-  
+
   customUrlParamsChange(params) {
     this.changeUrlParams(params);
+  }
+
+  deleteFilters() {
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+    });
   }
 
   private changeUrlParams(newParams: object): void {
@@ -202,4 +243,5 @@ export class ListPage {
       queryParamsHandling: 'merge'
     });
   }
+
 }

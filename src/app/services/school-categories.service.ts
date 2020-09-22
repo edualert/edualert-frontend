@@ -16,7 +16,7 @@ export class SchoolCategoriesService extends OneTimeDataGetter {
   getData(forceRequest?: boolean): Observable<SchoolCategory[]> {
     return super.getData(forceRequest, 'school-units-categories/')
       .pipe(map((response) => (response).map(
-        category => new IdName(category)
+        category => new SchoolCategory(category)
       )));
   }
 }

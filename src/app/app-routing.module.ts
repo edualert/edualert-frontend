@@ -49,12 +49,11 @@ const routes: Routes = [
   {
     matcher: (url) => {
       const path = url[0]?.path;
-      if (path === 'login-admin' || path === 'login-faculty' || path === 'forgot-password' || path === 'reset-password') {
+      if ((path === 'login-admin' || path === 'login-faculty' || path === 'forgot-password' || path === 'reset-password') && (url.length === 1 || (path === 'reset-password' && url.length === 2))) {
         return {
           consumed: url
         };
       }
-      return null;
     },
     component: LoginComponent,
     canActivate: [AuthGuardService]
@@ -63,8 +62,8 @@ const routes: Routes = [
 
   {path: 'manage-class-profiles', pathMatch: 'full', component: ManageClassProfilesComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
   {path: 'manage-class-profiles/:id/view', pathMatch: 'full', component: ClassProfileDetailComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
-  {path: 'manage-class-profiles/:id/edit', pathMatch: 'full', component: ClassProfileAddEditComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
-  {path: 'manage-class-profiles/add', pathMatch: 'full', component: ClassProfileAddEditComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
+  {path: 'manage-class-profiles/:id/edit', pathMatch: 'full', component: ClassProfileAddEditComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},
+  {path: 'manage-class-profiles/add', pathMatch: 'full', component: ClassProfileAddEditComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},
 
   {path: 'manage-classes',  pathMatch: 'full', component: ManageClassesComponent, canActivate: [AuthGuardService]},
   {path: 'manage-classes/:id/view', pathMatch: 'full', component: ClassDetailComponent, canActivate: [AuthGuardService]},
@@ -101,6 +100,7 @@ const routes: Routes = [
 
   {path: 'manage-school-calendar', pathMatch: 'full', component: ViewStudyYearComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
   {path: 'manage-school-calendar/edit', pathMatch: 'full', component: EditStudyYearComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},
+  {path: '**', redirectTo: ''}
 ];
 
 @NgModule({

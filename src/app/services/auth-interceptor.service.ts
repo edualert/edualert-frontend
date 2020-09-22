@@ -5,14 +5,15 @@ import {AuthService, HttpAuthResponse} from './auth.service';
 import {catchError} from 'rxjs/operators';
 import {flatMap} from 'rxjs/internal/operators';
 import {LocalStorageService} from './local-storage.service';
-
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthInterceptorService implements HttpInterceptor {
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService,
+              private router: Router) {
   }
 
   private static setAuthTokenHeader(req: HttpRequest<any>, token: string): HttpRequest<any> {
@@ -39,6 +40,14 @@ export class AuthInterceptorService implements HttpInterceptor {
       flatMap((response: HttpAuthResponse) => {
         const newReq = AuthInterceptorService.setAuthTokenHeader(req, response.access_token);
         return next.handle(newReq);
+      }),
+      catchError( err => {
+        if ( err.status === 400 ) {
+          this.router.navigateByUrl('');
+          LocalStorageService.removeAccessToken();
+          LocalStorageService.removeRefreshToken();
+        }
+        return throwError(err);
       })
     );
   }

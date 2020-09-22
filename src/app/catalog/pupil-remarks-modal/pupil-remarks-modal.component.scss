@@ -1,0 +1,142 @@
+@import '../../../assets/styles/base';
+@import '../../../assets/styles/buttons';
+
+.title, .description {
+  color: white;
+}
+
+.description {
+  margin-top: 5px;
+}
+
+
+textarea {
+  margin: $margin-big auto;
+  width: 500px;
+  height: 200px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border-radius: 10px;
+  opacity: 1;
+  padding: $margin-default $margin-tiny $margin-default $margin-default;
+  transition: box-shadow 0.1s $ease-in;
+
+  border: none;
+  overflow: auto;
+  outline: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  resize: none; /*remove the resize handle on the bottom right*/
+
+  &.error {
+    box-shadow: inset 0 0 0 1px lighten($color-red, 3%);
+  }
+}
+
+textarea::-webkit-input-placeholder {
+  font-size: $font-size-bigish;
+  letter-spacing: 0;
+  color: $color-text-light;}
+
+textarea:-moz-placeholder { /* Firefox 18- */
+  font-size: $font-size-bigish;
+  letter-spacing: 0;
+  color: $color-text-light;
+}
+
+textarea::placeholder {
+  font-size: $font-size-bigish;
+  letter-spacing: 0;
+  color: $color-text-light;
+}
+
+.textarea-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .textarea-label {
+    position: absolute;
+    bottom: $margin-big;
+    width: 500px;
+    padding-left: $margin-default;
+    height: 20px;
+    background: #F9F9F9;
+    border-radius: 0 0 $border-radius-normal $border-radius-normal;
+    color: $color-text-light;
+    transition: color 0.1s $ease-in, background-color 0.1s $ease-in;
+    font-size: $font-size-small;
+    &.error {
+      background: $color-red;
+      color: #FFFFFF;
+    }
+  }
+}
+
+
+.body {
+  width: 500px;
+
+  .action-button {
+    display: flex;
+    font-weight: $font-weight-regular;
+    color: $color-text-normal;
+    background-color: white;
+    margin-top: $margin-tiny;
+    margin-right: $margin-default;
+    padding: 6px $margin-small 6px $margin-tiny;
+    cursor: unset;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+
+    .text-content {
+      align-self: center;
+      white-space: nowrap;
+    }
+  }
+}
+
+.text-button {
+  &.disabled {
+    color: $color-text-normal;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .body {
+    width: unset;
+  }
+}
+
+@media (max-width: $mobile-screen-width-small) {
+  .body {
+    max-width: 500px;
+    width: 100%;
+
+    .labels-container {
+      padding-top: $margin-small;
+      padding-bottom: $margin-small;
+      flex-direction: column;
+
+      .action-button {
+        margin-top: $margin-tiny;
+        margin-right: auto;
+        border-radius: $border-radius-tiny;
+
+        &:first-of-type {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+}
+
+.margin-right-30 {
+  margin-right: $margin-big;
+}

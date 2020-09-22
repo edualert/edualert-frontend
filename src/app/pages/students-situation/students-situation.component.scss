@@ -2,6 +2,23 @@
 
 .page-content {
   padding-right: 0;
+
+  @keyframes contentAppear {
+    0% {
+      opacity: 0;
+      background-color: opacity($color-background);
+    }
+    40% {
+      opacity: 0;
+      background-color: opacity($color-background);
+    }
+    100% {
+      opacity: 1;
+      background-color: opacity($color-background);
+    }
+
+  }
+  animation: contentAppear 2.9s linear 1 backwards;
 }
 
 .dropdown-parent {
@@ -20,13 +37,6 @@
 #header-sort {
   display: flex;
   align-items: baseline;
-}
-
-.list-count {
-  position: absolute;
-  bottom: 60px;
-  right: 5px;
-  width: max-content;
 }
 
 @media (max-width: $mobile-screen-width-normal) {

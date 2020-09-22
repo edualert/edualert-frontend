@@ -12,13 +12,22 @@ import {cleanSession} from 'selenium-webdriver/safari';
   providedIn: 'root'
 })
 export class InstitutionsAtRiskService extends OneTimeDataGetter {
+  totalCount: number;
 
   constructor(injector: Injector) {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<InstitutionAtRisk[]> {
-    return super.getData(forceRequest, 'institutions-at-risk/')
+  getData(forceRequest: boolean, requestPath?: string, page_size?: number, page?: number): Observable<InstitutionAtRisk[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `institutions-at-risk/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `institutions-at-risk/?page_size=${page_size}`;
+    } else {
+      path = `institutions-at-risk/`;
+    }
+    return super.getData(forceRequest, path)
       .pipe(map((response: NetworkingListResponse) => {
         const institutionsAtRiskList: InstitutionAtRisk[] = [];
         if (response.count !== 0) {
@@ -26,8 +35,13 @@ export class InstitutionsAtRiskService extends OneTimeDataGetter {
             institutionsAtRiskList.push(new InstitutionAtRisk(institution));
           });
         }
+        this.totalCount = response.count;
         return institutionsAtRiskList;
       }));
+  }
+
+  getTotalCount(): number {
+    return this.totalCount;
   }
 }
 
@@ -35,13 +49,22 @@ export class InstitutionsAtRiskService extends OneTimeDataGetter {
   providedIn: 'root'
 })
 export class InactiveInstitutionsService extends OneTimeDataGetter {
+  totalCount: number;
 
   constructor(injector: Injector) {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<InactiveInstitution[]> {
-    return super.getData(forceRequest, 'inactive-institutions/')
+  getData(forceRequest: boolean, requestPath?: string, page_size?: number, page?: number): Observable<InactiveInstitution[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `inactive-institutions/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `inactive-institutions/?page_size=${page_size}`;
+    } else {
+      path = `inactive-institutions/`;
+    }
+    return super.getData(forceRequest, path)
       .pipe(map((response: NetworkingListResponse) => {
         const inactiveInstitutionsList: InactiveInstitution[] = [];
         if (response.count !== 0) {
@@ -49,8 +72,13 @@ export class InactiveInstitutionsService extends OneTimeDataGetter {
             inactiveInstitutionsList.push(new InactiveInstitution(institution));
           });
         }
+        this.totalCount = response.count;
         return inactiveInstitutionsList;
       }));
+  }
+
+  getTotalCount(): number {
+    return this.totalCount;
   }
 }
 
@@ -83,22 +111,38 @@ export class InstitutionsEnrollmentStatisticsService extends OneTimeDataGetter {
   providedIn: 'root'
 })
 export class InstitutionsAverageService extends OneTimeDataGetter {
+  totalCount: number = null;
 
   constructor(injector: Injector) {
     super(injector);
+    this.getTotalCount = this.getTotalCount.bind(this);
   }
 
-  getData(forceRequest: boolean, classId?: string): Observable<Averages[]> {
-    return super.getData(forceRequest, `institutions-averages/`)
+  getData(forceRequest: boolean, classId?: string, page_size?: number, page?: number): Observable<Averages[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `institutions-averages/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `institutions-averages/?page_size=${page_size}`;
+    } else {
+      path = `institutions-averages/`;
+    }
+
+    return super.getData(forceRequest, path)
       .pipe(map( (response: NetworkingListResponse) => {
         const listOfInstitutionsAverages: Averages[] = [];
-        if ( response.count > 0 ) {
+        if (response.count > 0) {
           response.results.forEach( el => {
             listOfInstitutionsAverages.push(new Averages(el));
           });
         }
+        this.totalCount = response.count;
         return listOfInstitutionsAverages;
       }));
+  }
+
+  getTotalCount(): number {
+    return this.totalCount;
   }
 }
 
@@ -106,13 +150,23 @@ export class InstitutionsAverageService extends OneTimeDataGetter {
   providedIn: 'root'
 })
 export class InstitutionsAbsencesService extends OneTimeDataGetter {
+  totalCount: number;
 
   constructor(injector: Injector) {
     super(injector);
+    this.getTotalCount = this.getTotalCount.bind(this);
   }
 
-  getData(forceRequest: boolean, classId?: string): Observable<Absences[]> {
-    return super.getData(forceRequest, `institutions-absences/`)
+  getData(forceRequest: boolean, classId?: string, page_size?: number, page?: number): Observable<Absences[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `institutions-absences/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `institutions-absences/?page_size=${page_size}`;
+    } else {
+      path = `institutions-absences/`;
+    }
+    return super.getData(forceRequest, path)
       .pipe(map( (response: NetworkingListResponse) => {
         const listOfInstitutionsAbsences: Absences[] = [];
         if ( response.count > 0 ) {
@@ -120,7 +174,12 @@ export class InstitutionsAbsencesService extends OneTimeDataGetter {
             listOfInstitutionsAbsences.push(new Absences(el));
           });
         }
+        this.totalCount = response.count;
         return listOfInstitutionsAbsences;
       }));
+  }
+
+  getTotalCount(): number {
+    return this.totalCount;
   }
 }

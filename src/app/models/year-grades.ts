@@ -1,4 +1,5 @@
 export enum YearGrades {
+  'P' = 'Clasa P',
   'I' = 'Clasa I',
   'II' = 'Clasa II',
   'III' = 'Clasa III',

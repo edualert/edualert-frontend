@@ -48,7 +48,7 @@ export class IsTeacherClassMasterService {
 
   verifyIfClassMaster(): Observable<boolean> {
     const currentAcademicYear = getCurrentAcademicYear();
-    return this.httpClient.get(`years/${currentAcademicYear}/own-study-classes`)
+    return this.httpClient.get(`years/${currentAcademicYear}/own-study-classes/`)
       .pipe(map((response: any) => {
         let isClassMaster = false;
         if (response.hasOwnProperty('class_master') && response['class_master'].length > 0) {

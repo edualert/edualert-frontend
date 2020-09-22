@@ -20,7 +20,10 @@
           <ng-container [ngSwitch]="message?.receiver_type">
             <ng-container *ngSwitchCase="'CLASS_STUDENTS'">
               <div class="cell">
-                <a class="text-item link-content blue-text bold arrow right" [routerLink]="['/my-classes', message.target_study_class.id, 'class-detail']">
+                <a class="text-item link-content blue-text bold arrow right"
+                   [routerLink]="account.user_role  === 'SCHOOL_PRINCIPAL' ?
+                          ['/manage-classes', message.target_study_class.id, 'view'] :
+                          ['/my-classes', message.target_study_class.id, 'class-detail']">
 									{{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
 								</a>
               </div>
@@ -34,7 +37,10 @@
               <hr class="vertical">
               <div class="cell">
                 <span class="title">Clasă:</span>
-                <a class="text-item link-content blue-text bold arrow right" [routerLink]="['/my-classes', message.target_study_class.id, 'class-detail']">
+                <a class="text-item link-content blue-text bold arrow right"
+                   [routerLink]="account.user_role === 'SCHOOL_PRINCIPAL' ?
+                          ['/manage-classes', message.target_study_class.id, 'view'] :
+                          ['/my-classes', message.target_study_class.id, 'class-detail']">
 									{{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
 								</a>
               </div>
@@ -47,8 +53,11 @@
               </div>
               <hr class="vertical">
               <div class="cell">
-                <span class="title">Elev:</span>
-                <a class="text-item link-content blue-text bold arrow right" [routerLink]="['/my-classes', message.target_study_class.id, 'class-detail']">
+                <span class="title">Clasă:</span>
+                <a class="text-item link-content blue-text bold arrow right"
+                   [routerLink]="account.user_role === 'SCHOOL_PRINCIPAL' ?
+                          ['/manage-classes', message.target_study_class.id, 'view'] :
+                          ['/my-classes', message.target_study_class.id, 'class-detail']">
 									{{message.target_study_class.class_grade + " " + message.target_study_class.class_letter}}
 								</a>
               </div>
@@ -56,21 +65,24 @@
             <ng-container *ngSwitchCase="'ONE_PARENT'" class="receiver-info-wrapper">
               <div class="cell">
                 <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.target_user_through.user_profile)">
-									{{message.target_user_through.user_profile_full_name}}
+									{{message.target_user_through?.user_profile_full_name}}
 								</span>
               </div>
               <hr class="vertical">
               <div class="cell">
                 <span class="title">Părinte elev:</span>
                 <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.target_user_through.children[0].id)">
-									{{message.target_user_through.children[0].full_name}}
+									{{message.target_user_through.children[0]?.full_name}}
 								</span>
               </div>
               <hr class="vertical">
               <div class="cell">
                 <span class="title">Clasă:</span>
-                <a class="text-item link-content blue-text bold arrow right" [routerLink]="['/my-classes', message.target_user_through.children[0].study_class.id, 'class-detail']">
-									{{message.target_user_through.children[0].study_class.class_grade + " " + message.target_user_through.children[0].study_class.class_letter}}
+                <a class="text-item link-content blue-text bold arrow right"
+                   [routerLink]="account.user_role === 'SCHOOL_PRINCIPAL' ?
+                          ['/manage-classes', message.target_user_through.children[0]?.study_class.id, 'view'] :
+                          ['/my-classes', message.target_user_through.children[0]?.study_class.id, 'class-detail']">
+									{{message.target_user_through.children[0]?.study_class.class_grade + " " + message.target_user_through.children[0]?.study_class.class_letter}}
 								</a>
               </div>
             </ng-container>
@@ -110,8 +122,8 @@
           <ng-container [ngSwitch]="message?.from_user_role">
             <ng-container *ngSwitchCase="'SCHOOL_PRINCIPAL'">
               <div class="cell">
-              <span class="text-item link-content bold">
-									{{message?.from_user_full_name}}
+              <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.from_user)">
+                {{message?.from_user_full_name}}
               </span>
               </div>
               <hr class="vertical">
@@ -121,9 +133,9 @@
             </ng-container>
             <ng-container *ngSwitchCase="'TEACHER'">
               <div class="cell">
-              <span class="text-item dark-text bold">
-                {{message?.from_user_full_name}}
-              </span>
+              <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.from_user)">
+              {{message?.from_user_full_name}}
+            </span>
               </div>
               <hr class="vertical">
               <div class="cell">

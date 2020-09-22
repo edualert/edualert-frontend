@@ -158,6 +158,12 @@
     transition: transform 0.2s $ease-in-out, background-color 0.15s;
   }
 
+  &.uncheckable {
+    &:before {
+      background-color: darken($color-separator, 10%);
+    }
+  }
+
   &.checked {
     &:before {
       transform: none;

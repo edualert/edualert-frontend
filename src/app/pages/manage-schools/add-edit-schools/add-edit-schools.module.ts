@@ -8,6 +8,7 @@ import {HeaderModule} from '../../../header/header.module';
 import { AddSchoolDetailsComponent } from './add-school-details/add-school-details.component';
 import { AddEditSchoolsComponent } from './add-edit-schools.component';
 import {RouterModule} from '@angular/router';
+import {AddUserModalModule} from '../../manage-users/add-user-modal/add-user-modal.module';
 
 @NgModule({
   declarations: [EditSchoolDetailsComponent, AddSchoolDetailsComponent, AddEditSchoolsComponent],
@@ -17,7 +18,8 @@ import {RouterModule} from '@angular/router';
     DropdownModule,
     SharedModule,
     HeaderModule,
-    RouterModule
+    RouterModule,
+    AddUserModalModule
   ]
 })
 export class AddEditModule {}

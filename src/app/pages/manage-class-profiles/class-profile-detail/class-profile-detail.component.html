@@ -7,12 +7,17 @@
       </div>
     </a>
     <h1 id="header-title">Detalii profil</h1>
-    <h2 id="header-subtitle" *ngIf="!requestInProgress">
-      {{academicProgramDetails?.academic_year}} - {{academicProgramDetails?.academic_year + 1}}
+    <h2 id="header-subtitle">
+      <ng-container *ngIf="!requestInProgress else loading">
+        {{academicProgramDetails?.academic_year}} - {{academicProgramDetails?.academic_year + 1}}
+      </ng-container>
+      <ng-template #loading>Se încarcă datele...</ng-template>
     </h2>
     <div id="header-top-right-container">
-      <div class="button-container">
-        <a [routerLink]="'/manage-class-profiles/' + academicProgramDetails?.id + '/edit'" class="text-button">
+      <div *ngIf="!requestInProgress"
+           class="button-container">
+        <a [routerLink]="'/manage-class-profiles/' + academicProgramDetails?.id + '/edit'"
+           class="text-button"  >
           Editează
         </a>
         <div class="text-button dark-text"
@@ -24,9 +29,9 @@
   </app-header>
   <div class="page-content">
     <ng-container *ngIf="!this.requestInProgress; else loadingList">
-      <div class="detail-element-container header blue-text bold">
+      <div class="detail-element-container header blue-text">
         <div class="label-container fixed-large-column">Nume</div>
-        <div class="value-container">{{academicProgramDetails.name}}</div>
+        <div class="value-container bold">{{academicProgramDetails.name}}</div>
       </div>
       <div class="detail-element-container" *ngIf="academicProgramDetails.core_subject">
         <div class="label-container fixed-large-column">Disciplină de specialitate</div>
@@ -48,6 +53,7 @@
       </div>
       <div [ngSwitch]="subjectActiveTab">
         <div *ngSwitchCase="'mandatory_subjects'">
+          <ng-container *ngIf="academicProgramDetails.subjects[yearGradeActiveTab]?.mandatory_subjects.length; else noResultsText"></ng-container>
           <div *ngFor="let subject of academicProgramDetails.subjects[yearGradeActiveTab]?.mandatory_subjects">
             <div class="detail-element-container">
               <div class="label-container fixed-large-column">Nume</div>
@@ -61,6 +67,7 @@
           </div>
         </div>
         <div *ngSwitchCase="'optional_subjects'">
+          <ng-container *ngIf="academicProgramDetails.subjects[yearGradeActiveTab]?.optional_subjects.length > 0; else noResultsText"></ng-container>
           <div *ngFor="let subject of academicProgramDetails.subjects[yearGradeActiveTab]?.optional_subjects">
             <div class="detail-element-container">
               <div class="label-container fixed-large-column">Nume</div>
@@ -78,6 +85,11 @@
     <ng-template #loadingList>
       <div class="list-count">
         Se încarcă datele...
+      </div>
+    </ng-template>
+    <ng-template #noResultsText>
+      <div class="no-results">
+        Lista este goală
       </div>
     </ng-template>
   </div>

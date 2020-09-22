@@ -1,6 +1,7 @@
 @import './base';
 
 .error-toast {
+  display: flex;
   color: whitesmoke;
   background-color: $color-red;
   height: auto;

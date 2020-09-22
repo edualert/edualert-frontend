@@ -3,7 +3,7 @@ import {LocalStorageService} from '../services/local-storage.service';
 import {monthDatesAndNames, weekdays} from './constants';
 import {findIndex} from 'lodash';
 
-export const academicYearStart = moment(`15.09.${moment().year()}`, 'DD.MM.YYYY');
+export const academicYearStart = moment(`07.09.${moment().year()}`, 'DD.MM.YYYY');
 export const initialAcademicYear = 2019;
 
 export const monthsRo = [
@@ -28,7 +28,7 @@ export function formatPhoneNumber(phoneNumber: string): string {
   if (phoneNumber === null) {
     return '-';
   }
-  return phoneNumber.slice(0, 4) + ' ' + phoneNumber.slice(4, 7) + ' ' + phoneNumber.slice(7, 10);
+  return phoneNumber.slice(0, 4) + ' ' + phoneNumber.slice(4, 7) + ' ' + phoneNumber.slice(7, phoneNumber.length);
 }
 
 export const getCurrentAcademicYear = (): number => {
@@ -143,10 +143,31 @@ export function handleChartWidthHeight(currentScreenHeight?: number): number[] {
 
   if (currentScreenHeight) {
     const headerHeight = document.getElementById('page-header').getBoundingClientRect().height;
-    const headerSizeDelta = headerHeight >= 195 ? 173 : 203;
+    const headerSizeDelta = headerHeight >= 195 ? 93 : 103;
     chartHeight = currentScreenHeight - headerHeight - headerSizeDelta;
   }
 
   chartWH = window.innerWidth < 768 ? [800, chartHeight] : [1400, chartHeight];
   return chartWH;
+}
+
+export function compareSubjectsName(a, b) {
+  return compare(a, b, 'subject_name');
+}
+
+//  General comparing function for objects by given field
+export function compare(a, b, field) {
+  //  Use toUpperCase() to ignore character casing
+  const comparingItem = a.hasOwnProperty(field) ? a[field].toUpperCase() : null;
+  const compareAgainst = b.hasOwnProperty(field) ? b[field].toUpperCase() : null;
+
+  let comparison = 0;
+  if (comparingItem && compareAgainst) {
+    if (comparingItem > compareAgainst) {
+      comparison = 1;
+    } else if (comparingItem < compareAgainst) {
+      comparison = -1;
+    }
+  }
+  return comparison;
 }

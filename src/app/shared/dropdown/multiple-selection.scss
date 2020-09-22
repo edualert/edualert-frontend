@@ -8,6 +8,39 @@
   padding-right: 10px;
 }
 
+.multiple-with-search {
+  position: relative;
+
+  .dropdown-button-text {
+    display: flex;
+    justify-content: flex-start;
+    align-content: center;
+    padding: 7px 0 7px 10px;
+  }
+
+  .inactive-input {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .bottom-padded {
+    padding-bottom: 15px;
+  }
+}
+
+.dropdown-error {
+  border: 1px solid $color-red;
+  border-radius: $border-radius-tiny;
+
+  .dropdown-error-message {
+    position: fixed;
+    right: 35px;
+    color: $color-red;
+    font-size: $font-size-small;
+  }
+}
+
 .current-selection-horizontal-list {
   display: flex;
   flex-wrap: wrap;

@@ -17,13 +17,13 @@
     <!-- SIMPLE NUMBER ----------------------------------  -->
     <div *ngSwitchCase="'simple-number'" class="simple-number-cell">
       <div *ngIf="!data" class="list-element">-</div>
-      <div *ngIf="data" class="bg-element">{{data}}</div>
+      <div *ngIf="data" class="bg-element">{{!data ? '0' : data}}</div>
     </div>
 
     <!-- SEMESTER AVERAGE ----------------------------------  -->
     <div *ngSwitchCase="'sem-avg'" class="semester-average-cell">
       <div *ngIf="!data" class="list-element">-</div>
-      <div *ngIf="data" class="bg-element {{data > 4 ? 'blue-text' : 'red-text'}}">
+      <div *ngIf="data" class="bg-element {{data >= pivotPoint ? 'blue-text' : 'red-text'}}">
         {{data}}
       </div>
     </div>
@@ -32,14 +32,14 @@
     <div *ngSwitchCase="'annual-avg'" class="annual-average-cell">
       <div *ngIf="!data" class="list-element">-</div>
 
-      <div *ngIf="data && !data.length" class="bg-element annual" [class.red-background]="data < 5">
+      <div *ngIf="data && !data.length" class="bg-element annual" [class.red-background]="data <= pivotPoint">
         {{data}}
       </div>
 
       <!--2 grades: before and after retry -->
       <div *ngIf="data?.length == 2">
-        <div class="bg-element big-bg-element annual first-avg" [class.red-background]="data[0] < 5">{{data[0]}}</div>
-        <div class="bg-element big-bg-element annual second-avg" [class.red-background]="data[1] < 5">{{data[1]}}</div>
+        <div class="bg-element big-bg-element annual first-avg" [class.red-background]="data[0] < pivotPoint">{{data[0]}}</div>
+        <div class="bg-element big-bg-element annual second-avg" [class.red-background]="data[1] < pivotPoint">{{data[1]}}</div>
       </div>
 
     </div>
@@ -47,14 +47,14 @@
     <!-- ABSENCES TOTAL ----------------------------------  -->
     <div *ngSwitchCase="'absences-count'" class="absences-count-cell total">
       <div *ngIf="!data" class="list-element">-</div>
-      <div *ngIf="data" class="bg-element big-bg-element" [class.red-text]="data >= 10">{{data}}</div>
+      <div *ngIf="data" class="bg-element big-bg-element" [class.red-text]="data > exceptionRule ? true : data >= pivotPoint">{{data}}</div>
     </div>
 
     <!-- GRADES LIST ----------------------------------  -->
     <div *ngSwitchCase="'grades-list'" class="list-cell">
       <div class="list">
         <div *ngIf="!data || !data.grades || !data.grades.length" class="list-element">-</div>
-        <div *ngFor="let grade of data?.grades | slice:0:maxGrades" class="list-element">
+        <div *ngFor="let grade of data?.grades | slice:0:maxGrades" class="list-element" [class.red-text]="grade.grade <= pivotPoint">
           {{grade.grade}}
         </div>
         <div *ngIf="data?.grades && data.grades.length > maxGrades" class="hidden-items">
@@ -64,10 +64,10 @@
 
       <div class="horizontal">
         <div *ngIf="data?.thesis"
-             class="bg-element small-bg-element {{data?.thesis.grade > maxGrades ? 'blue-text' : 'red-text'}}">
+             class="bg-element small-bg-element {{data?.thesis.grade > pivotPoint ? 'blue-text' : 'red-text'}}">
           {{data.thesis.grade}}
         </div>
-        <div *ngIf="data?.avg" class="bg-element average {{data?.avg > maxGrades ? 'blue-text' : 'red-text'}}">
+        <div *ngIf="data?.avg" class="bg-element average {{data?.avg > pivotPoint ? 'blue-text' : 'red-text'}}">
           {{data.avg}}
         </div>
       </div>
@@ -83,7 +83,7 @@
         <div *ngIf="this.data?.length > 3" class="hidden-items"> + {{data?.length - 3}}</div>
       </div>
       <div class="horizontal">
-        <div *ngIf="data?.length" class="bg-element" [class.red-text]="data?.length >= 10">{{data?.length}}</div>
+        <div *ngIf="data?.length" class="bg-element" [class.red-text]="data > exceptionRule ? true : data?.length >= pivotPoint">{{data?.length}}</div>
       </div>
     </div>
 
@@ -94,7 +94,7 @@
       </div>
       <div class="secondary-text clickable"
            [routerLink]="'/messages/create'"
-           [queryParams]="{userId: data?.id}">
+           [queryParams]="{userId: data?.id, userName: data?.full_name}">
         Trimitere mesaj
       </div>
     </div>
@@ -104,7 +104,7 @@
       <div class="name">
         {{data?.subject_name}}
       </div>
-      <div class="blue-text secondary-text clickable">
+      <div class="blue-text secondary-text clickable" (click)="openUserDetailsModal(data?.teacher?.id)">
         {{data?.teacher?.full_name}}
       </div>
     </div>
@@ -112,14 +112,14 @@
     <!-- BUTTONS ----------------------------------  -->
     <div *ngSwitchCase="'buttons'" class="buttons-cell">
       <div class="labels">
-        <div class="button" (click)="openTagsModal(data)">
+        <div *ngIf="data && data?.labels?.length || data && data?.length" class="button" (click)="openTagsModal(data?.labels ? data?.labels : data)">
           Etichete
         </div>
-        <div class="label-count">
-          {{data.labels.length}}
+        <div *ngIf="data && data?.labels?.length || data && data?.length"  class="label-count">
+          +{{data?.labels?.length ? data?.labels?.length : data?.length}}
         </div>
       </div>
-      <div class="button" (click)="openObservationsModal()">
+      <div class="button" (click)="openObservationsModal(data?.risk_description)">
         Observații
       </div>
     </div>
@@ -150,5 +150,6 @@
   </ng-container>
 </div>
 
-<!--<app-pupil-labels-modal #viewPupilLabelsModal></app-pupil-labels-modal>-->
-<!--<app-view-user-modal #userDetailsModal></app-view-user-modal>-->
+<app-pupil-labels-modal #viewPupilLabelsModal></app-pupil-labels-modal>
+<app-pupil-remarks-modal #viewRemarksLabelsModal></app-pupil-remarks-modal>
+<app-view-user-modal #userDetailsModal></app-view-user-modal>

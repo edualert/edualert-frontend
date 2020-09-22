@@ -70,8 +70,9 @@ export class MyOwnAbsencesEvolutionService extends OneTimeDataGetter {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string, classId?:string, byCategory?: boolean): Observable<any> {
-    return super.getData(forceRequest, `own-absences-evolution/?month=${classId}&by_category=${byCategory}`)
+  getData(forceRequest: boolean, requestPath?: string, month?: number, byCategory?: boolean): Observable<any> {
+    const path = byCategory ? `own-absences-evolution/?month=${month}&by_category=${byCategory}` : `own-absences-evolution/?month=${month}`;
+    return super.getData(forceRequest, path)
       .pipe(map((response: AbsencesStatistics[]) => response.map(absence => new AbsencesStatistics(absence))));
   }
 
