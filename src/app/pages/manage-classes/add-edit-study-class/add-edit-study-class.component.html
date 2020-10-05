@@ -30,7 +30,7 @@
 
   <div class="page-content">
     <div class="detail-element-container header regular blue-text">
-      <div class="label-container fixed-large-column">Nume*</div>
+      <div class="label-container fixed-large-column name-label">Nume*</div>
       <div class="dropdown-parent half-width margin-right-big">
         <app-dropdown
           [list]="availableClasses"
@@ -45,16 +45,12 @@
         ></app-dropdown>
       </div>
       <div class="dropdown-parent half-width">
-        <app-dropdown
-          [list]="classesAlphaLetters"
-          [placeholder]="'-'"
-          (elementHasBeenSelected)="handleInputChange($event, 'class_letter')"
-          [appliedElement]="studyClass?.class_letter"
-          [dropdownStyle]="'big'"
-          [errorMessage]="studyClassErrors?.class_letter ? studyClassErrors?.class_letter : ''"
-          [error]="studyClassErrors?.class_letter ? studyClassErrors?.class_letter : ''"
-          [required]="true"
-        ></app-dropdown>
+        <app-input-new [value]="studyClass?.class_letter"
+                       [error]="studyClassErrors?.class_letter ? studyClassErrors?.class_letter : ''"
+                       (inputChange)="handleInputChange({element: $event, index: 0}, 'class_letter')"
+                       [maxLength]="3"
+                       [inputStyle]="'big'"
+        ></app-input-new>
       </div>
     </div>
     <div class="row margin-top-tiny">

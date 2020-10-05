@@ -4,6 +4,8 @@
          [class.error]="error"
          (input)="sendValue($event)"
          [type]="inputType"
-         [maxlength]="maxLength">
+         [maxlength]="maxLength"
+         [ngClass]="inputStyle"
+         [class.disabled]="isDisabled">
   <div *ngIf="error" class="error-message {{ customErrorClass ? customErrorClass : '' }}">{{error}}</div>
 </div>
