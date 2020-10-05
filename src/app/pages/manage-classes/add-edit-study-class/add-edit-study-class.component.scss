@@ -2,6 +2,7 @@
 
 .detail-element-container {
   margin-top: $margin-tiny !important;
+  align-items: unset !important;
 }
 
 .dropdown-parent {
@@ -10,6 +11,12 @@
   &.half-width {
     width: calc((100% - #{$fixed-width-column-large} - #{$margin-big}) / 2);
   }
+}
+
+.name-label {
+  height: 40px;
+  line-height: 40px;
+  margin-bottom: unset;
 }
 
 .button-container {

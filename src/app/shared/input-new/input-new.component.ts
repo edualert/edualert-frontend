@@ -14,6 +14,8 @@ export class InputNewComponent {
   @Input() inputType?: string;
   @Input() customErrorClass?: CustomErrorClass[];
   @Input() maxLength?: string | number;
+  @Input() inputStyle?: 'big';
+  @Input() isDisabled?: boolean = false;
 
   @Output() inputChange: EventEmitter<string> = new EventEmitter<string>();
 

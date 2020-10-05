@@ -10,6 +10,20 @@
   max-height: 110px;
   overflow-y: scroll;
   border-radius: $border-radius-normal;
+
+  .close-error {
+    align-self: center;
+    background: url('/../../assets/img/x-white.svg');
+    width: 15px;
+    height: 15px;
+    padding-bottom: 16px;
+    padding-right: $margin-tiny;
+    margin-left: $margin-tiny;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 
 .error-toast::-webkit-scrollbar {

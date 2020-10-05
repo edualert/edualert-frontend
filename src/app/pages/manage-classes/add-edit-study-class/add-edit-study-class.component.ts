@@ -121,7 +121,7 @@ export class AddEditStudyClassComponent implements OnInit {
     } else {
       this.studyClass[field] = event.element;
     }
-    if (!this.isEdit && (field === 'class_grade' || field === 'academic_program_name')) {
+    if (field === 'academic_program_name' || field === 'class_grade') {
       this.handlePageDataUpdate();
     }
     this.studyClassErrors[field] = null;
@@ -276,9 +276,14 @@ export class AddEditStudyClassComponent implements OnInit {
               this.checkObject(data, requiredFields[key]);
             }
           }
-        } else {
+        } else if (key !== 'students') {
           requiredFields[key] = 'Acest câmp este obligatoriu.';
           this.hasUnfilledFields = true;
+        }
+        if (requiredFields.hasOwnProperty(key) && data && key === 'class_letter' && !/^[A-Z0-9]*$/.test(data)) {
+          this.hasUnfilledFields = true;
+          requiredFields[key] = 'Acest câmp poate conține doar litere mari și cifre.';
+          return;
         }
       });
   }
