@@ -15,7 +15,7 @@ export class InactiveTeachersService extends OneTimeDataGetter {
   }
 
   getData(forceRequest: boolean, requestPath?: string): Observable<InactiveTeacher[]> {
-    return super.getData(forceRequest, 'inactive-teachers')
+    return super.getData(forceRequest, 'inactive-teachers/')
       .pipe(map((response: NetworkingListResponse) => {
         const inactiveTeachersList = [];
         if (response.count > 0) {

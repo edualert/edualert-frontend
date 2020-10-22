@@ -58,9 +58,17 @@
 		   <h1 id="header-title">Detalii clasă</h1>
 		   <h2 id="header-subtitle">{{study_class?.academic_year}} - {{study_class?.academic_year + 1}}</h2>
 		   <div id="header-top-right-container">
-		     <div class="button-container" [class.disabled]="!isEditable">
-		       <div class="text-button" [routerLink]="['/manage-classes/' + study_class.id + '/edit']">Editează</div>
-		       <div class="text-button dark-text" [class.disabled]="study_class?.has_previous_catalog_data" (click)="deleteClass($event)">Șterge</div>
+		     <div class="button-container">
+		       <div class="text-button"
+                [routerLink]="['/manage-classes/' + study_class.id + '/edit']"
+                *ngIf="isEditable">
+             Editează
+           </div>
+		       <div class="text-button dark-text"
+                *ngIf="isEditable && !study_class?.has_previous_catalog_data"
+                (click)="deleteClass($event)">
+             Șterge
+           </div>
 		     </div>
 		   </div>
 		 </app-header>

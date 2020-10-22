@@ -43,13 +43,14 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
 
   classDetails: ClassDetails;
   ownPupilsData: any[];
-  subjectsDataList: { studentListData: any, subjectId: number }[];
+  subjectsDataList: { [key: number]: { studentListData: any, subjectId: number } } = {};
 
   tabs: TableTab[];
   activeTab: any;
   tableData: any;
   tabsInitialised: boolean = false;
   initialSortCriteria: any = null;
+  pupilCount: number;
 
   @ViewChild('addGradesBulkModal', {static: false}) addGradesBulkModal: AddGradesBulkModalComponent;
   @ViewChild('addAbsencesBulkModal', {static: false}) addAbsencesBulkModal: AddAbsencesBulkModalComponent;
@@ -75,7 +76,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
     this.customUrlParamsChange({'ordering': this.defaultSortingCriterion?.id});
 
     this.activatedRoute.queryParams.subscribe((urlParams: Params) => {
-      if ( Object.keys(urlParams).length === 0 ) {
+      if (Object.keys(urlParams).length === 0) {
         urlParams = {'ordering': this.defaultSortingCriterion?.id};
         this.customUrlParamsChange(urlParams);
       }
@@ -87,15 +88,23 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
   ngOnInit(): void {
     this.classId = this.activatedRoute.snapshot.params['id'];
     this.tabs = [];
-    if (this.initialSortCriteria === null) this.initialSortCriteria = this.filterData.sortCriteria;
+    if (this.initialSortCriteria === null) {
+      this.initialSortCriteria = this.filterData.sortCriteria;
+    }
     this.fetchClassData(this.urlParams);
+  }
+
+  refreshClassData = () => {
+    this.fetchCatalogData(this.activeTab.id, this.urlParams);
   }
 
   private fetchClassData(urlParams?): void {
 
-    this.httpClient.get(`own-study-classes/${this.classId}/`).subscribe(response => {
+    // Get the overall class details
+    this.httpClient.get(`own-study-classes/${this.classId}/`).subscribe((response: ClassDetails) => {
+
       this.classDetails = new ClassDetails(response);
-      if (this.classDetails.is_class_master ) {
+      if (this.classDetails.is_class_master) {
         const gradesCountIndex = findIndex(this.filterData.sortCriteria, ({id: 'grades_count', text: 'Număr note'}));
         const lastGradeDateIndex = findIndex(this.filterData.sortCriteria, ({id: 'last_grade_date', text: 'Data ultimei note'}));
         if (gradesCountIndex !== -1 && lastGradeDateIndex !== 1) {
@@ -106,12 +115,15 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
         this.filterData.sortCriteria.push(...[{id: 'grades_count', text: 'Număr note'}, {id: 'last_grade_date', text: 'Data ultimei note'}]);
       }
 
-      if (!this.tabsInitialised) this.initialiseTabs();
+      if (!this.tabsInitialised) {
+        this.initialiseTabs();
+      }
 
       if (this.classDetails.is_class_master) {
         this.fetchOwnPupilData(urlParams);
+      } else {
+        this.fetchCatalogData(this.classDetails.taught_subjects[0].id, urlParams);
       }
-      this.fetchCatalogData(urlParams);
     });
   }
 
@@ -142,33 +154,35 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
     });
   }
 
-  private fetchCatalogData(urlParams?: Params): void {
-    this.subjectsDataList = [];
-    const requests: { [key: string]: Observable<any> } = {};
+  private fetchCatalogData(subjectId: any, urlParams?: Params): void {
     const httpParams = new RequestParams({...urlParams}).getHttpParams();
 
-    // Prepare requests for all the taught subjects
-    this.classDetails.taught_subjects.forEach((subject) => {
-      requests[subject.id] = this.httpClient.get(`own-study-classes/${this.classId}/subjects/${subject.id}/catalogs/`, {params: httpParams});
-    });
-    // Make all requests, populate the internal data with the results
-    forkJoin(requests).subscribe((responses) => {
-      this.subjectsDataList = this.classDetails.taught_subjects.map(
-        (subject: Subject) => ({studentListData: responses[subject.id], subjectId: subject.id})
-      );
-      // this.subjectsDataList = Object.keys(responses).map((subjectId) => ({studentListData: responses[subjectId], subjectId: parseInt(subjectId, 10)}));
-      this.tableData = this.subjectsDataList[0].studentListData;
+    this.httpClient.get(`own-study-classes/${this.classId}/subjects/${subjectId}/catalogs/`, {params: httpParams}).subscribe((response: any[]) => {
+      this.subjectsDataList[subjectId] = {studentListData: response, subjectId};
+      this.tableData = response;
+      this.pupilCount = response.length;
     });
   }
 
   changeTab(tab: any) {
-    const tabIndex = findIndex(this.tabs, {id: parseInt(tab, 10)});
-    this.activeTab = this.tabs[tabIndex];
+    this.activeTab = this.tabs[findIndex(this.tabs, {id: parseInt(tab, 10)})];
 
-    if (tab === this.classPupilsTab && this.classDetails?.is_class_master) {
+    if (parseInt(tab, 10) === this.classPupilsTab && this.classDetails?.is_class_master) {
       this.tableData = this.ownPupilsData;
     } else {
-      this.tableData = cloneDeep(this.subjectsDataList[findIndex(this.subjectsDataList, {subjectId: parseInt(tab, 10)})]?.studentListData);
+      this.setDataForTab(tab);
+    }
+    this.pupilCount = this.tableData?.length;
+  }
+
+  private setDataForTab(id) {
+    // If we already have the data, set it.
+    if (this.subjectsDataList[id]) {
+      this.tableData = this.subjectsDataList[id].studentListData;
+      this.pupilCount = this.tableData.length;
+    } else {
+      // Else, fetch it from the server and set it;
+      this.fetchCatalogData(id, this.activeUrlParams);
     }
   }
 
@@ -225,7 +239,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
   }
 
   sendClassMessageList() {
-   this.router.navigateByUrl(`/messages/create?classId=${this.classId}&className=${this.classDetails?.class_grade} ${this.classDetails?.class_letter}`)
+    this.router.navigateByUrl(`/messages/create?classId=${this.classId}&className=${this.classDetails?.class_grade} ${this.classDetails?.class_letter}`);
   }
 
   catalogExport() {
@@ -239,12 +253,16 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
       classLetter: this.classDetails?.class_letter,
       students: this.tableData,
       saveGradesCallback: (addedGrades: BulkAddedGrades) => {
-        this.httpClient.post(`${baseUrl}/bulk-grades/`, addedGrades).subscribe((response) => {
-          if (Object.keys(response).length) {
-            this.tableData = response['catalogs'];
-            this.addGradesBulkModal.close();
-          }
-        });
+        if (addedGrades.student_grades.length > 0) {
+          this.httpClient.post(`${baseUrl}/bulk-grades/`, addedGrades).subscribe((response) => {
+            if (Object.keys(response).length) {
+              this.tableData = response['catalogs'];
+              this.addGradesBulkModal.close();
+            }
+          });
+        } else {
+          this.addGradesBulkModal.close();
+        }
       }
     };
 
@@ -258,12 +276,16 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
       classLetter: this.classDetails?.class_letter,
       students: this.tableData,
       saveAbsencesCallback: (addedAbsences: BulkAddedAbsences) => {
-        this.httpClient.post(`${baseUrl}/bulk-absences/`, addedAbsences).subscribe((response) => {
-          if (Object.keys(response).length) {
-            this.tableData = response['catalogs'];
-            this.addAbsencesBulkModal.close();
-          }
-        });
+        if (addedAbsences.student_absences.length > 0) {
+          this.httpClient.post(`${baseUrl}/bulk-absences/`, addedAbsences).subscribe((response) => {
+            if (Object.keys(response).length) {
+              this.tableData = response['catalogs'];
+              this.addAbsencesBulkModal.close();
+            }
+          });
+        } else {
+          this.addAbsencesBulkModal.close();
+        }
       }
     };
 
@@ -278,7 +300,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
 
     // Remember the tab and its associated data before the request.
     const tabBeforeRequest = this.activeTab.id;
-    const currentSubject = this.subjectsDataList[findIndex(this.subjectsDataList, {subjectId: tabBeforeRequest})];
+    const currentSubject = this.subjectsDataList[tabBeforeRequest];
 
     request.subscribe((response: any) => {
       const studentIndex = findIndex(currentSubject.studentListData, {id: response.id});
@@ -288,11 +310,11 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
 
       // Do not update TableData if tab has been changed while the request was being made.
       if (this.activeTab.id === tabBeforeRequest) {
-        this.tableData = cloneDeep(this.subjectsDataList[findIndex(this.subjectsDataList, {subjectId: tabBeforeRequest})].studentListData);
+        this.tableData = cloneDeep(this.subjectsDataList[tabBeforeRequest].studentListData);
       }
 
       // Invalidate "Elevii Clasei" content due to the addition/removal of grades/absences, so we have to request the data for that tab again
-      if ( changesCatalogContent ) {
+      if (changesCatalogContent) {
         this.fetchOwnPupilData();
       }
     });
@@ -365,7 +387,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
 
 class BulkAddedGrades {
   taken_at: string;
-  student_grades: StudentToGrade;
+  student_grades: StudentToGrade[];
 }
 
 class StudentToGrade {
@@ -375,7 +397,7 @@ class StudentToGrade {
 
 class BulkAddedAbsences {
   taken_at: string;
-  student_absences: StudentToAbsence;
+  student_absences: StudentToAbsence[];
 }
 
 class StudentToAbsence {

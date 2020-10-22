@@ -31,6 +31,8 @@ export class EditMyAccountComponent implements OnInit {
     repeatNewPassword: null,
   };
   errors: any = {};
+  displayErrorToast: boolean = false;
+  errorKey: string;
   readonly userRoles = userRoles;
   passwordFormShouldBeSubmitted: boolean = false;
   hasModifiedData: boolean = false;
@@ -39,6 +41,8 @@ export class EditMyAccountComponent implements OnInit {
 
   addInput(event: string | number | boolean, key: string, formType = 'account'): void {
     this.hasModifiedData = true;
+    this.errors[key] = '';
+    this.displayErrorToast = false;
     if (formType === 'account') {
       this.account[key] = event;
     }
@@ -74,6 +78,8 @@ export class EditMyAccountComponent implements OnInit {
     Object.keys(this.errors).forEach(key => {
       if (this.errors[key]) {
         resp = false;
+        this.displayErrorToast = true;
+        this.errorKey = key;
         return;
       }
     });
@@ -117,7 +123,9 @@ export class EditMyAccountComponent implements OnInit {
       this.accountService.setAccount();
       this.router.navigate(['my-account']);
     }, (errorObject => {
-      this.errors[Object.keys(errorObject['error'])[0]] = errorObject['error'][Object.keys(errorObject['error'])[0]];
+      this.displayErrorToast = true;
+      this.errorKey = Object.keys(errorObject['error'])[0];
+      this.errors[this.errorKey] = errorObject['error'][this.errorKey];
     }));
   }
 
@@ -139,6 +147,10 @@ export class EditMyAccountComponent implements OnInit {
 
   showHidePassword(element) {
     element.inputType = element.inputType === 'password' ? 'text' : 'password';
+  }
+
+  hideErrorToast() {
+    this.displayErrorToast = false;
   }
 
 }

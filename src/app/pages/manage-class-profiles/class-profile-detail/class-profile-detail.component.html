@@ -13,11 +13,12 @@
       </ng-container>
       <ng-template #loading>Se încarcă datele...</ng-template>
     </h2>
-    <div id="header-top-right-container">
+    <div id="header-top-right-container"
+         *ngIf="!(academicProgramDetails?.academic_year < currentAcademicYear)">
       <div *ngIf="!requestInProgress"
            class="button-container">
         <a [routerLink]="'/manage-class-profiles/' + academicProgramDetails?.id + '/edit'"
-           class="text-button"  >
+           class="text-button">
           Editează
         </a>
         <div class="text-button dark-text"

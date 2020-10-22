@@ -1,8 +1,6 @@
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Injector} from '@angular/core';
-import {cities} from '../../data/cities';
-import {districts} from '../../data/districts';
-import {capitalizeString, getAvailableAcademicYears, getCurrentAcademicYear} from '../../shared/utils';
+import {getAvailableAcademicYears, getCurrentAcademicYear} from '../../shared/utils';
 import {findIndex} from 'lodash';
 import {SchoolCategoriesService} from '../../services/school-categories.service';
 import {forkJoin, Observable, of} from 'rxjs';
@@ -22,6 +20,7 @@ import {ScrollableList} from './scrollable-list';
 import {classListDetailSortCriteria} from '../../data/class-detail-sort-criteria';
 import {CurrentAcademicYearService} from '../../services/current-academic-year.service';
 import {AcademicYearCalendar} from '../../models/academic-year-calendar';
+import {StudentRemarksService} from '../../services/student-remarks.service';
 
 class FilterData {
   districts: IdText[] = null;
@@ -61,6 +60,7 @@ export class ListPage extends ScrollableList {
   readonly studyClassAvailableGradesService: AvailableClassNamesService;
   readonly genericAcademicProgramsService: GenericAcademicProgramsService;
   readonly currentAcademicYearService: CurrentAcademicYearService;
+  readonly studentRemarksService: StudentRemarksService;
 
   private readonly defaultFilterData;
 
@@ -83,8 +83,8 @@ export class ListPage extends ScrollableList {
   constructor(injector: Injector) {
     super();
 
-
     this.router = injector.get(Router);
+    this.studentRemarksService = injector.get(StudentRemarksService);
     this.activatedRoute = injector.get(ActivatedRoute);
     this.schoolCategoriesService = injector.get(SchoolCategoriesService);
     this.schoolUnitsProfilesService = injector.get(SchoolUnitsProfilesService);
@@ -120,7 +120,6 @@ export class ListPage extends ScrollableList {
       genericAcademicPrograms: this.genericAcademicProgramsService.getData(true).pipe(catchError(() => of(null))),
       sortCriteria: this.activatedRoute.snapshot.url[2]?.path === 'class-detail' ? classListDetailSortCriteria : studentsSituationSortCriteria
     };
-
   }
 
 

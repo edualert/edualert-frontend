@@ -23,8 +23,7 @@
       </div>
       <div *ngIf="availableFields?.labels" class="detail-element-container margin-top-small">
         <div class="label-container fixed-width">Etichete</div>
-        <div *ngIf="availableFields?.risk_alerts" class="extra-data red-text margin-right bold">Risc Ridicat</div>
-        <div class="value-container bold" [class.full-width-with-risk-alert]="availableFields?.risk_alerts">{{ getLabelsString() }}</div>
+        <div class="value-container bold labels-string" [class.full-width-with-risk-alert]="availableFields?.risk_alerts">{{ getLabelsString() }}</div>
       </div>
       <div *ngIf="user?.risk_alerts.dates?.length > 0 && availableFields?.risk_alerts" class="detail-element-container margin-top-small">
         <div class="label-container fixed-width"></div>

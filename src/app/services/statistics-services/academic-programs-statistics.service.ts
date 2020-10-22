@@ -16,7 +16,7 @@ export class AcademicProgramsAtRiskService extends OneTimeDataGetter {
   }
 
   getData(forceRequest: boolean, requestPath?: string): Observable<AcademicProfileAtRisk[]> {
-    return super.getData(forceRequest, 'programs-at-risk')
+    return super.getData(forceRequest, 'programs-at-risk/')
       .pipe(map((response: NetworkingListResponse) => {
         const academicProgramsAtRiskList = [];
         if (response.count > 0) {
@@ -40,7 +40,7 @@ export class AcademicProgramsAverageService extends OneTimeDataGetter {
   }
 
   getData(forceRequest: boolean, requestPath?: string): Observable<Averages[]> {
-    return super.getData(forceRequest, 'programs-averages')
+    return super.getData(forceRequest, 'programs-averages/')
       .pipe(map((response: NetworkingListResponse) => {
         const academicProgramsAverageList = [];
         if (response.count > 0) {
@@ -64,7 +64,7 @@ export class AcademicProgramsAbsencesService extends OneTimeDataGetter {
   }
 
   getData(forceRequest: boolean, requestPath?: string): Observable<Absences[]> {
-    return super.getData(forceRequest, 'programs-absences')
+    return super.getData(forceRequest, 'programs-absences/')
       .pipe(map((response: NetworkingListResponse) => {
         const academicProgramsAbsencesList = [];
         if (response.count > 0) {

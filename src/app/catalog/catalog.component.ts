@@ -1,19 +1,18 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {
-  classPupils,
-  classMastery,
-  ownClassSubject,
   CatalogLayout,
   CellIdentifier,
+  classMastery,
+  classPupils,
+  ownClassSubject,
   studentCatalog,
+  studentOwnSituation,
   studentsSituationOrs,
-  studentsSituationTeacherPrincipal,
-  studentOwnSituation
+  studentsSituationTeacherPrincipal
 } from '../models/catalog-layouts';
 import {cloneDeep} from 'lodash';
 import {AcademicYearCalendarService} from '../services/academic-year-calendar.service';
 import {AcademicYearCalendar} from '../models/academic-year-calendar';
-import {Semester} from '../models/semester';
 
 export type catalogLayout = 'class_master' | 'class_students' | string;
 
@@ -39,7 +38,7 @@ class ExpandedCell {
 export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   @Input() data: any[];
-  @Input() tableLayout: 'class_master' | 'class_students' | 'student_catalog' | 'students_situation_ors' | string;
+  @Input() tableLayout: 'class_master' | 'class_students' | 'student_catalog' | 'students_situation_ors' | 'students_situation_teacher_principal' | string;
   @Input() isClassMaster: boolean = false;
 
   @Output() addGradeToStudent: EventEmitter<any> = new EventEmitter<any>();
@@ -48,7 +47,6 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Output() deleteAbsence: EventEmitter<any> = new EventEmitter<any>();
   @Output() authorizeAbsence: EventEmitter<any> = new EventEmitter<any>();
   @Output() onLinkClick: EventEmitter<any> = new EventEmitter<any>();
-
   @ViewChild('scrollContainer', {static: false}) scrollContainer: ElementRef;
   @ViewChild('tableHeader', {static: false}) tableHeader: ElementRef;
   @ViewChild('tableSubheader', {static: false}) tableSubheader: ElementRef;
@@ -63,19 +61,10 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   constructor(academicCalendarService: AcademicYearCalendarService) {
     academicCalendarService.getData(false).subscribe(response => {
-      // TODO: Set academic year from request after demo.
-      // this.academicCalendar = new AcademicYearCalendar(response);
-    });
-
-    this.academicCalendar = new AcademicYearCalendar({
-      first_semester: new Semester({
-        starts_at: '09-09-2019',
-        ends_at: '12-01-2020'
-      }),
-      second_semester: new Semester({
-        starts_at: '13-01-2019',
-        ends_at: '08-09-2020'
-      })
+      this.academicCalendar = new AcademicYearCalendar(response);
+      if (!this.internalLayout) {
+        this.internalLayout = this.getLayout(this.tableLayout);
+      }
     });
 
     this.bringExpandedCellToScreen = this.bringExpandedCellToScreen.bind(this);
@@ -121,7 +110,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.refreshExpandedCellData();
     }
 
-    if (changes.tableLayout) {
+    if (changes.tableLayout && this.academicCalendar) {
       this.internalLayout = this.getLayout(changes.tableLayout.currentValue);
     }
 
@@ -133,19 +122,19 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   private getLayout(layout: catalogLayout): CatalogLayout {
     switch (layout) {
       case 'class_master':
-        return classMastery;
+        return this.setDynamicWidths(classMastery);
       case 'class_students':
-        return classPupils;
+        return this.setDynamicWidths(classPupils);
       case 'student_catalog':
-        return studentCatalog;
+        return this.setDynamicWidths(studentCatalog);
       case 'student_own_situation':
-        return studentOwnSituation;
+        return this.setDynamicWidths(studentOwnSituation);
       case 'students_situation_ors':
-        return studentsSituationOrs;
+        return this.setDynamicWidths(studentsSituationOrs);
       case 'students_situation_teacher_principal':
-        return studentsSituationTeacherPrincipal;
+        return this.setDynamicWidths(studentsSituationTeacherPrincipal);
       default:
-        return ownClassSubject;
+        return this.setDynamicWidths(ownClassSubject);
     }
   }
 
@@ -155,6 +144,19 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.formatGradesList(newRow);
       return newRow;
     });
+  }
+
+  // Adjusts the width according to the current semester for each cell of dynamic type
+  private setDynamicWidths(layout: CatalogLayout): CatalogLayout {
+    const newLayout = cloneDeep(layout);
+    layout.cellWidths.forEach((width, index) => {
+      if (typeof width === 'object' && width?.length === 2) {
+        newLayout.cellWidths[index] = width[0](this.academicCalendar[width[1]]);
+      } else {
+        return;
+      }
+    });
+    return newLayout;
   }
 
   // Modifies parameter

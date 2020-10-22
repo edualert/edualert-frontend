@@ -1,6 +1,14 @@
 <!--This component will be used by all types of users roles, being the same for all-->
 <div class="animated-page">
   <app-header>
+    <div id="error-alert">
+      <div class="error-toast" *ngIf="displayErrorToast">
+        <div class="request-error">
+          {{ errors[errorKey] }}
+        </div>
+        <div class="close-error" (click)="hideErrorToast()"></div>
+      </div>
+    </div>
     <h1 id="header-title">Editare contul meu</h1>
     <div id="header-top-right-container">
       <div class="button-container">

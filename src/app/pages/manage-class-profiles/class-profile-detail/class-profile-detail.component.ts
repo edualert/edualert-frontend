@@ -6,6 +6,7 @@ import {HttpClient} from '@angular/common/http';
 import {ConfirmationModalComponent} from '../../../shared/confirmation-modal/confirmation-modal.component';
 import {AcademicSubject} from '../../../models/academic-subject';
 import {findIndex} from 'lodash';
+import {getCurrentAcademicYear} from '../../../shared/utils';
 
 @Component({
   selector: 'app-class-profile-detail',
@@ -24,6 +25,7 @@ export class ClassProfileDetailComponent implements OnInit {
   yearGradesTabList = [];
   yearGradeActiveTab: string;
   requestInProgress: boolean;
+  currentAcademicYear: number;
   @ViewChild('appConfirmationModal', {static: false}) appConfirmationModal: ConfirmationModalComponent;
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -33,6 +35,7 @@ export class ClassProfileDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAcademicProgramDetails();
+    this.currentAcademicYear = getCurrentAcademicYear();
   }
 
   private getAcademicProgramDetails() {

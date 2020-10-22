@@ -97,7 +97,7 @@
     </div>
   </div>
   <div id="modal-footer">
-    <span class="text-button blue" (click)="save()">Salvează</span>
+    <span class="text-button blue" [class.disabled] = "!(updateSettingsBody.length > 0)" (click)="save()">Salvează</span>
     <span class="text-button dark-text" (click)="close()">Anulează</span>
   </div>
 </app-modal>

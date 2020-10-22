@@ -6,7 +6,7 @@
   </div>
   <div id="modal-body">
     <div class="body" *ngIf="!requestInProgress; else loading">
-      <div class="content" *ngIf="responseErrors; else successModal">
+      <div class="content" *ngIf="responseHasErrors else successModal">
         <div class="report-message big-text bold">{{ successMessage }}</div>
         <hr>
         <div class="error-card" *ngFor="let error of formatErrors(responseErrors)">

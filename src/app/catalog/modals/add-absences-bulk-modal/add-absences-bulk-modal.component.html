@@ -72,7 +72,7 @@
     </div>
   </div>
   <div id="modal-footer">
-    <span class="text-button blue" (click)="saveAbsencesAction()">Salvează</span>
+    <span class="text-button blue" [class.disabled] = !hasModifiedData (click)="saveAbsencesAction()">Salvează</span>
     <span class="text-button dark-text" (click)="close()">Anulează</span>
   </div>
 </app-modal>

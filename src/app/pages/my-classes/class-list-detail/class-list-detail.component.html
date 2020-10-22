@@ -71,7 +71,7 @@
   <div class="page-content">
     <app-toolbar [buttonsObjList]="provideButtonsList()" >
       <ng-container id="count-container">
-        30 elevi afisați din 30
+        {{pupilCount}} elevi afișați din {{pupilCount}}
       </ng-container>
 
     </app-toolbar>
@@ -80,5 +80,8 @@
 
 <app-add-grades-bulk-modal #addGradesBulkModal></app-add-grades-bulk-modal>
 <app-add-absences-bulk-modal #addAbsencesBulkModal></app-add-absences-bulk-modal>
-<app-settings-modal #settingsModal></app-settings-modal>
+<app-settings-modal
+  #settingsModal
+  (refreshCatalogData)="refreshClassData()"
+></app-settings-modal>
 <app-view-user-modal #appViewUserModal></app-view-user-modal>

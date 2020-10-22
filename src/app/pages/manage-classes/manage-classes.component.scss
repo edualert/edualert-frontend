@@ -8,6 +8,7 @@
   display: inline-flex;
   align-items: center;
   margin-right: $margin-default;
+  cursor: pointer;
 
   .card-left-container {
     height: 100%;
@@ -43,8 +44,6 @@
       .text-button {
         display: inline;
         width: auto;
-
-
       }
 
       .text-button + .text-button {

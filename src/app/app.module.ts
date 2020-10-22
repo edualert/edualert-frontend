@@ -36,6 +36,7 @@ import {LanguageInterceptorService} from './services/language-interceptor.servic
 import {StudentCatalogModule} from './pages/student-catalog/student-catalog.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {StudentOwnSituationModule} from './pages/school-situation/student-own-situation.module';
+import {CloneClassService} from './services/clone-class.service';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import {StudentOwnSituationModule} from './pages/school-situation/student-own-si
       provide: HTTP_INTERCEPTORS,
       useClass: LanguageInterceptorService,
       multi: true
-    }
+    },
+    CloneClassService
   ],
   bootstrap: [AppComponent]
 })

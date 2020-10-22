@@ -39,23 +39,6 @@
   z-index: 1;
 }
 
-.weekly-hours-info {
-  padding-left: $margin-small;
-  padding-top: 7px;
-  margin-bottom: 14px;
-  font-size: $font-size-small;
-  font-weight: $font-weight-bold;
-  color: $color-text-light;
-
-  @media screen and (max-width: $mobile-screen-width-normal) {
-    padding-left: 0;
-  }
-
-  &.error {
-    color: $color-red;
-  }
-}
-
 .close-error {
   align-self: center;
   background: url('../../../../assets/img/x-white.svg');

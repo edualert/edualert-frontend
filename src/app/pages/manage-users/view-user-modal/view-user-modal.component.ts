@@ -54,7 +54,7 @@ export class ViewUserModalComponent {
 
   getLabelsString(): string {
     let result = '';
-    this.user?.labels?.map(el => result += el.text + ' ');
+    this.user?.labels?.map(el => result += el.text + '     ');
     return result;
   }
 

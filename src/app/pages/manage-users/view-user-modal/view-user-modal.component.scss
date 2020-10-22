@@ -104,8 +104,11 @@
 .value-container {
   &.full-width-with-risk-alert {
     width: calc(100% - 240px);
-    padding-left: $margin-tiny;
   }
+}
+
+.labels-string {
+  white-space: pre;
 }
 
 @media (max-width: $mobile-screen-width-normal) {

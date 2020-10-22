@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {ModalComponent} from '../../shared/modal/modal.component';
 import {HttpClient} from '@angular/common/http';
 import {ClassDetails} from '../../models/class-details';
@@ -22,6 +22,7 @@ export class SettingsModalComponent {
   isGloballySelected: {[key: string]: boolean};
 
   @ViewChild('modal', {static: false}) modal: ModalComponent;
+  @Output() refreshCatalogData: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(
     private http: HttpClient) {
@@ -48,6 +49,7 @@ export class SettingsModalComponent {
   save() {
     this.updateSettings();
     this.close();
+    this.refreshCatalogData.emit();
   }
 
   close() {

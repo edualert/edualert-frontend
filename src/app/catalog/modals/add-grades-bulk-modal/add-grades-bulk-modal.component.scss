@@ -121,6 +121,9 @@
     &.blue {
       margin-right: $margin-big;
     }
+    &.disabled {
+      pointer-events: none;
+    }
   }
 }
 

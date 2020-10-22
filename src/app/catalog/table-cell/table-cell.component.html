@@ -32,12 +32,12 @@
     <div *ngSwitchCase="'annual-avg'" class="annual-average-cell">
       <div *ngIf="!data" class="list-element">-</div>
 
-      <div *ngIf="data && !data.length" class="bg-element annual" [class.red-background]="data <= pivotPoint">
-        {{data}}
+      <div *ngIf="data && !data[1]" class="bg-element annual" [class.red-background]="data[0] <= pivotPoint">
+        {{data[0]}}
       </div>
 
       <!--2 grades: before and after retry -->
-      <div *ngIf="data?.length == 2">
+      <div *ngIf="data?.length == 2 && data[1]">
         <div class="bg-element big-bg-element annual first-avg" [class.red-background]="data[0] < pivotPoint">{{data[0]}}</div>
         <div class="bg-element big-bg-element annual second-avg" [class.red-background]="data[1] < pivotPoint">{{data[1]}}</div>
       </div>
@@ -109,21 +109,6 @@
       </div>
     </div>
 
-    <!-- BUTTONS ----------------------------------  -->
-    <div *ngSwitchCase="'buttons'" class="buttons-cell">
-      <div class="labels">
-        <div *ngIf="data && data?.labels?.length || data && data?.length" class="button" (click)="openTagsModal(data?.labels ? data?.labels : data)">
-          Etichete
-        </div>
-        <div *ngIf="data && data?.labels?.length || data && data?.length"  class="label-count">
-          +{{data?.labels?.length ? data?.labels?.length : data?.length}}
-        </div>
-      </div>
-      <div class="button" (click)="openObservationsModal(data?.risk_description)">
-        Observații
-      </div>
-    </div>
-
     <!-- LINK BUTTON ----------------------------------  -->
     <div *ngSwitchCase="'link-button'" class="link-button-cell">
       <div class="button text-button" (click)="onLinkClick.emit()">
@@ -137,19 +122,26 @@
     </div>
 
     <!-- LABELS ----------------------------------  -->
-    <div *ngSwitchCase="'labels'" class="tags">
-      <div class="tag" *ngIf="data && data[0]">{{data[0].text}}</div>
-      <div *ngIf="!data || !data[0]">-</div>
-      <ng-container *ngIf="data && data.length > 1">
-        <div class="bold plus-tags">+{{data.length - 1}}</div>
-        <div class="tags-overlay">
-          <div class="tag" *ngFor="let tag of data">{{tag.text}}</div>
-        </div>
-      </ng-container>
+    <div *ngSwitchCase="'labels'" class="labels-observations">
+      <div class="tags">
+        <div class="tag" *ngIf="(data && data[0]) || (data?.labels && data?.labels[0])">{{data[0]?.text ? data[0]?.text : data?.labels[0]?.text }}</div>
+        <div *ngIf="(!data || !data[0]) && !data?.labels?.length">-</div>
+        <ng-container *ngIf="(data && data?.length > 1) || (data?.labels && data?.labels.length > 1)">
+          <div class="bold plus-tags">+{{data?.length ? data?.length - 1 : data?.labels.length - 1}}</div>
+          <div class="tags-overlay" *ngIf="data?.length">
+            <div class="tag" *ngFor="let tag of data">{{tag.text}}</div>
+          </div>
+          <div class="tags-overlay" *ngIf="data?.labels?.length">
+            <div class="tag" *ngFor="let tag of data?.labels">{{tag.text}}</div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="button observations" (click)="openObservationsModal(studentData, studentCatalogID, tableLayoutAsIdentifier)">
+        Observații
+      </div>
     </div>
   </ng-container>
 </div>
 
-<app-pupil-labels-modal #viewPupilLabelsModal></app-pupil-labels-modal>
 <app-pupil-remarks-modal #viewRemarksLabelsModal></app-pupil-remarks-modal>
 <app-view-user-modal #userDetailsModal></app-view-user-modal>

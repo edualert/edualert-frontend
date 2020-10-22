@@ -1,1 +1,1 @@
-export type NavBarSize = 'small' | 'normal' | 'big';
+export type NavBarSize = 'normal' | 'big';

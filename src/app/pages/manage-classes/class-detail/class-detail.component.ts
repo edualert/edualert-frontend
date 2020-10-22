@@ -6,6 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {NetworkingListResponse} from '../../../models/networking-list-response';
 import {ConfirmationModalComponent} from '../../../shared/confirmation-modal/confirmation-modal.component';
 import {ViewUserModalComponent} from '../../manage-users/view-user-modal/view-user-modal.component';
+import {getCurrentAcademicYear} from '../../../shared/utils';
 
 @Component({
   selector: 'app-class-detail',
@@ -23,6 +24,7 @@ export class ClassDetailComponent {
     {name: "Elevii clasei", id: "students"},
   ];
   activeTab;
+  currentAcademicYear: number;
   @ViewChild('appConfirmationModal', {static: false}) appConfirmationModal: ConfirmationModalComponent;
   @ViewChild('appViewUserModal', {'static': false}) appViewUserModal: ViewUserModalComponent;
 
@@ -30,6 +32,7 @@ export class ClassDetailComponent {
     this._path = `study-classes/${route.snapshot.params['id']}/`;
     this.activeTab = this.tabs[0].id;
     this.requestData();
+    this.currentAcademicYear = getCurrentAcademicYear();
   }
 
   deleteClass = (event) => {
@@ -59,10 +62,10 @@ export class ClassDetailComponent {
     this.httpClient.get(this._path).subscribe((response: NetworkingListResponse) => {
       if (Object.keys(response).length) {
         this.study_class = new StudyClass(response);
+        this.isEditable = this.study_class?.academic_year === this.currentAcademicYear;
 
         // TODO: Uncomment this after demo
         // this.isEditable = moment().isBefore(academicYearStart.clone().set("year", this.study_class.academic_year));
-        this.isEditable = true;
         //  END TODO
       }
       this.requestInProgress = false;

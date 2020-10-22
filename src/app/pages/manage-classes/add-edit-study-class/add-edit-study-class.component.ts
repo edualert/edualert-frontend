@@ -3,14 +3,14 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {SchoolDetailsService} from '../../../services/school-details.service';
 import {TeachersListService} from '../../../services/teachers-list.service';
 import {Teacher} from '../../../models/teacher';
-import {CLASS_ALPHA_LETTERS, StudyClass, StudyClassErrors, StudyClassRequestBody} from '../../../models/study-class';
+import {StudyClass, StudyClassErrors, StudyClassRequestBody} from '../../../models/study-class';
 import {StudyClassAvailableGradesList, StudyClassService} from '../../../services/study-class.service';
 import {SubjectsListService} from '../../../services/subjects-list.service';
 import {IdName} from '../../../models/id-name';
 import {IdFullname} from '../../../models/id-fullname';
 import {StudentsService} from '../../../services/students.service';
 import {AcademicProgramsService} from '../../../services/academic-programs.service';
-import {findIndex} from 'lodash';
+import {findIndex, cloneDeep} from 'lodash';
 import {TeacherClassThrough} from '../../../models/teacher-class-through';
 import {HttpClient} from '@angular/common/http';
 import {getCurrentAcademicYear} from '../../../shared/utils';
@@ -18,6 +18,10 @@ import {MY_OWN_SCHOOL_CATEGORY_LEVELS_GRADES, SchoolDetail} from '../../../model
 import {UserDetailsBase} from '../../../models/user-details-base';
 import {Student} from '../../../models/student';
 import {AddUserModalComponent} from '../../manage-users/add-user-modal/add-user-modal.component';
+import {CloneClassService} from '../../../services/clone-class.service';
+import {AcademicYearCalendarService} from '../../../services/academic-year-calendar.service';
+import * as moment from 'moment';
+
 
 @Component({
   selector: 'app-add-edit-study-class',
@@ -30,14 +34,16 @@ export class AddEditStudyClassComponent implements OnInit {
   schoolData: SchoolDetail;
 
   availableClasses: string[];
-  classesAlphaLetters = CLASS_ALPHA_LETTERS;
   studentList: IdFullname[];
   classMasterCandidates: Teacher[];
   availableSchoolTeachers: Teacher[] = [];
   academicProgramsList: IdName[];
   availableTeachersForSubjects: {} = {};
 
+  requestInProgress: boolean = false;
+  academicYearInProgress: boolean = false;
   isEdit: boolean;
+  isClone: boolean;
   activeTab: string = 'teachers';
 
   hasUnfilledFields: boolean = false;
@@ -45,6 +51,7 @@ export class AddEditStudyClassComponent implements OnInit {
   hasModifiedData: boolean = false;
 
   currentAcademicYear = getCurrentAcademicYear();
+  shouldPATCH: boolean = false;
 
   tabs = [
     {name: 'Profesorii clasei', id: 'teachers'},
@@ -54,6 +61,8 @@ export class AddEditStudyClassComponent implements OnInit {
   studyClassRequestErrors: string;
 
   initialStudentNumber: number;
+  initialStudentIdsArray: number[] = [];
+  initialAcademicProgramId: string;
 
   @ViewChild('addNewUserModal', {'static': false}) addNewUserModal: AddUserModalComponent;
 
@@ -65,6 +74,8 @@ export class AddEditStudyClassComponent implements OnInit {
               private academicProgramsListService: AcademicProgramsService,
               private studentService: StudentsService,
               private studyClassAvaliableGradesList: StudyClassAvailableGradesList,
+              private cloneClassService: CloneClassService,
+              private academicYearCalendarService: AcademicYearCalendarService,
               private httpClient: HttpClient,
               private router: Router) {
   }
@@ -72,11 +83,28 @@ export class AddEditStudyClassComponent implements OnInit {
   ngOnInit(): void {
     this.studyClassErrors = new StudyClassErrors();
     this.isEdit = this.activatedRoute.snapshot.params.hasOwnProperty('id');
-    if (this.isEdit) {
-      this.studyClassService.getData(true, this.activatedRoute.snapshot.params['id']).subscribe(response => {
-        this.studyClass = response;
+    this.isClone = this.activatedRoute.snapshot.queryParams.cloned;
+    if (this.isClone) {
+      this.isEdit = false;
+      this.cloneClassService.classToBeCloned.subscribe((studyClass: StudyClass) => {
+        this.studyClass = studyClass;
         this.initialStudentNumber = this.studyClass.students.length;
         this.initPageData();
+      });
+    } else if (this.isEdit) {
+      this.academicYearInProgress = true;
+      this.academicYearCalendarService.getData(false).subscribe(response => {
+        this.shouldPATCH = moment().valueOf() >= moment(response.first_semester.starts_at).valueOf();
+      });
+      this.studyClassService.getData(true, this.activatedRoute.snapshot.params['id']).subscribe(response => {
+        this.studyClass = response;
+        this.studyClass.students.forEach(student => {
+          this.initialStudentIdsArray.push(student.id as number);
+        });
+        this.initialAcademicProgramId = this.studyClass.academic_program;
+        this.initialStudentNumber = this.studyClass.students.length;
+        this.initPageData();
+        this.academicYearInProgress = false;
       });
     } else {
       this.studyClass = new StudyClass(null);
@@ -99,8 +127,8 @@ export class AddEditStudyClassComponent implements OnInit {
         response.forEach(teacher => {
           this.availableSchoolTeachers.push(new Teacher(teacher));
         });
-        if (this.isEdit) {
-          this.getAvailableTeachersForSubject();
+        if (this.isEdit || this.isClone) {
+          this.getAndFormatTeachersAndSubjects();
         }
       }
     );
@@ -130,14 +158,44 @@ export class AddEditStudyClassComponent implements OnInit {
   }
 
   handleListInputChange(event: { element: any, index: number }, field, index) {
+    this.studyClassRequestErrors = '';
     if (field === 'teachers_class_through') {
       this.studyClass.teachers_class_through[index].teacher = event.element;
       this.studyClassErrors.teachers_class_through[index] = {teacher: ''};
+
+      if (this.shouldPATCH) {
+        if (this.studyClass.updated_teachers === undefined) {
+          this.studyClass.updated_teachers = [];
+        }
+        const teacherToUpdate = {
+          id: this.studyClass.teachers_class_through[index].id,
+          teacher: event.element.id
+        };
+        if (findIndex(this.studyClass.updated_teachers, {teacher: teacherToUpdate.teacher}) < 0) {
+          const teacherToAddIndex = findIndex(this.studyClass.updated_teachers, {id: teacherToUpdate.id});
+          if (teacherToAddIndex < 0) {
+            this.studyClass.updated_teachers.push(teacherToUpdate);
+          } else {
+            this.studyClass.updated_teachers[teacherToAddIndex] = teacherToUpdate;
+          }
+          this.studyClassErrors.teachers_class_through[index] = {teacher: ''};
+        }
+      }
+
     } else {
       if (this.studyClass.students[index].full_name) {
         this.studentList.push(this.studyClass.students[index]);
       }
+
       this.studyClass.students[index] = event.element;
+      if (field === 'students' && this.shouldPATCH) {
+        if (this.studyClass.new_students === undefined) {
+          this.studyClass.new_students = [];
+        }
+        this.studyClass.new_students[index - this.initialStudentNumber] = event.element.id;
+        this.studyClassErrors.new_students = '';
+      }
+
       if (this.isEdit) {
         this.studyClassErrors.students[index - this.initialStudentNumber].full_name = null;
       } else {
@@ -157,16 +215,8 @@ export class AddEditStudyClassComponent implements OnInit {
         this.academicProgramsList = response;
       });
       if (this.studyClass.academic_program) {
-        this.subjectsListService.getData(true, this.studyClass.academic_program, this.studyClass.class_grade).subscribe(response => {
-          response.forEach(classSubject => {
-            this.studyClass.teachers_class_through.push(new TeacherClassThrough(
-              {
-                subject_id: classSubject.subject_id, subject_name: classSubject.subject_name, teacher: new IdFullname({full_name: '-'}), is_mandatory: classSubject.is_mandatory,
-              }
-            ));
-          });
-          this.getAvailableTeachersForSubject();
-        });
+        this.requestInProgress = true;
+        this.getAndFormatTeachersAndSubjects();
       }
     }
   }
@@ -176,6 +226,9 @@ export class AddEditStudyClassComponent implements OnInit {
   }
 
   addStudent() {
+    if (!this.studyClass.new_students) {
+      this.studyClass.new_students = [];
+    }
     if (this.studyClass.students && this.studyClass.students.length > 0) {
       this.studyClass.students.push(new IdFullname(null));
       if (!this.studyClassErrors.students) {
@@ -225,15 +278,27 @@ export class AddEditStudyClassComponent implements OnInit {
 
   makeCreateOrUpdateRequest(requestData: StudyClassRequestBody) {
     if (this.isEdit) {
-      this.httpClient.put(`study-classes/${this.studyClass.id}/`, requestData).subscribe(response => {
-        this.hasModifiedData = false;
-        this.hasUnsavedData = false;
-        this.router.navigate([`manage-classes/`]);
-      }, error => {
-        if (error['error']['general_errors']) {
-          this.studyClassRequestErrors = error['error']['general_errors'];
-        }
-      });
+      if (this.shouldPATCH) {
+        this.httpClient.patch(`study-classes/${this.studyClass.id}/`, requestData).subscribe(response => {
+          this.hasModifiedData = false;
+          this.hasUnsavedData = false;
+          this.router.navigate([`manage-classes/`]);
+        }, error => {
+          if (error['error']['general_errors']) {
+            this.studyClassRequestErrors = error['error']['general_errors'];
+          }
+        });
+      } else {
+        this.httpClient.put(`study-classes/${this.studyClass.id}/`, requestData).subscribe(response => {
+          this.hasModifiedData = false;
+          this.hasUnsavedData = false;
+          this.router.navigate([`manage-classes/`]);
+        }, error => {
+          if (error['error']['general_errors']) {
+            this.studyClassRequestErrors = error['error']['general_errors'];
+          }
+        });
+      }
     } else {
       this.httpClient.post(`years/${this.currentAcademicYear}/study-classes/`, requestData).subscribe(response => {
         this.hasModifiedData = false;
@@ -241,7 +306,11 @@ export class AddEditStudyClassComponent implements OnInit {
         this.router.navigate([`manage-classes/`]);
       }, error => {
         if (error['error']['general_errors']) {
-          this.studyClassRequestErrors = error['error']['general_errors'][0];
+          this.studyClassRequestErrors = error['error']['general_errors'];
+        }
+        if (error.error['class_master']) {
+          this.studyClassRequestErrors = `Diriginte: ${error.error['class_master']}`;
+          this.studyClassErrors.class_master = error.error['class_master'];
         }
       });
     }
@@ -254,15 +323,26 @@ export class AddEditStudyClassComponent implements OnInit {
     Object.keys(requiredFields)
       .forEach(key => {
         const data = dict[key];
-        if (key === 'teacher' && data && (!data.full_name || data.full_name === '-')) {
-          requiredFields[key] = 'Acest câmp este obligatoriu.';
-          this.hasUnfilledFields = true;
+        if (key === 'teachers_class_through' && data && data.length > 0) {
+          data.forEach(teacherClassThrough => {
+            const teacherClassThroughIndex = data.indexOf(teacherClassThrough);
+            if ([undefined, '', '-'].includes(teacherClassThrough.teacher.full_name)) {
+              if (!requiredFields[key][teacherClassThroughIndex]) {
+                requiredFields[key][teacherClassThroughIndex] = {};
+              }
+              requiredFields[key][data.indexOf(teacherClassThrough)].teacher = 'Acest câmp este obligatoriu.';
+              this.hasUnfilledFields = true;
+            }
+          });
           return;
         }
         if (key === 'students' && data && data.length > 0) {
           data.forEach(student => {
-            if ([undefined, ''].includes(student.full_name)) {
-              requiredFields[key][data.indexOf(student) - 1].full_name = 'Acest câmp este obligatoriu.';
+            if ([undefined, ''].includes(student?.full_name)) {
+              if (!requiredFields[key][data.indexOf(student)]) {
+                requiredFields[key][data.indexOf(student)] = {};
+              }
+              requiredFields[key][data.indexOf(student)].full_name = 'Acest câmp este obligatoriu.';
               this.hasUnfilledFields = true;
               return;
             }
@@ -291,7 +371,9 @@ export class AddEditStudyClassComponent implements OnInit {
   checkArray(array, requiredFields) {
     array.forEach((item, index) => {
       Object.keys(item).forEach(key => {
-        if (item[key] !== undefined) this.checkObject(item, requiredFields[index]);
+        if (item[key] !== undefined) {
+          this.checkObject(item, requiredFields[index]);
+        }
       });
     });
   }
@@ -303,39 +385,92 @@ export class AddEditStudyClassComponent implements OnInit {
   }
 
   formatRequestBody(studyClass: StudyClass): StudyClassRequestBody {
-
     const requestBody: StudyClassRequestBody = new StudyClassRequestBody();
-    requestBody.teachers_class_through = [];
-    requestBody.students = [];
 
-    studyClass.teachers_class_through.forEach(subject => {
-      requestBody.teachers_class_through.push({
-        teacher: subject.teacher.id,
-        subject: subject.subject_id
+    if (this.shouldPATCH) {
+      requestBody.class_master = studyClass.class_master.id;
+      requestBody.updated_teachers = [];
+      studyClass.updated_teachers?.forEach(teacher => {
+        requestBody.updated_teachers.push({
+          id: teacher.id,
+          teacher: teacher.teacher
+        });
       });
-    });
-    if (studyClass.students && studyClass.students.length > 0) {
-      studyClass.students.forEach(student => {
-        requestBody.students.push(parseInt(student.id.toString(), 10));
+      requestBody.new_students = studyClass.new_students;
+      requestBody.deleted_students = studyClass.deleted_students;
+
+      // Check if the deleted users are in requestBody.new_students
+      requestBody.new_students?.forEach(studentId => {
+        if (requestBody.deleted_students.includes(studentId)) {
+          requestBody.new_students.splice(requestBody.new_students.indexOf(studentId), 1);
+          requestBody.deleted_students.splice(requestBody.deleted_students.indexOf(studentId), 1);
+        }
       });
+      requestBody.deleted_students?.forEach(studentId => {
+        if (requestBody.new_students.includes(studentId)) {
+          requestBody.new_students.splice(requestBody.new_students.indexOf(studentId), 1);
+          requestBody.deleted_students.splice(requestBody.deleted_students.indexOf(studentId), 1);
+        }
+      });
+    } else {
+      requestBody.teachers_class_through = [];
+      requestBody.students = [];
+
+      studyClass.teachers_class_through.forEach(subject => {
+        requestBody.teachers_class_through.push({
+          teacher: subject.teacher.id,
+          subject: subject.subject_id
+        });
+      });
+      if (studyClass.students && studyClass.students.length > 0) {
+        studyClass.students.forEach(student => {
+          requestBody.students.push(parseInt(student.id.toString(), 10));
+        });
+      }
+
+      requestBody.academic_program = studyClass.academic_program;
+      requestBody.class_grade = studyClass.class_grade;
+      requestBody.class_letter = studyClass.class_letter;
+      requestBody.class_master = studyClass.class_master.id;
+
     }
-
-    requestBody.academic_program = studyClass.academic_program;
-    requestBody.class_grade = studyClass.class_grade;
-    requestBody.class_letter = studyClass.class_letter;
-    requestBody.class_master = studyClass.class_master.id;
-
     return requestBody;
   }
 
   deleteStudent(index: number) {
     if (this.isEdit && index <= this.initialStudentNumber) {
-      this.initialStudentNumber--;
+      if (this.shouldPATCH && !this.studyClass.new_students && this.studyClass.new_students?.length === 0) {
+        this.initialStudentNumber--;
+      } else if (!this.shouldPATCH || index < this.initialStudentNumber) {
+        this.initialStudentNumber--;
+      }
     }
     if (this.studyClass.students[index].full_name) {
       this.studentList.push(this.studyClass.students[index]);
     }
-    this.studyClass.students.splice(index, 1);
+    if (this.shouldPATCH) {
+      if (this.studyClass.deleted_students === undefined) {
+        this.studyClass.deleted_students = [];
+      }
+      const studentId = this.studyClass.students[index].id as number;
+      if (this.initialStudentIdsArray.includes(studentId) && !this.studyClass.deleted_students.includes(studentId)) {
+        this.studyClass.deleted_students.push(studentId);
+      }
+      if (this.studyClass.new_students && this.studyClass.new_students.includes(studentId)) {
+        if (studentId === undefined) {
+          const oldStudentsCount = this.studyClass.students.length - this.studyClass.new_students.length;
+          const newStudentsIndex = index - oldStudentsCount;
+          this.studyClass.new_students.splice(newStudentsIndex, 1);
+        } else {
+          this.studyClass.new_students.splice(this.studyClass.new_students.indexOf(studentId), 1);
+        }
+        this.studyClass.students.splice(index, 1);
+      } else {
+        this.studyClass.students.splice(index, 1);
+      }
+    } else {
+      this.studyClass.students.splice(index, 1);
+    }
 
     if (this.studyClassErrors.students.indexOf(this.studyClass.students[index])) {
       this.studyClassErrors.students.splice(this.studyClassErrors.students.indexOf(this.studyClass.students[index]), 1);
@@ -355,17 +490,45 @@ export class AddEditStudyClassComponent implements OnInit {
   }
 
   getAvailableTeachersForSubject() {
-    this.studyClass.teachers_class_through.forEach(subject => {
+    this.studyClass.teachers_class_through.forEach((subject: TeacherClassThrough) => {
       if (subject.is_mandatory) {
         this.availableSchoolTeachers.forEach(teacher => {
           if (teacher.taught_subjects.includes(subject.subject_id)) {
-            this.availableTeachersForSubjects[subject.subject_name] = !this.availableTeachersForSubjects[subject.subject_name] ? [] : this.availableTeachersForSubjects[subject.subject_name];
+            this.availableTeachersForSubjects[subject.subject_name] = this.availableTeachersForSubjects[subject.subject_name] || [];
             this.availableTeachersForSubjects[subject.subject_name].push(teacher);
           }
         });
-      } else {
-        this.availableTeachersForSubjects[subject.subject_name] = this.availableSchoolTeachers;
+      } else if (subject.is_mandatory === false) {
+        this.availableTeachersForSubjects[subject.subject_name] = cloneDeep(this.availableSchoolTeachers);
       }
+    });
+  }
+
+  getAndFormatTeachersAndSubjects() {
+    this.subjectsListService.getData(true, this.studyClass.academic_program, this.studyClass.class_grade).subscribe(response => {
+      response.forEach(classSubject => {
+        const subjectIndex = findIndex(this.studyClass.teachers_class_through, {subject_id: classSubject.subject_id});
+        if (subjectIndex > -1 && this.initialAcademicProgramId === this.studyClass.academic_program) {
+          this.studyClass.teachers_class_through[subjectIndex] = {
+            id: this.studyClass.teachers_class_through[subjectIndex].id,
+            subject_id: classSubject.subject_id,
+            subject_name: classSubject.subject_name,
+            teacher: this.studyClass.teachers_class_through[subjectIndex].teacher,
+            is_mandatory: classSubject.is_mandatory,
+          };
+        } else {
+          this.studyClass.teachers_class_through.push(new TeacherClassThrough({
+            subject_id: classSubject.subject_id,
+            subject_name: classSubject.subject_name,
+            teacher: new IdFullname({full_name: '-'}),
+            is_mandatory: classSubject.is_mandatory,
+            }
+          ));
+        }
+      });
+      this.getAvailableTeachersForSubject();
+      this.initialAcademicProgramId = this.studyClass.academic_program;
+      this.requestInProgress = false;
     });
   }
 

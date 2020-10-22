@@ -34,10 +34,13 @@
                 <div class="value-container bold dark-text">{{profile.classes_count.toString(10)}}</div>
               </div>
             </div>
-            <div class="card-right-container">
+            <div class="card-right-container"
+                 *ngIf="!(activeUrlParams['academicYear'] < defaultAcademicYear.id)">
               <hr class="vertical visible-on-desktop">
               <div class="row">
-                <a routerLink="{{profile.id + '/edit'}}" class="text-button edit spaced-out">Editează</a>
+                <a routerLink="{{profile.id + '/edit'}}"
+                   class="text-button edit spaced-out">
+                  Editează</a>
                 <div class="text-button dark-text"
                      *ngIf="profile?.classes_count === 0"
                      (click)="deleteSchoolProfile(profile, $event)">

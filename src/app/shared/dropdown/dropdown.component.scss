@@ -151,6 +151,11 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
 }
 
 .element {
+
+  &:first-of-type {
+    margin-top: 5px;
+  }
+
   display: flex;
   align-items: center;
   cursor: pointer;

@@ -13,12 +13,6 @@
   }
 }
 
-.name-label {
-  height: 40px;
-  line-height: 40px;
-  margin-bottom: unset;
-}
-
 .button-container {
   display: flex;
   flex-direction: row;
@@ -121,10 +115,30 @@ hr {
   max-height: 110px;
   overflow-y: scroll;
   border-radius: $border-radius-normal;
+
+  .close-error {
+    align-self: center;
+    background: url('../../../../assets/img/x-white.svg');
+    width: 15px;
+    height: 15px;
+    padding-bottom: 16px;
+    padding-right: $margin-tiny;
+    margin-left: $margin-tiny;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 
 .request-error {
   padding: 10px 0 10px;
+}
+
+.name-label {
+  height: 40px;
+  line-height: 40px;
+  margin-bottom: unset;
 }
 
 @media screen and (max-width: $mobile-screen-width-normal) {
