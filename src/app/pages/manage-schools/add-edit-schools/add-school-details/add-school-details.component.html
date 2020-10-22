@@ -23,7 +23,6 @@
         <div class="dropdown-parent value">
           <app-dropdown
             [error]="schoolDetailsError?.district"
-            [errorMessage]="schoolDetailsError?.district"
             [list]="data.districts"
             [displayedProperty]="'text'"
             (elementHasBeenSelected)="handleInputChange($event, 'district')"
@@ -38,7 +37,6 @@
         <div class="dropdown-parent value">
           <app-dropdown
             [error]="schoolDetailsError?.city"
-            [errorMessage]="schoolDetailsError?.city"
             [componentDisabled]="!schoolDetails?.district"
             [list]="data.cities"
             [displayedProperty]="'text'"
@@ -54,7 +52,6 @@
         <div class="dropdown-parent value">
           <app-dropdown
             [error]="schoolDetailsError?.name"
-            [errorMessage]="schoolDetailsError?.name"
             [list]="data.names"
             [displayedProperty]="'name'"
             (elementHasBeenSelected)="handleInputChange($event, 'name')"
@@ -72,6 +69,7 @@
           <app-dropdown
             [withMultipleSelection]="true"
             [error]="schoolDetailsError?.categories ? schoolDetailsError?.categories : ''"
+            [errorMessage]="schoolDetailsError?.categories ? schoolDetailsError?.categories : ''"
             [list]="data.categories ? data.categories : []"
             [displayedProperty]="'name'"
             (selectionHasBeenConfirmed)="handleInputChange($event, 'categories')"
@@ -137,7 +135,6 @@
             [userRoleToAdd]="'SCHOOL_PRINCIPAL'"
             (addUserModalCallbackFunction)="confirmAddingUser($event)"
             [error]="schoolDetailsError?.school_principal"
-            [errorMessage]="schoolDetailsError?.school_principal"
             [list]="data.school_principals"
             [displayedProperty]="'full_name'"
             (elementHasBeenSelected)="handleInputChange($event, 'school_principal')"

@@ -12,6 +12,7 @@
 .card {
   margin-top: $margin-default;
   position: relative;
+  cursor: pointer;
 
   &:hover .card-title {
     color: $color-blue;

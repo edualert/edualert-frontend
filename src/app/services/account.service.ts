@@ -15,6 +15,10 @@ export class AccountService {
     this.setAccount();
   }
 
+  public clearAccount(): void {
+    this.account.next(new UserDetails());
+  }
+
   public setAccount(): void {
     this.http.get('my-account/').subscribe((response: UserDetails) => {
       this.account.next(new UserDetails(response));
@@ -26,6 +30,7 @@ export class AccountService {
 
   public selectChild(child_id: number): void {
     const children = this.account.getValue().children;
-    this.selectedChild.next(children[children.findIndex(child => child.id === child_id)]);
+    const childrenIndex = children.findIndex(child => child.id === child_id);
+    this.selectedChild.next(children[childrenIndex]);
   }
 }

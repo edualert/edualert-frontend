@@ -6,7 +6,8 @@
      #root>
   <div class="button-container">
 
-    <div *ngIf="!withSearch; else searchInput" class="dropdown-button {{ errorMessage ? 'display-error' : ''}} {{ isOpen ? 'box-shadowed' : ''}}"
+    <div *ngIf="!withSearch; else searchInput"
+         class="dropdown-button {{ errorMessage ? 'display-error' : ''}} {{ isOpen ? 'box-shadowed' : ''}}"
          (click)="open()">
       <ng-container *ngIf="!withMultipleSelection; else withMultiple">
         <span *ngIf="appliedElement; else displayPlaceholder" class="overflow-handle">
@@ -80,8 +81,10 @@
   <div class="list-container {{ error ? 'with-error' : ''}}" #listContainer *ngIf="isOpen">
 
     <ng-container *ngIf="!withMultipleSelection">
-      <div *ngIf="!searchString && !required" class="element" (click)="singleElementSelected($event, null)">&nbsp;-</div>
-      <div class="element {{appliedElement && element[displayedProperty] === appliedElement ? 'blue-text' : ''}}" *ngFor="let element of displayedList; index as i"
+      <div *ngIf="!searchString && !required" class="element" (click)="singleElementSelected($event, null)">&nbsp;-
+      </div>
+      <div class="element {{appliedElement && element[displayedProperty] === appliedElement ? 'blue-text' : ''}}"
+           *ngFor="let element of displayedList; index as i"
            (click)="singleElementSelected($event, element, i)"
            [class.highlighted]="i === highlightIndex"
            [class.checked]="appliedElement ? (element[displayedProperty] ? element[displayedProperty] === appliedElement[displayedProperty] : element === appliedElement) : false">
@@ -107,7 +110,9 @@
         *ngFor="let element of displayedList; index as $i"
         (click)="elementFromSelectionClicked($i)"
         [class.checked]="viewIndexSelection[$i]">
-        {{element[displayedProperty] || element}}
+        <div>
+          {{element[displayedProperty] || element}}
+        </div>
         <span
           *ngIf="dropdownErrors?.index && $i === dropdownErrors?.index"
           class="dropdown-error-message">{{dropdownErrors?.message}}</span>

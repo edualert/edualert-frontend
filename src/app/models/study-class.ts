@@ -1,8 +1,6 @@
 import {TeacherClassThrough} from './teacher-class-through';
 import {IdFullname} from './id-fullname';
 
-export const CLASS_ALPHA_LETTERS = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
-
 export class ClassSubject {
 
   subject_id: number;
@@ -27,6 +25,9 @@ export class StudyClass {
   class_master?: IdFullname;
   teachers_class_through?: TeacherClassThrough[];
   students?: IdFullname[];
+  updated_teachers?: {id: number, teacher: number}[];
+  new_students: number[];
+  deleted_students: number[];
 
   constructor(data) {
     if (data) {
@@ -42,6 +43,11 @@ export class StudyClass {
         this.teachers_class_through = data.teachers_class_through ? data.teachers_class_through.map(teacher_class => new TeacherClassThrough(teacher_class)) : [];
         this.students = data.students ? data.students.map(student => new IdFullname(student)) : [];
         this.academic_year = data.academic_year;
+      }
+      if (data.subjects) { // clone object
+        this.class_master = new IdFullname(data.class_master);
+        this.teachers_class_through = data.subjects ? data.subjects.map(subject => new TeacherClassThrough(subject)) : [];
+        this.students = data.students ? data.students.map(student => new IdFullname(student)) : [];
       }
     }
   }
@@ -80,6 +86,11 @@ export class StudyClassErrors {
   teachers_class_through: {
     teacher: string;
   }[];
+  updated_teachers: {
+    teacher: string;
+  }[];
+  new_students: string;
+  deleted_students: string;
   students: IdFullname[];
 
   constructor() {
@@ -105,6 +116,10 @@ export class StudyClassRequestBody {
     subject: number;
   }[];
   students: number[];
+  // Fields for PATCH request
+  updated_teachers: {id: number, teacher: number}[];
+  new_students: number[];
+  deleted_students: number[];
 }
 
 export class StudyClassGrade {

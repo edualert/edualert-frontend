@@ -45,9 +45,9 @@ export class UserDetails extends UserDetailsBase {
       this.taught_subjects = get(value, 'taught_subjects', null) ? get(value, 'taught_subjects').map(taught_subjects => new IdName(taught_subjects)) : [];
       this.parents = get(value, 'parents', null) ? get(value, 'parents').map(parents => new UserDetailsBase(parents)) : [];
       this.children = get(value, 'children', null) ? get(value, 'children', null).map( child => new IdFullname(child)) : [];
-      this.class_grade = get(value, 'student_in_class.class_grade', null);
-      this.class_letter = get(value, 'student_in_class.class_letter', null);
-      this.class_id = get(value, 'student_in_class.id', null);
+      this.class_grade = value.hasOwnProperty('student_in_class') ? get(value, 'student_in_class.class_grade', null) : get(value, 'class_grade');
+      this.class_letter = value.hasOwnProperty('student_in_class') ? get(value, 'student_in_class.class_letter', null) : get(value, 'class_letter');
+      this.class_id = get(value, 'student_in_class.id', null) ;
       this.personal_id_number = get(value, 'personal_id_number', null);
       this.birth_date = get(value, 'birth_date', null);
       this.educator_full_name = get(value, 'educator_full_name', null);

@@ -43,7 +43,6 @@ export const getCurrentAcademicYear = (): number => {
 export const getAvailableAcademicYears = (): number[] => {
   const result = [];
   const currentAcademicYear = moment(getCurrentAcademicYear(), 'YYYY');
-  result.push(currentAcademicYear.year() + 1);
 
   while (currentAcademicYear.year() !== initialAcademicYear) {
     result.push(currentAcademicYear.year());

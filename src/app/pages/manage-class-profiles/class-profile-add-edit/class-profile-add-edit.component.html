@@ -109,17 +109,15 @@
             <div class="detail-element-container">
               <div class="label-container">Număr de ore săptămână</div>
               <div class="value-container small">
-                <app-input-new [value]="subject.weekly_hours_count"
-                               [inputType]="'number'"
-                               [error]="errors[yearGradeActiveTab]?.optional_subjects[$i]?.weekly_hours_count"
-                               (inputChange)="weeklyHoursChange($i, $event)"></app-input-new>
-              </div>
-              <div class="weekly-hours-info"
-                   [class.error]="academicProgram?.optional_subjects_weekly_hours && weeklyHoursSum(yearGradeActiveTab, $i) > academicProgram?.optional_subjects_weekly_hours[yearGradeActiveTab]"
-                   *ngIf="subjectActiveTab === 'optional_subjects'">
-                Total ore / săptămănă:
-                {{weeklyHoursSum(yearGradeActiveTab, $i)}}
-                din {{academicProgram?.optional_subjects_weekly_hours ? academicProgram?.optional_subjects_weekly_hours[yearGradeActiveTab] : '0'}}
+                <app-dropdown
+                  [list]="totalOptionalClasses"
+                  [placeholder]="'-'"
+                  (elementHasBeenSelected)="weeklyHoursChange($i, $event.element)"
+                  [appliedElement]="academicProgram.subjects[this.yearGradeActiveTab].optional_subjects[$i].weekly_hours_count"
+                  [errorMessage]="errors[yearGradeActiveTab]?.optional_subjects[$i]?.weekly_hours_count"
+                  [error]="errors[yearGradeActiveTab]?.optional_subjects[$i]?.weekly_hours_count"
+                  [required]="true"
+                ></app-dropdown>
               </div>
             </div>
             <hr class="margin-list">

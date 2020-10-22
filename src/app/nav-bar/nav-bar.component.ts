@@ -53,6 +53,7 @@ export class NavBarComponent {
 
   logout(): void {
     this.authService.logout();
+    this.accountService.clearAccount();
     this.router.navigateByUrl(getLoginPageRoute());
   }
 }

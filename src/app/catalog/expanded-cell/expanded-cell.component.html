@@ -99,8 +99,7 @@
         <div class="text-button blue-text add-button" (click)="openAbsenceOverlay($event)">Adaugă absență</div>
       </div>
     </div>
-    <div class="absences-summary">
-      <ng-container *ngIf="data?.length">
+    <div class="absences-summary" *ngIf="data?.length">
         <div class="elements desktop-only">
           <div class="label relative">Nr. total de absențe</div>
           <div class="element-cell single-number red-text">{{data.length || 0}}</div>
@@ -127,7 +126,6 @@
             </div>
           </div>
         </div>
-      </ng-container>
     </div>
   </div>
 

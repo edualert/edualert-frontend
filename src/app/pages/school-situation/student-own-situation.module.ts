@@ -7,6 +7,8 @@ import {HeaderModule} from '../../header/header.module';
 import {CatalogModule} from '../../catalog/catalog.module';
 import {FilterModule} from '../../filter/filter.module';
 import {DropdownModule} from '../../shared/dropdown/dropdown.module';
+import {SettingsModalModule} from '../../catalog/settings-modal/settings-modal.module';
+import {ViewUserModalModule} from '../manage-users/view-user-modal/view-user-modal.module';
 
 @NgModule({
   declarations: [StudentOwnSituationComponent],
@@ -17,7 +19,8 @@ import {DropdownModule} from '../../shared/dropdown/dropdown.module';
     HeaderModule,
     CatalogModule,
     FilterModule,
-    DropdownModule
+    DropdownModule,
+    ViewUserModalModule
   ],
   exports: [StudentOwnSituationComponent],
 })

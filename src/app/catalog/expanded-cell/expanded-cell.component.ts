@@ -35,7 +35,7 @@ export class ExpandedCellComponent implements OnInit {
   ngOnInit(): void {
     if (['grades_sem_1', 'grades_sem_2'].includes(this.identifier)) {
       this.data.grades = this.data.grades.map((grade: Grade) => ({...grade, minutesSinceCreation: this.getMinutesDiff(grade.created)}));
-      if (!this.data?.thesis?.hasOwnProperty('minutesSinceCreation')) {
+      if (this.data.thesis && !this.data?.thesis?.hasOwnProperty('minutesSinceCreation')) {
         this.data.thesis['minutesSinceCreation'] = this.data?.thesis ? this.getMinutesDiff(this.data?.thesis?.created) : null;
       }
     }
@@ -106,7 +106,6 @@ export class ExpandedCellComponent implements OnInit {
   }
 
   openAbsenceOverlay(event: Event, absence?: any): void {
-    debugger
     this.singleAbsenceModal.open(event.target, this.root.nativeElement, absence);
   }
 

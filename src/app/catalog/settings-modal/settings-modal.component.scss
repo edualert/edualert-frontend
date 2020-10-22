@@ -17,9 +17,12 @@
 }
 
 .student-list {
-  overflow: auto;
-  margin-right: -40px;
+  min-height: 30vh;
   min-width: 70vw;
+  height: 65vh;
+
+  overflow-y: scroll;
+  margin-right: -40px;
 
   .table-header .row .column {
     font-weight: $font-weight-regular;
@@ -61,6 +64,10 @@
       flex-grow: 1.5;
     }
   }
+}
+
+.disabled {
+  pointer-events: none;
 }
 
 @media (max-width: 960px) {

@@ -31,7 +31,7 @@ export class StudyClassAvailableGradesList extends OneTimeDataGetter {
   }
 
   getData(forceRequest: boolean, academicYear?: string): Observable<StudyClassGrade[]> {
-    return super.getData(forceRequest, `years/${academicYear}/study-classes-names`)
+    return super.getData(forceRequest, `years/${academicYear}/study-classes-names/`)
       .pipe(map((grades: StudyClassGrade[]) => (grades).map(grade => new StudyClassGrade(grade))));
   }
 

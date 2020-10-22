@@ -3,39 +3,22 @@ import {AccountService} from '../../services/account.service';
 import {ListPage} from '../list-page/list-page';
 import {HttpClient} from '@angular/common/http';
 import {Params} from '@angular/router';
-import {NetworkingListResponse} from '../../models/networking-list-response';
 import {ListUser} from '../../models/list-user';
 import {AddNewUserModalComponent} from './add-new-user-modal/add-new-user-modal.component';
 import {userRolesArray, userRoles} from '../../models/user-roles';
 import {findIndex} from 'lodash';
 import {ConfirmationModalComponent} from '../../shared/confirmation-modal/confirmation-modal.component';
-import BaseRequestParameters from '../list-page/base-request-parameters';
 import {AddUsersBulkService} from '../../services/add-users-bulk.service';
 import {FormBuilder} from '@angular/forms';
 import {AddUsersBulkComponent} from './add-users-bulk/add-users-bulk.component';
+import {ManageUsersService} from '../../services/manage-users.service';
 
-
-class RequestParams extends BaseRequestParameters {
-  readonly search: string;
-  readonly user_role: number;
-  readonly is_active: boolean;
-  readonly page_size: number;
-  readonly page: number;
-
-  constructor(newObj: { search?, user_role?, is_active?, page_size?, page? }) {
-    super();
-    this.search = newObj?.search;
-    this.user_role = newObj?.user_role;
-    this.is_active = newObj?.is_active;
-    this.page_size = newObj?.page_size;
-    this.page = newObj?.page;
-  }
-}
 
 @Component({
   selector: 'app-manage.users',
   templateUrl: './manage-users.component.html',
-  styleUrls: ['./manage-users.component.scss']
+  styleUrls: ['./manage-users.component.scss'],
+  providers: [ManageUsersService]
 })
 export class ManageUsersComponent extends ListPage implements AfterViewInit, OnDestroy {
   users: ListUser[] = [];
@@ -58,7 +41,8 @@ export class ManageUsersComponent extends ListPage implements AfterViewInit, OnD
               private http: HttpClient,
               private accountService: AccountService,
               private bulkAddUsersService: AddUsersBulkService,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private manageUsersService: ManageUsersService) {
     super(injector);
 
     this.scrollHandle = this.scrollHandle.bind(this);
@@ -69,7 +53,8 @@ export class ManageUsersComponent extends ListPage implements AfterViewInit, OnD
       this.users = [];
       this.requestedPageCount = 1;
       this.activeUrlParams = urlParams;
-      this.requestData(urlParams);
+      manageUsersService.setUrlParams(urlParams);
+      this.requestData(urlParams, true);
     });
 
     accountService.account.subscribe(user => {
@@ -85,6 +70,12 @@ export class ManageUsersComponent extends ListPage implements AfterViewInit, OnD
         userStatuses: null
       });
     });
+
+    manageUsersService.getUsersObservable().subscribe(info => {
+      this.users = info.users;
+      this.totalCount = info.totalCount;
+      this.elementCount = this.users.length;
+    });
   }
 
   ngAfterViewInit(): void {
@@ -95,22 +86,15 @@ export class ManageUsersComponent extends ListPage implements AfterViewInit, OnD
     document.body.removeEventListener('scroll',  this.scrollHandle);
   }
 
-  requestData(urlParams?: Params): void {
+  requestData(urlParams?: Params, clearUsersArray?: boolean): void {
     this.requestInProgress = !this.keepOldList;
     this.initialRequestInProgress = true;
-    let httpParams;
-    if (this.afterDelete) {
-      httpParams = new RequestParams({...urlParams}).getHttpParams();
-    } else {
-      httpParams = new RequestParams({...urlParams, page_size: 10}).getHttpParams();
-    }
-    const path = 'users/';
-    this.http.get(path, {params: httpParams}).subscribe((response: NetworkingListResponse) => {
-      this.totalCount = response.count;
-      response.results.map(result => {
-        this.users.push(result);
-      });
-      this.elementCount = this.users.length;
+
+    const requestPromise = clearUsersArray
+      ? this.manageUsersService.refreshUsers()
+      : this.manageUsersService.requestUsers(this.afterDelete);
+
+    requestPromise.then(() => {
       this.initialRequestInProgress = false;
       this.requestInProgress = false;
       this.keepOldList = false;
@@ -175,7 +159,7 @@ export class ManageUsersComponent extends ListPage implements AfterViewInit, OnD
             this.totalCount -= 1;
             if (this.users.length < this.totalCount) {
               this.afterDelete = true;
-              this.requestData({...this.activeUrlParams, page_size: 1, page: this.users.length + 1});
+              this.requestData({...this.activeUrlParams, page_size: 1, page: this.users.length + 1}, false);
             }
           }
         });

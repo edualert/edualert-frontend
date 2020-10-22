@@ -1,8 +1,8 @@
 import {IdFullname} from './id-fullname';
 
 export class TeacherClassThrough {
-  id: number;
-  teacher: IdFullname;
+  id?: number;
+  teacher?: IdFullname;
   subject_id: number;
   subject_name: string;
   is_mandatory: boolean;

@@ -307,9 +307,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
 
   deleteParent(index: number): void {
     this.hasModifiedDataOutput.emit(true);
-    _.remove(this.userDetails.parents, (el: IdFullname) => {
-      return el.id === this.userDetails.parents[index].id;
-    });
+    this.userDetails.parents.splice(index, 1);
   }
 
   isLabelChecked(id: number): boolean {

@@ -15,6 +15,7 @@ import {IdText} from '../../models/id-text';
 })
 export class MyClassesComponent extends ListPage {
   classes?: {[key: string]: OwnStudyClass[]} = null;
+  classesObjKeys: string[];
   accountRole: string;
   readonly defaultAcademicYear: IdText = new IdText({id: getCurrentAcademicYear(), text: `${getCurrentAcademicYear()} - ${getCurrentAcademicYear() + 1}`});
 
@@ -55,6 +56,7 @@ export class MyClassesComponent extends ListPage {
           this.classes[key] = list;
         });
       }
+      this.classesObjKeys = Object.keys(this.classes);
       this.requestInProgress = false;
     });
   }

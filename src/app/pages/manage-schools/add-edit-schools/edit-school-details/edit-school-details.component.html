@@ -42,6 +42,7 @@
         <app-dropdown
           [withMultipleSelection]="true"
           [error]="schoolDetailsError?.categories"
+          [errorMessage]="schoolDetailsError?.categories ? schoolDetailsError?.categories : ''"
           [list]="data.categories ? data.categories : []"
           [displayedProperty]="'name'"
           (selectionHasBeenConfirmed)="handleInputChange($event, 'categories')"

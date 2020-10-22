@@ -29,7 +29,7 @@ export class AvailableClassNamesService extends OneTimeDataGetter {
     } else {
       return this.currentAcademicYearService.getData(true).pipe(
         mergeMap((academicYear: AcademicYearCalendar) => {
-          return super.getData(forceRequest, `years/${academicYear.academic_year}/study-classes-names`)
+          return super.getData(forceRequest, `years/${academicYear.academic_year}/study-classes-names/`)
             .pipe(map((grades: StudyClassGrade[]) => (grades).map(grade => grade.class_grade)));
         })
       );

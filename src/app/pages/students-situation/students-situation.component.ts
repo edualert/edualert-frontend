@@ -128,6 +128,12 @@ export class StudentsSituationComponent extends ListPage implements AfterViewIni
     this.academicYearToRequest = value?.id;
     this.studyClassAvailableGradesService.getData(true).pipe(catchError(() => of(null)))
       .subscribe(availableClassGrade => {
+        availableClassGrade.forEach((element, index) => {
+          const tempArray = availableClassGrade.slice(index, availableClassGrade.length - 1);
+          if (tempArray.includes(element)) {
+            availableClassGrade.splice(index, 1);
+          }
+        });
         this.filterData.studyClassGrades = availableClassGrade;
       });
   }

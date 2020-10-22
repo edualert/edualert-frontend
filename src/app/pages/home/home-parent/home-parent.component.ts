@@ -50,7 +50,6 @@ export class HomeParentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchPageData();
     this.childAbsencesChartView = handleChartWidthHeight();
     this.account = this.accountService.account.getValue();
 
@@ -63,16 +62,18 @@ export class HomeParentComponent implements OnInit {
 
   fetchPageData(): void {
     const childId = this.selectedChild ? (this.selectedChild.id as string) : this.userDetails.children[0].id.toString();
-    this.childStatisticsService.getData(false, childId)
+    this.childStatisticsService.getData(true, childId)
       .subscribe(response => this.childStatistics = response);
-    this.childSchoolActivityService.getData(false, childId)
+    this.childSchoolActivityService.getData(true, childId)
       .subscribe(response => {
         this.childSchoolActivity = response;
+        this.childActivityTable = [];
         this.generateChildActivityTable();
       });
-    this.childSubjectsAtRiskService.getData(false, childId)
+    this.childSubjectsAtRiskService.getData(true, childId)
       .subscribe(response => {
         this.childSubjectsAtRisk = response;
+        this.childSubjectsAtRiskTable = [];
         this.generateChildSubjectsAtRiskTable();
       });
     this.ownChildAbsencesEvolutionService.getData(true, '', childId, this.currentMonth)

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {ViewUserModalComponent} from '../../pages/manage-users/view-user-modal/view-user-modal.component';
 import * as moment from 'moment';
 import {PupilLabelsModalComponent} from '../pupil-labels-modal/pupil-labels-modal.component';
@@ -10,7 +10,7 @@ import {PupilRemarksModalComponent} from '../pupil-remarks-modal/pupil-remarks-m
   templateUrl: './table-cell.component.html',
   styleUrls: ['./table-cell.component.scss']
 })
-export class TableCellComponent implements OnInit {
+export class TableCellComponent {
 
   @Input() cellType: string;
   @Input() cellIdentifier: string;
@@ -20,11 +20,14 @@ export class TableCellComponent implements OnInit {
   @Input() isExpanded?: boolean;
   @Input() pivotPoint: string | number;
   @Input() exceptionRule: string | number;
+  @Input() studentCatalogID: string | number;
+  @Input() tableLayoutAsIdentifier: string;
+  @Input() studentData: any;
   @Output() onExpandCell?: EventEmitter<any> = new EventEmitter<any>();
   @Output() onCloseExpand?: EventEmitter<any> = new EventEmitter<any>();
   @Output() onLinkClick?: EventEmitter<any> = new EventEmitter<any>();
+
   @ViewChild('userDetailsModal', {static: false}) userDetailModal: ViewUserModalComponent;
-  @ViewChild('viewPupilLabelsModal', {static: false}) viewPupilLabelsModal: PupilLabelsModalComponent;
   @ViewChild('viewRemarksLabelsModal', {static: false}) viewPupilRemarksModal: PupilRemarksModalComponent;
   readonly maxGrades = 4;
 
@@ -32,15 +35,9 @@ export class TableCellComponent implements OnInit {
     this.onCellClick = this.onCellClick.bind(this);
   }
 
-  ngOnInit() {
-  }
 
-  openTagsModal(studentData: Student): void {
-    this.viewPupilLabelsModal.open({labels: studentData});
-  }
-
-  openObservationsModal(studentData: Student): void {
-    this.viewPupilRemarksModal.open({labels: studentData});
+  openObservationsModal(studentData: Student, studentCatalogId, tableLayout): void {
+    this.viewPupilRemarksModal.open(studentData, studentCatalogId, tableLayout);
   }
 
   onCellClick() {

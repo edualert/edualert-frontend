@@ -1,6 +1,5 @@
 @import "../../../../assets/styles/base";
 
-
 .button-container {
   display: flex;
   flex-direction: row;
@@ -94,6 +93,15 @@
 
 .show-password-button {
   transform: translateY(-50%);
+}
+
+.close-error {
+  align-self: center;
+  background: url('../../../../assets/img/x-white.svg');
+  width: 15px;
+  height: 15px;
+  padding-bottom: 16px;
+  margin-left: 10px;
 }
 
 @media screen and (max-width: $mobile-screen-width-normal){

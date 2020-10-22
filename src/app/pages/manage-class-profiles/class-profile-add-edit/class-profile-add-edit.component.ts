@@ -98,6 +98,7 @@ export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactiv
   unregisteredAcademicPrograms: { id: number, name: string, subjects: any, optional_subjects_weekly_hours: any }[];
   readonly defaultAcademicYear: IdText = new IdText({id: getCurrentAcademicYear(), text: `${getCurrentAcademicYear()} - ${getCurrentAcademicYear() + 1}`});
   selectedOptionalSubject: number;
+  totalOptionalClasses: number[];
 
   coreSubject: AcademicSubject;
   hasCoreSubject: boolean = false;
@@ -156,6 +157,7 @@ export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactiv
         this.getCoreSubject();
         this.listAllMandatorySubjects(this.academicProgram);
       }
+      this.setTotalNumberOfOptionalClasses(this.yearGradeActiveTab);
       this.requestInProgress = false;
     });
   }
@@ -201,6 +203,7 @@ export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactiv
     // If already has subjects, it means we've already requested backend for this program: Skip the request
     if (this.unregisteredAcademicPrograms[unregisteredIndex].hasOwnProperty('subjects')) {
       this.setNewProgram(this.unregisteredAcademicPrograms[unregisteredIndex]);
+      this.setTotalNumberOfOptionalClasses(this.yearGradeActiveTab);
       if (this.hasCoreSubject) {
         this.listAllMandatorySubjects(this.academicProgram);
       }
@@ -210,6 +213,7 @@ export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactiv
         this.unregisteredAcademicPrograms[unregisteredIndex].subjects = this.convertToAcademicYearGrade(resp.subjects);
         this.unregisteredAcademicPrograms[unregisteredIndex].optional_subjects_weekly_hours = resp.optional_subjects_weekly_hours;
         this.setNewProgram(this.unregisteredAcademicPrograms[unregisteredIndex]);
+        this.setTotalNumberOfOptionalClasses(this.yearGradeActiveTab);
         if (this.hasCoreSubject) {
           this.listAllMandatorySubjects(this.academicProgram);
         }
@@ -228,6 +232,11 @@ export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactiv
       return optionalSubjects[0].weekly_hours_count;
     }
     return optionalSubjects[selectedProgram].weekly_hours_count;
+  }
+
+  setTotalNumberOfOptionalClasses(tabClicked: string) {
+    this.totalOptionalClasses = [...Array(this.academicProgram.optional_subjects_weekly_hours[tabClicked] + 1).keys()];
+    this.totalOptionalClasses.shift();
   }
 
   private convertToAcademicYearGrade(subjects: { [yearGrade: string]: AcademicSubject[] }): { [yearGrade: string]: AcademicYearGrade } {
@@ -263,6 +272,7 @@ export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactiv
 
   onYearGradeTabClicked(tabClicked: string) {
     this.yearGradeActiveTab = tabClicked;
+    this.setTotalNumberOfOptionalClasses(tabClicked);
   }
 
   subjectNameChange(index: number, value: string): void {

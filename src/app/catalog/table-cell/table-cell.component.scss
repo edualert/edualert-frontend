@@ -292,12 +292,26 @@
   }
 }
 
+.labels-observations {
+  display: flex;
+  flex-direction: column;
+
+  .observations {
+    padding-left: 15px;
+    padding-top: 10px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
 .tags {
   position: static;
   display: flex;
   font-size: $font-size-small;
   padding-left: $margin-tiny;
-  width: calc(100% - 20px);
+  width: 100%;
 
   .tag {
     font-size: $font-size-small;
@@ -307,6 +321,7 @@
     line-height: 26px;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin-right: 10px!important;
     overflow: hidden;
   }
 
@@ -350,7 +365,7 @@
   }
 }
 
-.table-cell:hover {
+.tags:hover {
   .tags-overlay {
     display: flex;
   }

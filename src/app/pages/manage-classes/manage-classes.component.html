@@ -43,19 +43,25 @@
                     </div>
                   </div>
                 </div>
-                <div class="card-right-container">
+                <div class="card-right-container"
+                     *ngIf="shouldDisplayActionButtonsContainer(studyClass, section)">
                   <hr class="vertical visible-on-desktop">
                   <hr>
                   <div class="buttons">
                     <div class="text-button edit"
-                         [routerLink]="[ + studyClass.id + '/edit']">
-                            <!-- [class.disabled]="!isEditable" removed from above for Demo purposes -->
+                         [routerLink]="[ + studyClass.id + '/edit']"
+                         *ngIf=isEditable>
                       Editează
                     </div>
                     <div class="text-button dark-text"
-                         (click)="deleteClass(studyClass, section.key, $event)">
-                      <!-- [class.disabled]="!isEditable || studyClass.has_previous_catalog_data" removed from above for Demo purposes -->
+                         (click)="deleteClass(studyClass, section.key, $event)"
+                         *ngIf="isEditable && !studyClass.has_previous_catalog_data">
                       Șterge
+                    </div>
+                    <div class="text-button red-text"
+                          *ngIf="shouldDisplayMoveButton(studyClass, section.key, section)"
+                         (click)="moveClass(studyClass)">
+                      Mută
                     </div>
                   </div>
                 </div>

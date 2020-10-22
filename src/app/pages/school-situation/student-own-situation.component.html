@@ -9,6 +9,26 @@
       <ng-container *ngIf="!rip">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</ng-container>
       <ng-container *ngIf="rip">...</ng-container>
     </div>
+    <div id="header-top-right-container">
+      <div class="catalog-top-right">
+        <div class="column">
+          <div class="gray-text label">{{academicYearToDisplay}} - {{academicYearToDisplay + 1}}</div>
+          <div class="value bold">{{rip ? "..." : studyClass?.academic_program_name}}</div>
+        </div>
+        <div class="column">
+          <div class="gray-text label">Diriginte</div>
+          <div class="value bold blue-text arrow-right link-content" *ngIf="!rip"
+               (click)="openUserModal($event, studyClass?.class_master.id)">
+            {{studyClass?.class_master.full_name}}</div>
+          <div class="value bold blue-text link-content" *ngIf="rip">...</div>
+        </div>
+      </div>
+      <div class="student-labels-container">
+        <div class="label" *ngFor="let label of student?.labels">
+          {{label.text}}
+        </div>
+      </div>
+    </div>
     <div id="header-filter">
       <app-filter>
         <div class="dropdown-parent">
@@ -27,3 +47,5 @@
     <app-catalog [tableLayout]="'student_own_situation'" [data]="catalog"></app-catalog>
   </div>
 </div>
+
+<app-view-user-modal #appViewUserModal></app-view-user-modal>
