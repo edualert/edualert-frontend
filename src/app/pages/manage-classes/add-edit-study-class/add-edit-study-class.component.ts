@@ -94,7 +94,7 @@ export class AddEditStudyClassComponent implements OnInit {
     } else if (this.isEdit) {
       this.academicYearInProgress = true;
       this.academicYearCalendarService.getData(false).subscribe(response => {
-        this.shouldPATCH = moment().valueOf() >= moment(response['first_semester']['starts_at'], 'DD-MM-YYYY').valueOf();
+        this.shouldPATCH = moment().valueOf() >= moment(response.first_semester.starts_at, 'DD-MM-YYYY').valueOf();
       });
       this.studyClassService.getData(true, this.activatedRoute.snapshot.params['id']).subscribe(response => {
         this.studyClass = response;
