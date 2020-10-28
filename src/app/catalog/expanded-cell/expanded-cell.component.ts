@@ -27,7 +27,7 @@ export class ExpandedCellComponent implements OnInit {
   @ViewChild('singleGradeModal', {static: false}) singleGradeModal: SingleGradeOverlayComponent;
   @ViewChild('singleAbsenceModal', {static: false}) singleAbsenceModal: SingleAbsenceOverlayComponent;
   @ViewChild('confirmationModal', {static: false}) confirmationModal: ConfirmationModalComponent;
-  readonly editableMinutes = 120;
+  readonly editableMinutes = 10080;
 
   constructor(private root: ElementRef) {
   }
