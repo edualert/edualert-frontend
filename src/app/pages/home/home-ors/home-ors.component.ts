@@ -24,6 +24,8 @@ export class HomeOrsComponent implements OnInit {
   institutionsAtRiskTableLayout: Column[] = [];
   inactiveInstitutionsTableLayout: Column[] = [];
 
+  forceRequest: boolean = true;
+
   institutionsEnrollmentStatistics: any;
   institutionsChartView: any[];
   colorSchemeYellow = {
@@ -51,14 +53,15 @@ export class HomeOrsComponent implements OnInit {
     this.fetchPageData();
     this.institutionsChartView = handleChartWidthHeight();
     this.studentsRiskChartView = handleChartWidthHeight();
+    this.forceRequest = false;
   }
 
   fetchPageData(): void {
-    this.institutionsAtRiskService.getData(false).subscribe(response => {
+    this.institutionsAtRiskService.getData(this.forceRequest).subscribe(response => {
       this.institutionsAtRiskList = response;
       this.generateFirstTableLayout();
     });
-    this.inactiveInstitutionsService.getData(false).subscribe(response => {
+    this.inactiveInstitutionsService.getData(this.forceRequest).subscribe(response => {
       this.inactiveInstitutionList = response;
       this.generateSecondTableLayout();
     });

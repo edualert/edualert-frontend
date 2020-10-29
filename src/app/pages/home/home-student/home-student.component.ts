@@ -29,6 +29,8 @@ export class HomeStudentComponent implements OnInit {
   myOwnSubjectsAtRisk: SubjectForChild[];
   myOwnSubjectsAtRiskTable: Column[] = [];
 
+  forceRequest: boolean = true;
+
   myOwnAbsencesList: any;
   myOwnAbsencesView: any[];
   colorSchemeRed = {
@@ -48,17 +50,18 @@ export class HomeStudentComponent implements OnInit {
   ngOnInit(): void {
     this.fetchPageData();
     this.myOwnAbsencesView = handleChartWidthHeight();
+    this.forceRequest = false;
   }
 
   fetchPageData(): void {
-    this.myOwnStatisticsService.getData(false)
+    this.myOwnStatisticsService.getData(this.forceRequest)
       .subscribe(response => this.myOwnStatistics = response);
-    this.myOwnSchoolActivityService.getData(false)
+    this.myOwnSchoolActivityService.getData(this.forceRequest)
       .subscribe(response => {
         this.myOwnSchoolActivity = response;
         this.generateMyActivityTable();
       });
-    this.myOwnSubjectsAtRiskService.getData(false)
+    this.myOwnSubjectsAtRiskService.getData(this.forceRequest)
       .subscribe(response => {
         this.myOwnSubjectsAtRisk = response;
         this.generateMyOwnSubjectsAtRiskTable();

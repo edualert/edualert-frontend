@@ -36,6 +36,8 @@ export class HomePrincipalComponent implements OnInit {
   schoolStudentsAtRiskList: StudentAtRisk[];
   schoolStudentsAtRiskTable: Column[] = [];
 
+  forceRequest: boolean = true;
+
   studentsEvolutionList: any;
   studentsChartView: any[];
   colorSchemeRed = {
@@ -56,25 +58,26 @@ export class HomePrincipalComponent implements OnInit {
   ngOnInit(): void {
     this.fetchPageData();
     this.studentsChartView = handleChartWidthHeight();
+    this.forceRequest = false;
   }
 
   fetchPageData(): void {
-    this.studyClassesAtRiskService.getData(false)
+    this.studyClassesAtRiskService.getData(this.forceRequest)
       .subscribe(response => {
         this.schoolStudyClassesAtRiskList = response;
         this.generateSchoolStudyClassesAtRiskTable();
       });
-    this.academicProgramsAtRiskService.getData(false)
+    this.academicProgramsAtRiskService.getData(this.forceRequest)
       .subscribe(response => {
         this.academicProgramsAtRiskList = response;
         this.generateAcademicProfilesAtRiskTable();
       });
-    this.inactiveTeachersService.getData(false)
+    this.inactiveTeachersService.getData(this.forceRequest)
       .subscribe(response => {
         this.inactiveTeachersList = response;
         this.generateTeachersTable();
       });
-    this.studentsAtRiskService.getData(false)
+    this.studentsAtRiskService.getData(this.forceRequest)
       .subscribe(response => {
         this.schoolStudentsAtRiskList = response;
         this.generateSchoolStudentsAtRiskTable();
