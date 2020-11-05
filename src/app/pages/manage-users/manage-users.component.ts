@@ -90,6 +90,9 @@ export class ManageUsersComponent extends ListPage implements AfterViewInit, OnD
     this.requestInProgress = !this.keepOldList;
     this.initialRequestInProgress = true;
 
+    if (urlParams) {
+      this.manageUsersService.setUrlParams(urlParams);
+    }
     const requestPromise = clearUsersArray
       ? this.manageUsersService.refreshUsers()
       : this.manageUsersService.requestUsers(this.afterDelete);

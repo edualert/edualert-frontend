@@ -67,8 +67,10 @@
 
     <div class="detail-element-container margin-top-small align-start">
       <div class="label-container fixed-width">Opțiune de trimitere</div>
-      <div class="value-container full-width">
-        <span class="radio-container" (click)="changeValue(!message.send_sms, 'send_sms')">
+      <!-- TODO Remove the disabled class from the div below after BE allows it -->
+      <div class="value-container full-width disabled">
+      <!-- TODO Remove the uncheckable class from the div below after BE allows it -->
+        <span class="radio-container uncheckable" (click)="changeValue(!message.send_sms, 'send_sms')">
           <div class="radio-button" [class.checked]="message?.send_sms"></div>
           <div class="text">Trimite și SMS</div>
         </span>

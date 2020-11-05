@@ -12,7 +12,7 @@
       <div class="arrow left"></div>
       <div class="blue-text bold column">Gestionare clase</div>
     </a>
-    <h1 id="header-title">{{isEdit ? 'Editare' : isClone ? 'Clonare' : 'Adaugare'}} clasă</h1>
+    <h1 id="header-title">{{isEdit ? 'Editare' : isClone ? 'Clonare' : 'Adăugare'}} clasă</h1>
     <h2 id="header-subtitle">
       <ng-container *ngIf="!academicYearInProgress; else loading">
         {{isEdit ? studyClass?.academic_year + ' - ' + (studyClass?.academic_year + 1)
@@ -214,7 +214,7 @@
               ></app-dropdown>
             </div>
             <div class="right-container">
-              <div class="text-button dark-text end mobile-margin" (click)="deleteStudent(i)">Sterge</div>
+              <div class="text-button dark-text end mobile-margin" (click)="deleteStudent(i)">Șterge</div>
             </div>
           </div>
           <hr *ngIf="i !== studyClass.students.length - 1">
@@ -228,8 +228,9 @@
               <div class="bold">{{ student?.full_name }}</div>
             </div>
             <div class="right-container">
-              <div class="text-button dark-text end mobile-margin" (click)="deleteStudent(i)">Sterge</div>
-              <div class="text-button dark-text end" (click)="openUserModal('STUDENT')">Muta</div>
+              <div class="text-button dark-text end mobile-margin" (click)="deleteStudent(i)">Șterge</div>
+              <!--TODO uncomment the line below after implementing the move student feature-->
+              <!--<div class="text-button dark-text end" (click)="openUserModal('STUDENT')">Mută</div>-->
             </div>
           </div>
           <div *ngIf="i >= initialStudentNumber" class="row spaced unwrapped">
@@ -250,7 +251,7 @@
               ></app-dropdown>
             </div>
             <div class="right-container">
-              <div class="text-button dark-text end mobile-margin" (click)="deleteStudent(i)">Sterge</div>
+              <div class="text-button dark-text end mobile-margin" (click)="deleteStudent(i)">Șterge</div>
             </div>
           </div>
           <hr *ngIf="i !== studyClass.students.length - 1">

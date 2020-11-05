@@ -83,7 +83,6 @@ export class HomeTeacherComponent implements OnInit {
 
   fetchPageData(): void {
     this.studyClassesAtRiskService.getData(this.forceRequest)
-
       .subscribe(response => {
         this.studyClassesAtRiskList = response;
         this.generateStudyClassesTable();

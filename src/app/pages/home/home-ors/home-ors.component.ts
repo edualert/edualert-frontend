@@ -28,6 +28,7 @@ export class HomeOrsComponent implements OnInit {
 
   institutionsEnrollmentStatistics: any;
   institutionsChartView: any[];
+
   colorSchemeYellow = {
     domain: ['#FFB300']
   };

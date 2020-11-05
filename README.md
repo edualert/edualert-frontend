@@ -16,6 +16,3 @@ You can see more info on the `./src/set-env` file.
 
  - When accessing the app from the browser, you can navigate to `/devtools`. This page has a small demo of all shared components and styles.
 
-## DEV
-
-

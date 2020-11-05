@@ -193,12 +193,11 @@ export class AddEditStudyClassComponent implements OnInit {
           this.studyClass.new_students = [];
         }
         this.studyClass.new_students[index - this.initialStudentNumber] = event.element.id;
-        this.studyClassErrors.new_students = '';
       }
 
-      if (this.isEdit) {
+      if (this.isEdit && this.studyClassErrors.students[index - this.initialStudentNumber]) {
         this.studyClassErrors.students[index - this.initialStudentNumber].full_name = null;
-      } else {
+      } else if (this.studyClassErrors.students[index]) {
         this.studyClassErrors.students[index].full_name = null;
       }
       this.studentList.splice(findIndex(this.studentList, {id: event.element.id}), 1);
@@ -401,13 +400,13 @@ export class AddEditStudyClassComponent implements OnInit {
 
       // Check if the deleted users are in requestBody.new_students
       requestBody.new_students?.forEach(studentId => {
-        if (requestBody.deleted_students.includes(studentId)) {
+        if (requestBody.deleted_students?.includes(studentId)) {
           requestBody.new_students.splice(requestBody.new_students.indexOf(studentId), 1);
           requestBody.deleted_students.splice(requestBody.deleted_students.indexOf(studentId), 1);
         }
       });
       requestBody.deleted_students?.forEach(studentId => {
-        if (requestBody.new_students.includes(studentId)) {
+        if (requestBody.new_students?.includes(studentId)) {
           requestBody.new_students.splice(requestBody.new_students.indexOf(studentId), 1);
           requestBody.deleted_students.splice(requestBody.deleted_students.indexOf(studentId), 1);
         }
