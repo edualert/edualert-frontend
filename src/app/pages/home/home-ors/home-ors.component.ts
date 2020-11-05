@@ -26,6 +26,9 @@ export class HomeOrsComponent implements OnInit {
 
   institutionsEnrollmentStatistics: any;
   institutionsChartView: any[];
+
+  forceRequest: boolean = true;
+
   colorSchemeYellow = {
     domain: ['#FFB300']
   };
@@ -51,14 +54,15 @@ export class HomeOrsComponent implements OnInit {
     this.fetchPageData();
     this.institutionsChartView = handleChartWidthHeight();
     this.studentsRiskChartView = handleChartWidthHeight();
+    this.forceRequest = false;
   }
 
   fetchPageData(): void {
-    this.institutionsAtRiskService.getData(false).subscribe(response => {
+    this.institutionsAtRiskService.getData(this.forceRequest).subscribe(response => {
       this.institutionsAtRiskList = response;
       this.generateFirstTableLayout();
     });
-    this.inactiveInstitutionsService.getData(false).subscribe(response => {
+    this.inactiveInstitutionsService.getData(this.forceRequest).subscribe(response => {
       this.inactiveInstitutionList = response;
       this.generateSecondTableLayout();
     });

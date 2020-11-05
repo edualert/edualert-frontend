@@ -86,11 +86,6 @@ export class StudyClassErrors {
   teachers_class_through: {
     teacher: string;
   }[];
-  updated_teachers: {
-    teacher: string;
-  }[];
-  new_students: string;
-  deleted_students: string;
   students: IdFullname[];
 
   constructor() {

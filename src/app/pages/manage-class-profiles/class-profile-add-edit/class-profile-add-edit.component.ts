@@ -85,7 +85,7 @@ class CreatableProgram {
   templateUrl: './class-profile-add-edit.component.html',
   styleUrls: ['./class-profile-add-edit.component.scss', '../../../shared/label-styles.scss']
 })
-export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactivate, OnDestroy {
+export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnDestroy {
   page: 'add' | 'edit';
   academicProgram: AcademicProgramDetails = new AcademicProgramDetails();
   yearGradesTabList: IdName[] = [];
@@ -122,19 +122,16 @@ export class ClassProfileAddEditComponent implements OnInit, CanComponentDeactiv
               private academicYearCalendarService: AcademicYearCalendarService) {
     this.sub = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
-        if (val.url.includes('add')) {
-          this.initialiseAdd();
-        } else {
-          this.initialiseEdit();
-        }
+        this.ownSchoolUnit.getData(true).subscribe(school => {
+          this.hasCoreSubject = ['Artistic', 'Sportiv'].includes(school?.academic_profile?.name);
+          this.coreSubjectsList = [];
+          if (val.url.includes('add')) {
+            this.initialiseAdd();
+          } else {
+            this.initialiseEdit();
+          }
+        });
       }
-    });
-  }
-
-  ngOnInit(): void {
-    this.ownSchoolUnit.getData(true).subscribe(school => {
-      this.hasCoreSubject = ['Artistic', 'Sportiv'].includes(school?.academic_profile?.name);
-      this.coreSubjectsList = [];
     });
   }
 

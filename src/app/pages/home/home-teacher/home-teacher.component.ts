@@ -32,6 +32,8 @@ export class HomeTeacherComponent implements OnInit {
   inactiveParentsList: InactiveParent[];
   inactiveParentsTable: Column[] = [];
 
+  forceRequest: boolean = true;
+
   ownStudentsEvolutionList: any;
   ownStudentsChartView: any[];
   colorSchemeRed = {
@@ -65,6 +67,7 @@ export class HomeTeacherComponent implements OnInit {
         this.isTeacherClassMaster = response;
         this.setTabs();
         this.fetchPageData();
+        this.forceRequest = false;
       });
   }
 
@@ -79,7 +82,7 @@ export class HomeTeacherComponent implements OnInit {
   }
 
   fetchPageData(): void {
-    this.studyClassesAtRiskService.getData(false)
+    this.studyClassesAtRiskService.getData(this.forceRequest)
       .subscribe(response => {
         this.studyClassesAtRiskList = response;
         this.generateStudyClassesTable();
@@ -88,12 +91,12 @@ export class HomeTeacherComponent implements OnInit {
     if (this.isTeacherClassMaster) {
       const classId = this.isTeacherClassMasterService.getOwnClassId();
 
-      this.inactiveParentsService.getData(false)
+      this.inactiveParentsService.getData(this.forceRequest)
         .subscribe(response => {
           this.inactiveParentsList = response;
           this.generateInactiveParentsTable();
         });
-      this.ownStudentsAtRiskService.getData(false)
+      this.ownStudentsAtRiskService.getData(this.forceRequest)
         .subscribe(response => {
           this.ownStudentsAtRiskList = response;
           this.generateOwnStudentsAtRiskTable();

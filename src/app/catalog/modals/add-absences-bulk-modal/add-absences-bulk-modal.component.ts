@@ -113,6 +113,7 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
     }
     else {
       this.students[studentIndex].addedAbsences.push(false);
+      this.hasModifiedData = true;
     }
   }
 
