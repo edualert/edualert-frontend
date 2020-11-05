@@ -24,6 +24,8 @@ export class HomeOrsComponent implements OnInit {
   institutionsAtRiskTableLayout: Column[] = [];
   inactiveInstitutionsTableLayout: Column[] = [];
 
+  forceRequest: boolean = true;
+
   institutionsEnrollmentStatistics: any;
   institutionsChartView: any[];
 
