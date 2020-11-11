@@ -1,7 +1,7 @@
 const fs = require('fs');
 const colors = require('colors');
 
-const defaultAPIUrl = 'https://live.api.edualert.ro/api/v1/my-account/';
+const defaultAPIUrl = 'https://live.api.edualert.ro';
 
 const directory = './src/environments';
 const filename = 'environment.ts';
