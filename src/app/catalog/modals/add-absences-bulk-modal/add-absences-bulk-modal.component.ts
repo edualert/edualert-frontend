@@ -110,7 +110,8 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
       if (this.isGloballySelected) {
         this.isGloballySelected = false;
       }
-    } else {
+    }
+    else {
       this.students[studentIndex].addedAbsences.push(false);
       this.hasModifiedData = true;
     }
