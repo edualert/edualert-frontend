@@ -14,7 +14,7 @@ import {IdName} from '../../models/id-name';
 })
 export class LoginComponent implements OnInit {
   readonly schoolNamesService: SchoolNamesService;
-  
+
   schools: IdName[];
   selectedSchool: IdName;
   schoolId: string | number;
@@ -93,6 +93,7 @@ export class LoginComponent implements OnInit {
 
   login(event): void {
     event.preventDefault();
+    this.username = this.username.trim();
     let sent_username = this.username;
 
     if (this.isFaculty) {
@@ -117,7 +118,9 @@ export class LoginComponent implements OnInit {
 
   resetPassword(event): void {
     event.preventDefault();
+    this.username = this.username.trim();
     let sent_username = this.username;
+
     if (this.isFaculty) {
       if (this.schoolId) {
         sent_username = `${this.schoolId}_${this.username}`;

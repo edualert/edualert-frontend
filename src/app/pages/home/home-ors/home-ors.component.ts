@@ -24,10 +24,10 @@ export class HomeOrsComponent implements OnInit {
   institutionsAtRiskTableLayout: Column[] = [];
   inactiveInstitutionsTableLayout: Column[] = [];
 
-  forceRequest: boolean = true;
-
   institutionsEnrollmentStatistics: any;
   institutionsChartView: any[];
+
+  forceRequest: boolean = true;
 
   colorSchemeYellow = {
     domain: ['#FFB300']

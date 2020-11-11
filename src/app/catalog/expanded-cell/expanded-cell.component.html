@@ -83,8 +83,7 @@
           <ng-container *ngIf="isEditable">
             <hr class="vertical" *ngIf="!absence.is_founded && (absence.minutesSinceCreation <= editableMinutes ||
              tableLayoutAsIdentifier === 'class_master' || isClassMaster)">
-            <span *ngIf="!absence.is_founded && (absence.minutesSinceCreation <= editableMinutes ||
-             tableLayoutAsIdentifier === 'class_master' || isClassMaster)" class="edit-button text-button" (click)="onAbsenceAuthorize(absence)">
+            <span *ngIf="!absence.is_founded" class="edit-button text-button" (click)="onAbsenceAuthorize(absence)">
               Motivează
             </span>
             <span *ngIf="absence.minutesSinceCreation <= editableMinutes"
