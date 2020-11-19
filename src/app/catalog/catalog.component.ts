@@ -13,6 +13,7 @@ import {
 import {cloneDeep} from 'lodash';
 import {AcademicYearCalendarService} from '../services/academic-year-calendar.service';
 import {AcademicYearCalendar} from '../models/academic-year-calendar';
+import {HeaderService} from '../header/header.service';
 
 export type catalogLayout = 'class_master' | 'class_students' | string;
 
@@ -40,6 +41,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() data: any[];
   @Input() tableLayout: 'class_master' | 'class_students' | 'student_catalog' | 'students_situation_ors' | 'students_situation_teacher_principal' | string;
   @Input() isClassMaster: boolean = false;
+  @Input() activeTabId: any;
 
   @Output() addGradeToStudent: EventEmitter<any> = new EventEmitter<any>();
   @Output() addAbsenceToStudent: EventEmitter<any> = new EventEmitter<any>();
@@ -59,7 +61,8 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   expandableCells: boolean[][];
   editableCells: boolean[][];
 
-  constructor(academicCalendarService: AcademicYearCalendarService) {
+  constructor(academicCalendarService: AcademicYearCalendarService,
+              private headerService: HeaderService) {
     academicCalendarService.getData(false).subscribe(response => {
       this.academicCalendar = new AcademicYearCalendar(response);
       if (!this.internalLayout) {
@@ -108,6 +111,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
     if (changes.data?.currentValue) {
       this.internalData = this.formatTableData(changes.data.currentValue);
       this.refreshExpandedCellData();
+      this.headerService.refreshHeaderHeight();
     }
 
     if (changes.tableLayout && this.academicCalendar) {

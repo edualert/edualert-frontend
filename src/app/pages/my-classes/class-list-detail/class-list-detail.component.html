@@ -47,6 +47,7 @@
         <app-catalog
           [data]="ownPupilsData"
           [tableLayout]="activeTab?.tableLayout"
+          [activeTabId]="activeTab?.id"
           (onLinkClick)="onLinkClick($event)"
         ></app-catalog>
       </ng-container>

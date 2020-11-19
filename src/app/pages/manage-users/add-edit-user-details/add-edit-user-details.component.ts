@@ -271,7 +271,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       _.remove(this.userDetails.labels, (el: IdText) => {
         return el.id === label.id;
       });
-    } else if (this.userDetails?.labels.length < 3) {
+    } else {
       this.userDetails.labels.push(label);
     }
   }

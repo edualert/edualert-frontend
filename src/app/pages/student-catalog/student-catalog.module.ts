@@ -5,6 +5,7 @@ import {StudentCatalogComponent} from './student-catalog.component';
 import {HeaderModule} from '../../header/header.module';
 import {CatalogModule} from '../../catalog/catalog.module';
 import {RouterModule} from '@angular/router';
+import {ViewUserModalModule} from '../manage-users/view-user-modal/view-user-modal.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {RouterModule} from '@angular/router';
     CoreModule,
     HeaderModule,
     CatalogModule,
-    RouterModule
+    RouterModule,
+    ViewUserModalModule
   ],
   exports: [
     StudentCatalogComponent

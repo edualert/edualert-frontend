@@ -89,13 +89,19 @@
 
     <!-- NAME ----------------------------------  -->
     <div *ngSwitchCase="'name-cell'" class="name-cell">
-      <div class="name blue-text clickable" (click)="openUserDetailsModal(data.id)">
+      <div class="name {{ activeTabId === 0 ? 'dark-text' : 'blue-text'}} clickable" (click)="openUserDetailsModal(data.id)">
         {{data.full_name}}
+        <div *ngIf="activeTabId === 0" class="arrow right"></div>
       </div>
-      <div class="secondary-text clickable"
+      <div *ngIf="activeTabId !== 0" class="secondary-text clickable"
            [routerLink]="'/messages/create'"
            [queryParams]="{userId: data?.id, userName: data?.full_name}">
         Trimitere mesaj
+      </div>
+      <div *ngIf="activeTabId === 0"
+           class="link-content-button blue-text"
+           [routerLink]="['/my-classes/' + classId + '/students/' + data.id + '/catalog']">
+        Toate materiile
       </div>
     </div>
 
@@ -110,9 +116,16 @@
     </div>
 
     <!-- LINK BUTTON ----------------------------------  -->
-    <div *ngSwitchCase="'link-button'" class="link-button-cell">
-      <div class="button text-button" (click)="onLinkClick.emit()">
-        Toate materiile
+    <div *ngSwitchCase="'link-button'">
+      <div *ngIf="activeTabId !== 0" class="link-button-cell">
+        <div class="button text-button" (click)="onLinkClick.emit()">
+          Toate materiile
+        </div>
+      </div>
+      <div *ngIf="activeTabId === 0" class="secondary-text clickable blue-text"
+           [routerLink]="'/messages/create'"
+           [queryParams]="{userId: data?.id, userName: data?.full_name}">
+        Trimitere mesaj
       </div>
     </div>
 

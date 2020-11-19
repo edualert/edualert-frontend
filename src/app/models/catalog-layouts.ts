@@ -6,7 +6,18 @@ import {Semester} from './semester';
 import {unitOfTime} from 'moment';
 
 export type CellIdentifier = 'name' | 'grades_sem_1' | 'grades_sem_2' | 'grade_annual' | 'abs_sem_1' | 'abs_sem_2' | 'abs_annual';
-export type CellType = 'name-cell' | 'subject-name-cell' | 'simple-number' | 'grades-list' | 'absences-list' | 'absences-count' | 'plain-text' | 'link-button' | 'labels' | 'annual-avg' | 'sem-avg';
+export type CellType =
+  'name-cell'
+  | 'subject-name-cell'
+  | 'simple-number'
+  | 'grades-list'
+  | 'absences-list'
+  | 'absences-count'
+  | 'plain-text'
+  | 'link-button'
+  | 'labels'
+  | 'annual-avg'
+  | 'sem-avg';
 
 
 export class CatalogLayout {

@@ -27,12 +27,17 @@ export class ExpandedCellComponent implements OnInit {
   @ViewChild('singleGradeModal', {static: false}) singleGradeModal: SingleGradeOverlayComponent;
   @ViewChild('singleAbsenceModal', {static: false}) singleAbsenceModal: SingleAbsenceOverlayComponent;
   @ViewChild('confirmationModal', {static: false}) confirmationModal: ConfirmationModalComponent;
-  readonly editableMinutes = 10080;
+
+  isOnViewPupilDataPage: boolean = false;
+
 
   constructor(private root: ElementRef) {
   }
 
   ngOnInit(): void {
+    if (this.tableLayoutAsIdentifier === 'student_catalog') {
+      this.isOnViewPupilDataPage = true;
+    }
     if (['grades_sem_1', 'grades_sem_2'].includes(this.identifier)) {
       this.data.grades = this.data.grades.map((grade: Grade) => ({...grade, minutesSinceCreation: this.getMinutesDiff(grade.created)}));
       if (this.data.thesis && !this.data?.thesis?.hasOwnProperty('minutesSinceCreation')) {

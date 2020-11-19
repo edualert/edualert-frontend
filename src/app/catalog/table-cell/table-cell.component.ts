@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import {PupilLabelsModalComponent} from '../pupil-labels-modal/pupil-labels-modal.component';
 import {Student} from '../../models/student';
 import {PupilRemarksModalComponent} from '../pupil-remarks-modal/pupil-remarks-modal.component';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-table-cell',
@@ -23,6 +24,7 @@ export class TableCellComponent {
   @Input() studentCatalogID: string | number;
   @Input() tableLayoutAsIdentifier: string;
   @Input() studentData: any;
+  @Input() activeTabId: any;
   @Output() onExpandCell?: EventEmitter<any> = new EventEmitter<any>();
   @Output() onCloseExpand?: EventEmitter<any> = new EventEmitter<any>();
   @Output() onLinkClick?: EventEmitter<any> = new EventEmitter<any>();
@@ -30,9 +32,11 @@ export class TableCellComponent {
   @ViewChild('userDetailsModal', {static: false}) userDetailModal: ViewUserModalComponent;
   @ViewChild('viewRemarksLabelsModal', {static: false}) viewPupilRemarksModal: PupilRemarksModalComponent;
   readonly maxGrades = 4;
+  classId: number;
 
-  constructor() {
+  constructor(private activatedRoute: ActivatedRoute) {
     this.onCellClick = this.onCellClick.bind(this);
+    this.classId = activatedRoute.snapshot.params?.id;
   }
 
 

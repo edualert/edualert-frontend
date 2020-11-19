@@ -1,2 +1,73 @@
 @import "../../../assets/styles/base";
 
+.tags {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  max-width: calc(100% - 600px);
+  margin-top: $margin-small;
+
+  .tag {
+    margin-bottom: $margin-xsmall;
+  }
+
+  .no-tags {
+    padding-top: 6px;
+    align-self: center;
+  }
+}
+
+.label {
+  padding-top: 6px;
+  margin-right: $margin-default;
+}
+
+.link-content {
+  pointer-events: none;
+  display: inline-flex !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    filter: brightness(1.3);
+    .item-separator {
+      filter: brightness(0.77);
+    }
+  }
+
+  .full-name {
+    cursor: pointer;
+    pointer-events: auto;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .item-separator {
+    margin-left: $margin-xsmall;
+  }
+}
+
+.value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#header-top-right-container .catalog-top-right {
+  padding: $margin-tiny $margin-big $margin-small;
+}
+
+.arrow.right {
+  margin-left: $margin-xsmall;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .tags {
+    display: none;
+  }
+}

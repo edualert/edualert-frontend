@@ -15,10 +15,13 @@
         <div class="element-cell grade-cell" *ngFor="let grade of data.grades">
           <div class="grade {{grade.grade <= 4 ? 'red-text' : ''}}">{{grade.grade}}</div>
           <div class="date">{{displayDate(grade.taken_at)}}</div>
-          <ng-container *ngIf="(isEditable && grade.minutesSinceCreation <= editableMinutes)">
+          <ng-container *ngIf="isEditable">
             <hr class="vertical">
-            <span class="edit-button text-button" (click)="openGradeOverlay($event, false, grade)">Editează</span>
-            <div class="delete-button text-button dark-text" (click)="onGradeDelete(grade)">Șterge</div>
+            <span class="edit-button text-button"
+                  (click)="openGradeOverlay($event, false, grade)">Editează</span>
+            <div *ngIf="tableLayoutAsIdentifier !== 'class_master'"
+                 class="delete-button text-button dark-text"
+                 (click)="onGradeDelete(grade)">Șterge</div>
           </ng-container>
         </div>
       </div>
@@ -39,7 +42,7 @@
         <div class="element-cell grade-cell">
           <div class="grade" [class.red-text]="data?.thesis?.grade < 5">{{data?.thesis?.grade ? data?.thesis?.grade : '-'}}</div>
           <div class="date">{{data?.thesis?.taken_at ? displayDate(data?.thesis?.taken_at) : '-'}}</div>
-          <ng-container *ngIf="isEditable && data?.thesis?.minutesSinceCreation <= editableMinutes">
+          <ng-container *ngIf="isEditable">
             <hr class="vertical">
             <span class="edit-button text-button" (click)="openGradeOverlay($event, true, data?.thesis)">Editează</span>
             <div class="delete-button text-button dark-text" (click)="onGradeDelete(data?.thesis)">Șterge</div>
@@ -81,12 +84,11 @@
           {{displayLongDate(absence.taken_at)}}
 
           <ng-container *ngIf="isEditable">
-            <hr class="vertical" *ngIf="!absence.is_founded && (absence.minutesSinceCreation <= editableMinutes ||
-             tableLayoutAsIdentifier === 'class_master' || isClassMaster)">
+            <hr class="vertical" *ngIf="!absence.is_founded && (tableLayoutAsIdentifier === 'class_master' || isClassMaster)">
             <span *ngIf="!absence.is_founded" class="edit-button text-button" (click)="onAbsenceAuthorize(absence)">
               Motivează
             </span>
-            <span *ngIf="absence.minutesSinceCreation <= editableMinutes"
+            <span *ngIf="!isOnViewPupilDataPage"
                   class="delete-button text-button dark-text"
                   (click)="onAbsenceDelete(absence)">
               Șterge
@@ -94,8 +96,9 @@
           </ng-container>
         </div>
       </div>
-      <div class="add-button-container" *ngIf="isEditable">
-        <div class="text-button blue-text add-button" (click)="openAbsenceOverlay($event)">Adaugă absență</div>
+      <div class="add-button-container" *ngIf="isEditable && !isOnViewPupilDataPage">
+        <div class="text-button blue-text add-button"
+             (click)="openAbsenceOverlay($event)">Adaugă absență</div>
       </div>
     </div>
     <div class="absences-summary" *ngIf="data?.length">

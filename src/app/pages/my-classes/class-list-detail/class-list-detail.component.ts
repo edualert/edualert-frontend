@@ -315,7 +315,12 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
 
       // Invalidate "Elevii Clasei" content due to the addition/removal of grades/absences, so we have to request the data for that tab again
       if (changesCatalogContent) {
-        this.fetchOwnPupilData();
+        if (this.classDetails.is_class_master) {
+          this.fetchOwnPupilData();
+          this.fetchCatalogData(tabBeforeRequest);
+        } else {
+          this.fetchCatalogData(tabBeforeRequest);
+        }
       }
     });
   }
@@ -367,7 +372,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
 
   authorizeAbsence(absence: any): void {
     const request = this.httpClient.post(`absences/${absence.id}/authorize/`, {});
-    this.modifyCatalog(request);
+    this.modifyCatalog(request, true);
   }
 
   onLinkClick(event: { cellIdentifier: string, dataRow: any }): void {

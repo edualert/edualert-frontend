@@ -56,7 +56,6 @@
 }
 
 .row-data {
-  display: flex;
   height: fit-content;
   padding: 5px 0 5px 5px;
 
@@ -68,12 +67,13 @@
 .column {
   font-weight: $font-weight-medium;
   width: fit-content;
-  white-space: nowrap;
+  text-align: center;
 }
 
 .header {
   color: $color-text-normal;
   font-weight: $font-weight-regular;
+  text-align: center;
 }
 
 .fixed-cell {
