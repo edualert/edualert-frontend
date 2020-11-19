@@ -65,15 +65,15 @@ const routes: Routes = [
   {path: 'manage-class-profiles/:id/edit', pathMatch: 'full', component: ClassProfileAddEditComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},
   {path: 'manage-class-profiles/add', pathMatch: 'full', component: ClassProfileAddEditComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},
 
-  {path: 'manage-classes',  pathMatch: 'full', component: ManageClassesComponent, canActivate: [AuthGuardService]},
-  {path: 'manage-classes/:id/view', pathMatch: 'full', component: ClassDetailComponent, canActivate: [AuthGuardService]},
-  {path: 'manage-classes/:id/edit', pathMatch: 'full', component: AddEditStudyClassComponent, canActivate: [AuthGuardService], canDeactivate: [CanLeaveGuardService]},
-  {path: 'manage-classes/add',  pathMatch: 'full', component: AddEditStudyClassComponent, canActivate: [AuthGuardService], canDeactivate: [CanLeaveGuardService]},
+  {path: 'manage-classes',  pathMatch: 'full', component: ManageClassesComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
+  {path: 'manage-classes/:id/view', pathMatch: 'full', component: ClassDetailComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
+  {path: 'manage-classes/:id/edit', pathMatch: 'full', component: AddEditStudyClassComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},
+  {path: 'manage-classes/add',  pathMatch: 'full', component: AddEditStudyClassComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},
 
   {path: 'my-classes', pathMatch: 'full', component: MyClassesComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
   {path: 'my-classes/:id/class-detail', pathMatch: 'full', component: ClassListDetailComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
-  {path: 'my-classes/:id/catalog', pathMatch: 'full', component: CatalogComponent},
-  {path: 'my-classes/:classId/students/:studentId/catalog', pathMatch: 'full', component: StudentCatalogComponent},
+  {path: 'my-classes/:id/catalog', pathMatch: 'full', component: CatalogComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
+  {path: 'my-classes/:classId/students/:studentId/catalog', pathMatch: 'full', component: StudentCatalogComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
 
   {path: 'manage-schools', pathMatch: 'full', component: ManageSchoolsComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
   {path: 'manage-schools/:id/view', pathMatch: 'full', component: SchoolDetailComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
@@ -87,7 +87,7 @@ const routes: Routes = [
 
   {path: 'messages', pathMatch: 'full', component: MessagesComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
   {path: 'messages/create', pathMatch: 'full', component: MessagesCreateComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},
-  {path: 'messages/:messageId/view', pathMatch: 'full', component: MessageDetailsComponent, canActivate: [AuthGuardService]},
+  {path: 'messages/:messageId/view', pathMatch: 'full', component: MessageDetailsComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
 
   {path: 'my-account', pathMatch: 'full', component: MyAccountComponent, canActivate: [AuthGuardService, UserRoleEnforcementService]},
   {path: 'my-account/edit', pathMatch: 'full', component: EditMyAccountComponent, canActivate: [AuthGuardService, UserRoleEnforcementService], canDeactivate: [CanLeaveGuardService]},

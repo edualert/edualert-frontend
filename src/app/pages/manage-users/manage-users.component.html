@@ -71,7 +71,8 @@
             <div class="card-right-container">
               <div class="tags-and-status-container">
                 <div class="tags">
-                  <div class="tag" *ngFor="let tag of user.labels">{{tag}}</div>
+                  <div class="tag" *ngFor="let tag of user.labels.length > 2 ? user.labels.slice(0, 2) : user.labels">{{tag}}</div>
+                  <div class="tag" *ngIf="user.labels.length > 2">+ {{user.labels.length - 2}}</div>
                 </div>
                 <div class="user-status"
                      [ngClass]="user.last_online === null && user.is_active ? 'grey' : user.is_active ? 'green' : 'red'">

@@ -1,4 +1,5 @@
-import {AfterViewInit, Component, HostListener} from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
+import {HeaderService} from './header.service';
 
 @Component({
   selector: 'app-header',
@@ -7,7 +8,14 @@ import {AfterViewInit, Component, HostListener} from '@angular/core';
 })
 export class HeaderComponent implements AfterViewInit {
 
-  constructor() { }
+  constructor(
+    headerService: HeaderService
+  ) {
+    headerService.getHeaderHeight().subscribe(value => {
+      const headerHeight = document.getElementById('page-header').getBoundingClientRect().height;
+      (document.getElementsByClassName('header-sublayer')[0] as HTMLElement).style.height = `${headerHeight}px`;
+    });
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {

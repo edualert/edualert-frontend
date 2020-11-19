@@ -33,7 +33,8 @@ export class LocalStorageService {
   }
 
   static getIsFaculty(): boolean {
-    return localStorage.getItem('isFaculty') === "true";
+    const isFaculty = localStorage.getItem('isFaculty');
+    return isFaculty === null || isFaculty === 'true';
   }
 
   static setSchoolId(id: string): void {

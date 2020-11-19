@@ -14,7 +14,7 @@ import {IdName} from '../../models/id-name';
 })
 export class LoginComponent implements OnInit {
   readonly schoolNamesService: SchoolNamesService;
-
+  
   schools: IdName[];
   selectedSchool: IdName;
   schoolId: string | number;
@@ -206,7 +206,7 @@ export class LoginComponent implements OnInit {
     this.forgotPasswordSuccess = null;
     this.forgotPasswordError = null;
     event.preventDefault();
-    this.router.navigateByUrl(getLoginPageRoute());
+    this.router.navigateByUrl(this.isFaculty ? '/login-faculty' : '/login-admin');
   }
 
   handleSchoolChange(entry: { element, index }): void {

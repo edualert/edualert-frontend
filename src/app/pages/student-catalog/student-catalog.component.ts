@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {cloneDeep} from 'lodash';
-import {Observable} from 'rxjs';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { cloneDeep } from 'lodash';
+import { Observable } from 'rxjs';
 import * as moment from 'moment';
+import { ViewUserModalComponent } from '../manage-users/view-user-modal/view-user-modal.component';
 
 @Component({
   selector: 'app-student-catalog',
@@ -28,6 +29,7 @@ export class StudentCatalogComponent implements OnInit {
   backLink: string;
   layout = 'student_catalog';
   rip: boolean;
+  @ViewChild('appViewUserModal', {static: false}) appViewUserModal: ViewUserModalComponent;
 
 
   constructor(private activatedRoute: ActivatedRoute, private httpClient: HttpClient) {
@@ -75,7 +77,15 @@ export class StudentCatalogComponent implements OnInit {
     request.subscribe((resp: any) => {
       const rowIndex = this.catalog.findIndex(row => row.id === resp.id);
       const catalog = cloneDeep(this.catalog);
+      const teacher = catalog[rowIndex]['teacher'];
+      const subjectName = catalog[rowIndex]['subject_name'];
+
+      // Replace the row with the one from response
       catalog[rowIndex] = resp;
+      // Add back the teacher and the subject, because they're not included in the response
+      catalog[rowIndex]['teacher'] = teacher;
+      catalog[rowIndex]['subject_name'] = subjectName;
+
       this.catalog = this.formatCatalog(catalog);
     });
   }
@@ -90,6 +100,7 @@ export class StudentCatalogComponent implements OnInit {
     );
     this.modifyCatalog(request);
   }
+
   deleteAbsence(absence: any): void {
     const request = this.httpClient.delete(`absences/${absence.id}/`);
     this.modifyCatalog(request);
@@ -98,5 +109,9 @@ export class StudentCatalogComponent implements OnInit {
   authorizeAbsence(absence: any): void {
     const request = this.httpClient.post(`absences/${absence.id}/authorize/`, {});
     this.modifyCatalog(request);
+  }
+
+  openUserModal(event, id) {
+    this.appViewUserModal.open(id);
   }
 }
