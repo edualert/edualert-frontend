@@ -47,7 +47,7 @@
         <div class="dropdown-parent mobile-sort">
           <app-dropdown
             [list]="filterData.sortCriteria"
-            [appliedElement]="filterParams.sortCriterion || defaultSortingCriterion"
+            [appliedElement]="filterParams.sortCriterion"
             [displayedProperty]="'text'"
             (elementHasBeenSelected)="changeSortingCriterion($event.element)"
             [placeholder]="'Sortează'"
@@ -69,14 +69,14 @@
       </div>
     </div>
     <div id="header-bottom-right-container">
-      <div class="list-count">
+      <div class="list-count" *ngIf="!requestInProgress; else loadingListCountMobile">
         {{students.length}} utilizatori afișați din {{studentsTotalCount}}
       </div>
     </div>
   </app-header>
 
   <div class="page-content">
-    <div *ngIf="!requestInProgress && !initialRequestInProgress; else loadingListCountMobile">
+    <div *ngIf="!initialRequestInProgress; else loadingListCountMobile">
       <ng-container [ngSwitch]="accountRole">
         <app-students-situation-ors
           *ngSwitchCase="'ADMINISTRATOR'"

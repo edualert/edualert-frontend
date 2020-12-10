@@ -1,4 +1,4 @@
-import {Component, Injector, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Injector, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AccountService} from '../../services/account.service';
 import {UserDetails} from '../../models/user-details';
 import {HttpClient} from '@angular/common/http';
@@ -35,7 +35,8 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
 
   constructor(injector: Injector,
               private accountService: AccountService,
-              private httpClient: HttpClient) {
+              private httpClient: HttpClient,
+              private elementRef: ElementRef) {
     super(injector);
 
     this.account = accountService.account.getValue();
@@ -93,6 +94,21 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
       this.catalog = [];
       this.catalog = this.formatCatalog(response.catalogs_per_subjects);
       this.rip = false;
+
+      // These lines till the end of this method are making the table's elms (table header & rows) to have the right position, no matter how long the req is taking
+      const tableElm: HTMLElement = document.getElementsByClassName('scrollable-container')[0] as HTMLElement;
+      const bodyElm: HTMLElement = document.getElementsByTagName('body')[0] as HTMLElement;
+
+      tableElm.scrollIntoView(false);
+      tableElm.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+      bodyElm.scrollTop = 0;
+
+      // Set scrollable container height
+      document.body.style.overflow = 'unset';
+      setTimeout(() => {
+        const scrollableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
+        scrollableContainer.style.height = scrollableContainer.clientHeight - 15 + 'px';
+      }, 400);
     });
   }
 
@@ -104,7 +120,6 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
         teacher: subject.teacher,
         subject_name: subject.subject_name
       };
-
       return subj;
     }) : [];
   }

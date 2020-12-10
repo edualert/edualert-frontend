@@ -14,17 +14,6 @@
   }
 }
 
-.student-labels-container {
-
-  .label {
-    margin-top: $margin-xsmall;
-    background-color: #E2E8EF;
-    border-radius: $border-radius-normal;
-    width: max-content;
-    padding: $margin-xsmall $margin-big;
-  }
-}
-
 .catalog-top-right {
   margin-top: -18px !important;
 }
@@ -32,4 +21,27 @@
 .dropdown-parent {
   width: 150px;
   margin-left: $margin-small;
+}
+
+.tags {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  max-width: calc(100% - #{$nav-bar-width});
+  margin-top: $margin-small;
+
+  .tag {
+    margin-bottom: $margin-xsmall;
+  }
+
+  .no-tags {
+    padding-top: 6px;
+    align-self: center;
+  }
+}
+
+.label {
+  padding-top: 6px;
+  margin-right: $margin-default;
 }

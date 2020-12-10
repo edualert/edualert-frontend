@@ -86,7 +86,7 @@ export class ManageSchoolsComponent extends ListPage implements AfterViewInit, O
 
   openDeActivateSchoolModalSchoolModal(school: SchoolUnit) {
     const modalData = {
-      title: `Doriți sa ${school.is_active ? 'dezactivați' : 'reactivați'} ${school.name}?`,
+      title: `Doriți să ${school.is_active ? 'dezactivați' : 'reactivați'} contul școlii ${school.name}?`,
       description: school.is_active ? 'Pentru această școală nu se vor mai putea introduce date în sistem și utilizatorii care aparțin școlii nu se vor mai putea autentifica în contul EduAlert.'
       : 'Pentru această școală se vor putea introduce din nou date în sistem și utilizatorii care aparțin școlii se vor putea autentifica în contul EduAlert.',
       cancelButtonText: 'NU',

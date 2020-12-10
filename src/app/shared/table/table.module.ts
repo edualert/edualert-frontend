@@ -1,10 +1,11 @@
-import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {TableComponent} from './table.component';
-import {CoreModule} from '../../core/core.module';
-import {TableCellComponent} from '../../catalog/table-cell/table-cell.component';
-import {RouterModule} from '@angular/router';
-import {ViewUserModalModule} from '../../pages/manage-users/view-user-modal/view-user-modal.module';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TableComponent } from './table.component';
+import { CoreModule } from '../../core/core.module';
+import { TableCellComponent } from '../../catalog/table-cell/table-cell.component';
+import { RouterModule } from '@angular/router';
+import { ViewUserModalModule } from '../../pages/manage-users/view-user-modal/view-user-modal.module';
+import { CatalogModule } from '../../catalog/catalog.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {ViewUserModalModule} from '../../pages/manage-users/view-user-modal/view
     CommonModule,
     CoreModule,
     RouterModule,
-    ViewUserModalModule
+    ViewUserModalModule,
+    CatalogModule
   ],
   exports: [
     TableComponent

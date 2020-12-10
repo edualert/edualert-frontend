@@ -5,7 +5,7 @@ $cell-height: 66px;
 
 .scrollable-container {
   max-width: calc(100vw - #{465px});
-  min-height: calc(100vh - 280px);
+  max-height: calc(100vh - 260px);
 
   overflow-x: auto;
 
@@ -90,7 +90,7 @@ $cell-height: 66px;
 }
 
 .row.header {
-  z-index: 2;
+  z-index: 1;
 
   .cell {
     height: 37px;
@@ -102,7 +102,7 @@ $cell-height: 66px;
 
 
 .row.subheader {
-  z-index: 2;
+  z-index: 1;
 
   .cell {
     line-height: 27px;
@@ -137,7 +137,6 @@ $cell-height: 66px;
 }
 
 .expanded-row {
-  position: relative;
   width: 100%;
   height: auto;
   border-right: 1px solid $color-separator;

@@ -1,14 +1,14 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {AccountService} from '../../../services/account.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {AuthService} from '../../../services/auth.service';
-import {HttpClient} from '@angular/common/http';
-import {findIndex} from 'lodash';
-import {get} from 'lodash';
-import {UserDetails} from '../../../models/user-details';
-import {formatPhoneNumber} from '../../../shared/utils';
-import {userRoles} from '../../../models/user-roles';
-import {ViewUserModalComponent} from "../view-user-modal/view-user-modal.component";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AccountService } from '../../../services/account.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { get } from 'lodash';
+import { UserDetails } from '../../../models/user-details';
+import { formatPhoneNumber } from '../../../shared/utils';
+import { userRoles } from '../../../models/user-roles';
+import { ViewUserModalComponent } from '../view-user-modal/view-user-modal.component';
+import { ManageUsersComponent } from '../manage-users.component';
 
 @Component({
   selector: 'app-user-details',
@@ -32,7 +32,7 @@ export class UserDetailsComponent implements OnInit {
     pedagogueSection?: boolean
   };
   formatPhoneNumber = formatPhoneNumber;
-  hasSchoolOrClass: boolean = false;
+  displayErrorToast: boolean = false;
   toastErrorMessage: string;
   isUserInactive: boolean = false;
 
@@ -48,7 +48,7 @@ export class UserDetailsComponent implements OnInit {
   }
 
   openViewUserModal(id: string | number) {
-    this.userDetailsModal.open(id)
+    this.userDetailsModal.open(id);
   }
 
   private static constructAvailableFields(userRole: string): object {
@@ -85,13 +85,31 @@ export class UserDetailsComponent implements OnInit {
 
   deleteUserButtonClicked() {
     if (confirm(`Doriți să ștergeți contul utilizatorului ${this.userDetails.full_name}?`)) {
-      this.httpClient.delete('users/' + this.userDetails.id).subscribe((response) => {
-        if (response === null) {this.router.navigate(['manage-users'])}
+      this.httpClient.delete(`users/${this.userDetails.id}/`).subscribe((response) => {
+        if (response === null) {
+          this.router.navigate(['manage-users']);
+        }
+      }, (error) => {
+        if (error.status === 400) {
+          this.displayErrorToast = true;
+          switch (this.userDetails.user_role) {
+            case 'SCHOOL_PRINCIPAL':
+              this.toastErrorMessage = ManageUsersComponent.principalChangeErrorMsg;
+              break;
+            case 'TEACHER':
+              this.toastErrorMessage = ManageUsersComponent.teacherChangeErrorMsg;
+              break;
+            case 'STUDENT':
+              this.toastErrorMessage = ManageUsersComponent.studentChangeErrorMsg;
+              break;
+            default:
+              this.toastErrorMessage = ManageUsersComponent.defaultChangeErrorMsg;
+          }
+        }
       });
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   changeUserStateButtonClicked(state: string) {
@@ -102,17 +120,16 @@ export class UserDetailsComponent implements OnInit {
           this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
         }), (error) => {
           if (error.error.new_school_principal) {
-            this.hasSchoolOrClass = true;
-            this.toastErrorMessage = 'Acest director este alocat unei școli și nu poate fi dezactivat/șters.';
+            this.displayErrorToast = true;
+            this.toastErrorMessage = ManageUsersComponent.principalChangeErrorMsg;
           } else if (error.error.new_teachers) {
-            this.hasSchoolOrClass = true;
-            this.toastErrorMessage = 'Acest profesor este alocat unei/unor clase și nu poate fi dezactivat/șters.';
+            this.displayErrorToast = true;
+            this.toastErrorMessage = ManageUsersComponent.teacherChangeErrorMsg;
           }
         });
-        return true
-      } else {
-        return false;
+        return true;
       }
+      return false;
     }
     if (state === 'activate') {
       if (confirm(`Doriți să reactivați contul utilizatorului ${this.userDetails.full_name}? Acest utilizator se va putea autentifica din nou în contul EduAlert.`)) {
@@ -122,14 +139,13 @@ export class UserDetailsComponent implements OnInit {
           })
         );
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
   }
 
   hideErrorToast() {
     this.toastErrorMessage = '';
-    this.hasSchoolOrClass = false;
+    this.displayErrorToast = false;
   }
 }

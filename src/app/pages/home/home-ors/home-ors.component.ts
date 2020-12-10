@@ -82,13 +82,13 @@ export class HomeOrsComponent implements OnInit {
       name: 'Nume institutie',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.institutionsAtRiskTableLayout.push(new Column({
       name: 'Numar elevi cu risc',
       dataKey: 'students_at_risk_count',
       columnType: 'numbered-cell',
-      minWidth: '120'
+      minWidth: '120px'
     }));
   }
 
@@ -98,12 +98,12 @@ export class HomeOrsComponent implements OnInit {
       name: 'Nume institutie',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '210',
+      minWidth: '210px',
     }));
     this.inactiveInstitutionsTableLayout.push(new Column({
       name: 'Data ultimei modificari',
       dataKey: 'last_change_in_catalog',
-      minWidth: '130',
+      minWidth: '130px',
       displayFormatter: (value: string) => {
         return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
       },

@@ -3,7 +3,6 @@
 import {AcademicYearCalendar} from './academic-year-calendar';
 import * as moment from 'moment';
 import {Semester} from './semester';
-import {unitOfTime} from 'moment';
 
 export type CellIdentifier = 'name' | 'grades_sem_1' | 'grades_sem_2' | 'grade_annual' | 'abs_sem_1' | 'abs_sem_2' | 'abs_annual';
 export type CellType =
@@ -60,14 +59,16 @@ export class CatalogLayout {
 
 
 export const ownClassSubject = new CatalogLayout({
-  cellWidths: ['regular',
+  cellWidths: [
+    'regular',
     [widthDecider, 'first_semester'],
     [widthDecider, 'second_semester'],
     'small',
     [widthDecider, 'first_semester'],
     [widthDecider, 'second_semester'],
     'small',
-    'small'],
+    'regular'
+  ],
   headerRow: [
     {label: 'Nume'},
     {label: 'Medii'},
@@ -164,15 +165,17 @@ export const ownClassSubject = new CatalogLayout({
   ]
 });
 
-
 export const classMastery = new CatalogLayout({   // DIRIGENTIE
-  cellWidths: ['regular',
+  cellWidths: [
+    'regular',
     'small',
     'small',
     'small',
     [widthDecider, 'first_semester'],
     [widthDecider, 'second_semester'],
-    'small'],
+    'small',
+    'regular'
+  ],
   headerRow: [
     {label: 'Nume'},
     {label: 'Medii la Purtare'},
@@ -263,7 +266,16 @@ export const classMastery = new CatalogLayout({   // DIRIGENTIE
 });
 
 export const classPupils = new CatalogLayout({   // ELEVII CLASEI
-  cellWidths: ['regular', 'small', 'small', 'small', 'small', 'small', 'small', 'regular'],
+  cellWidths: [
+    'regular',
+    'small',
+    'small',
+    'small',
+    'small',
+    'small',
+    'small',
+    'regular'
+  ],
   headerRow: [
     {label: 'Nume'},
     {label: 'Medii Generale'},
@@ -399,6 +411,7 @@ export const studentCatalog = new CatalogLayout({
     },
   ]
 });
+
 export const studentOwnSituation = new CatalogLayout({
   cellWidths: ['regular',
     [widthDecider, 'first_semester'],

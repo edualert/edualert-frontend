@@ -1,7 +1,7 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import OpenCloseable from '../../shared/open-closeable';
-import {DatepickerComponent} from '../../shared/datepicker/datepicker.component';
+import { DatepickerComponent } from '../../shared/datepicker/datepicker.component';
 
 @Component({
   selector: 'app-single-grade-overlay',
@@ -9,16 +9,19 @@ import {DatepickerComponent} from '../../shared/datepicker/datepicker.component'
   styleUrls: ['./single-grade-overlay.component.scss', '../grade-absence-overlay.scss']
 })
 export class SingleGradeOverlayComponent extends OpenCloseable {
-  @Output() save: EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }> = new EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }>();
+  @Output() save: EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }> =
+    new EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }>();
   readonly grades = new Array(10).fill(null).map((val, i) => i + 1);
   selectedGrade: number;
   selectedDate: Date;
   existingId: number;
   isThesis: boolean;
+  today: Date;
   @ViewChild('datepicker', {static: false}) datepicker: DatepickerComponent;
 
   constructor(private elRef: ElementRef) {
     super();
+    this.today = new Date();
   }
 
   selectGrade(grade: { element: number, index: number }): void {
@@ -55,7 +58,7 @@ export class SingleGradeOverlayComponent extends OpenCloseable {
     }
   }
 
-  private resetData(existingGrade?: {grade: number, taken_at: number, id: number}) {
+  private resetData(existingGrade?: { grade: number, taken_at: number, id: number }) {
 
     // Set existing grade or reset data to default;
     if (existingGrade) {

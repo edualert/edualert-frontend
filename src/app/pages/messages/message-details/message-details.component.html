@@ -4,7 +4,7 @@
     <a id="header-back-button" [routerLink]="['/messages']">
       <div class="arrow left"></div>
       <div class="blue-text bold column">
-        Mesaje Trimise
+        {{sendOrReceivedTemplate === 'received' ? 'Mesaje primite' : 'Mesaje trimise'}}
       </div>
     </a>
   </app-header>

@@ -61,7 +61,7 @@
   justify-content: space-between;
   padding-left: $margin-small;
   padding-right: $margin-tiny;
-  z-index: 1;
+  z-index: 0;
   border-left: 1px solid $color-separator;
   cursor: default;
   animation: expandedOverlay 0.3s 0s linear 1 backwards;
@@ -263,6 +263,8 @@
 
   .secondary-text {
     padding-left: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -278,35 +280,6 @@
 
 .clickable {
   cursor: pointer;
-}
-
-.buttons-cell {
-  padding-top: 2px;
-  padding-left: $margin-small;
-
-  .button {
-    font-size: $font-size-small;
-    color: $color-text-normal;
-    width: 56px;
-    height: 16px;
-    margin-bottom: 14px;
-    cursor: pointer;
-  }
-
-  .labels + .button {
-    margin-bottom: 0;
-  }
-
-  .labels {
-    display: flex;
-  }
-
-  .label-count {
-    font-size: $font-size-small;
-    color: $color-text-light;
-    width: 30px;
-    margin-left: $margin-xsmall;
-  }
 }
 
 .link-button-cell {
@@ -325,8 +298,24 @@
   flex-direction: column;
 
   .observations {
-    padding-left: 15px;
-    padding-top: 10px;
+    padding-left: $margin-small;
+    padding-top: $margin-tiny;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .labels {
+    display: flex;
+    align-items: baseline;
+    padding-left: $margin-small;
+
+    .label-count {
+      font-size: $font-size-small;
+      color: $color-text-light;
+      margin-left: $margin-xsmall;
+    }
 
     &:hover {
       cursor: pointer;

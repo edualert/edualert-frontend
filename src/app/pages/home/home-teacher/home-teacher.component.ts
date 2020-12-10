@@ -119,13 +119,13 @@ export class HomeTeacherComponent implements OnInit {
       name: 'Nume clasă',
       dataKey: 'class_full_name',
       columnType: 'class-name',
-      minWidth: '150'
+      minWidth: '150px'
     }));
     this.studyClassesAtRiskTable.push(new Column({
       name: 'Număr elevi cu risc',
       dataKey: 'students_at_risk_count',
       columnType: 'numbered-cell',
-      minWidth: '110'
+      minWidth: '110px'
     }));
   }
 
@@ -138,32 +138,32 @@ export class HomeTeacherComponent implements OnInit {
       link: (value: StudentAtRisk) => {
         return `manage-users/${value.id}/view`;
       },
-      minWidth: '150'
+      minWidth: '150px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Medie anuală',
       dataKey: this.ownStudentsAtRiskList[0]?.avg_final ? 'avg_final' : 'avg_sem1',
       columnType: 'simple-cell',
-      minWidth: '120'
+      minWidth: '120px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Număr corigențe',
       dataKey: 'second_examinations_count',
       columnType: 'numbered-cell',
-      minWidth: '150'
+      minWidth: '150px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Număr total absențe nemotivate / an',
       dataKey: this.ownStudentsAtRiskList[0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual'
         : 'unfounded_abs_count_sem1',
       columnType: 'numbered-cell',
-      minWidth: '240'
+      minWidth: '240px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Notă purtare',
       dataKey: this.ownStudentsAtRiskList[0]?.behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
       columnType: 'numbered-cell',
-      minWidth: '100'
+      minWidth: '100px'
     }));
   }
 
@@ -175,7 +175,7 @@ export class HomeTeacherComponent implements OnInit {
       link: (value: InactiveParent) => {
         return `manage-users/${value.id}/view`;
       },
-      minWidth: '150'
+      minWidth: '150px'
     }));
     this.inactiveParentsTable.push(new Column({
       name: 'Nume elev',
@@ -184,7 +184,7 @@ export class HomeTeacherComponent implements OnInit {
       link: (value: InactiveParent) => {
         return `manage-users/${value.student_id}/view`;
       },
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.inactiveParentsTable.push(new Column({
       name: 'Ultima dată activ',
@@ -192,7 +192,7 @@ export class HomeTeacherComponent implements OnInit {
       displayFormatter: (value: string) => {
         return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
       },
-      minWidth: '100'
+      minWidth: '100px'
     }));
   }
 

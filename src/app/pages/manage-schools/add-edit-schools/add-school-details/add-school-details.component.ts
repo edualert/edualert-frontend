@@ -29,8 +29,8 @@ export class AddSchoolDetailsComponent extends AddEditSchoolsComponent implement
         phone_number: this.schoolDetails.phone_number,
         email: this.schoolDetails.email,
         school_principal: this.schoolDetails.school_principal.id,
-        district: this.schoolDetails.district,
-        city: this.schoolDetails.city,
+        district: 'Cluj',
+        city: 'Cluj-Napoca',
         name: this.schoolDetails.name,
         categories: []
       };

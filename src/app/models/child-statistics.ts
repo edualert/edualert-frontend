@@ -1,5 +1,7 @@
 export class ChildStatistics {
 
+  avg_sem1: number;
+  avg_annual: number;
   behavior_grade_sem1: number;
   behavior_grade_annual: number;
   behavior_grade_limit: number;
@@ -19,7 +21,9 @@ export class ChildStatistics {
   school_place_by_abs_annual: number;
 
   constructor(object?: any) {
-    this.behavior_grade_sem1 = object?.behahior_grade_sem1;
+    this.avg_sem1 = object?.avg_sem1;
+    this.avg_annual = object?.avg_annual;
+    this.behavior_grade_sem1 = object?.behavior_grade_sem1;
     this.behavior_grade_annual = object?.behavior_grade_annual;
     this.behavior_grade_limit = object?.behavior_grade_limit;
     this.abs_count_sem1 = object?.abs_count_sem1;

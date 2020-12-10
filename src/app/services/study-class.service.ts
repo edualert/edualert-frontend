@@ -16,7 +16,7 @@ export class StudyClassService extends OneTimeDataGetter {
   }
 
   getData(forceRequest?: boolean, id?: string): Observable<StudyClass> {
-    return super.getData(forceRequest, 'study-classes/' + id);
+    return super.getData(forceRequest, `study-classes/${id}/`);
   }
 
 }

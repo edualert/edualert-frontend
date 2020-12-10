@@ -10,12 +10,12 @@
 .table-head {
   display: flex;
   justify-content: space-between;
-  padding-bottom: 10px;
+  padding-bottom: $margin-tiny;
   border-bottom: 1px solid $color-separator;
   width: auto;
 
   :last-of-type {
-    margin-right: 10px;
+    margin-right: $margin-tiny;
   }
 }
 
@@ -33,14 +33,10 @@
 
 .head {
   height: fit-content;
-  padding: 5px 0 5px 0;
+  padding: $margin-xsmall 0 $margin-xsmall $margin-xsmall;
 
   &:last-of-type {
     padding-left: 0;
-  }
-
-  &:first-of-type {
-    padding-left: 5px;
   }
 }
 
@@ -56,29 +52,32 @@
 }
 
 .row-data {
+  display: flex;
   height: fit-content;
-  padding: 5px 0 5px 5px;
+  padding: $margin-xsmall 0 $margin-xsmall $margin-xsmall;
 
   &:last-of-type {
-    margin-right: 15px;
+    margin-right: $margin-small;
   }
 }
 
 .column {
   font-weight: $font-weight-medium;
   width: fit-content;
-  text-align: center;
+
+  &.custom-text {
+    padding-left: 0;
+  }
 }
 
 .header {
   color: $color-text-normal;
   font-weight: $font-weight-regular;
-  text-align: center;
 }
 
 .fixed-cell {
-  padding-right: 10px;
-  margin-right: 10px;
+  padding-right: $margin-tiny;
+  margin-right: $margin-tiny;
   position: fixed;
   z-index: 100;
   top: 25px;
@@ -97,12 +96,12 @@
 
   &::after {
     content: url("src/assets/img/long-arrow.svg");
-    padding-left: 5px;
+    padding-left: $margin-xsmall;
   }
 }
 
 .arrow {
-  margin-top: 5px;
+  margin-top: $margin-xsmall;
   width: 100%;
 
   &.right {

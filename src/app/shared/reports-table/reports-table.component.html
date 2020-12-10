@@ -2,13 +2,13 @@
   <div class="scroll-container" (scroll)="handleScroll()">
     <div class="table">
       <div class="table-head">
-        <div class="head {{ columnHeader?.columnType }} header" [ngStyle]="{minWidth: columnHeader?.minWidth + 'px'}"
+        <div class="head {{ columnHeader?.columnType }} header" [ngStyle]="{minWidth: columnHeader?.minWidth}"
              *ngFor="let columnHeader of tableColumns">{{ columnHeader.name }}</div>
       </div>
       <div class="table-body">
         <div class="row" *ngFor="let data of tableData">
           <div class="row-data {{ column?.columnType }} column"
-               [ngStyle]="{minWidth: column?.minWidth + 'px'}"
+               [ngStyle]="{minWidth: column?.minWidth}"
                *ngFor="let column of tableColumns">
 
             <ng-container *ngIf="column?.displayFormatter; else simpleData">

@@ -254,6 +254,13 @@ $smallBouncyIn: cubic-bezier(0.57, -0.25, 0.58, 1);
       color: white;
     }
   }
+
+  &.disabled-date {
+    // must be kept at the end!
+    color: $darkGrey;
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
 }
 
 @for $i from 1 through 7 {
@@ -328,4 +335,3 @@ $smallBouncyIn: cubic-bezier(0.57, -0.25, 0.58, 1);
     width: 30px;
   }
 }
-

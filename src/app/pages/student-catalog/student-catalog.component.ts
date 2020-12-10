@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { cloneDeep } from 'lodash';
@@ -32,7 +32,9 @@ export class StudentCatalogComponent implements OnInit {
   @ViewChild('appViewUserModal', {static: false}) appViewUserModal: ViewUserModalComponent;
 
 
-  constructor(private activatedRoute: ActivatedRoute, private httpClient: HttpClient) {
+  constructor(private activatedRoute: ActivatedRoute,
+              private httpClient: HttpClient,
+              private elementRef: ElementRef) {
   }
 
   ngOnInit(): void {
@@ -40,6 +42,20 @@ export class StudentCatalogComponent implements OnInit {
     this.studentId = this.activatedRoute.snapshot.params.studentId;
     this.getCatalogData();
     this.backLink = `/my-classes/${this.classId}/class-detail`;
+    setTimeout(() => this.setScrollableContainerHeight(), 1000);
+  }
+
+  private setScrollableContainerHeight(): void {
+    setTimeout(() => {
+      const scrollableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
+      const pageHeaderHeight = document.getElementById('page-header').clientHeight;
+
+      if (scrollableContainer.clientHeight > (document.body.clientHeight - pageHeaderHeight)) {
+        const scrollableContainerComputedHeight = document.body.clientHeight - pageHeaderHeight - 60; // 60 -> space for toolbar
+        scrollableContainer.style.height = scrollableContainerComputedHeight + 'px';
+        document.body.style.overflow = 'unset';
+      }
+    }, 400);
   }
 
   private getCatalogData() {

@@ -13,50 +13,100 @@
         <div class="card grey-background text-card">
           <div class="text-row margin-bottom-small">
             <div class="medium border-right">Notă purtare</div>
-            <h1 class=
-                  "{{ (childStatistics?.behavior_grade_sem1 ? childStatistics?.behavior_grade_sem1 : childStatistics?.behavior_grade_annual) > 5
-                      ? 'blue-text' : 'red-text' }}"
-            >{{ childStatistics?.behavior_grade_sem1 ? childStatistics?.behavior_grade_sem1 : childStatistics?.behavior_grade_annual }}</h1>
+            <h1 class="{{
+              isFirstSemesterEnded
+                ? (
+                    (!isSecondSemesterEnded
+                      ? childStatistics?.behavior_grade_sem1
+                      : childStatistics?.behavior_grade_annual
+                    ) > childStatistics?.behavior_grade_limit
+                        ? 'blue-text' : 'red-text'
+                  ) : ''}}"
+            >
+              {{ isFirstSemesterEnded && !isSecondSemesterEnded
+              ? childStatistics?.behavior_grade_sem1
+              : isSecondSemesterEnded
+                ? childStatistics?.behavior_grade_annual : '-' }}
+            </h1>
           </div>
         </div>
         <div class="card grey-background text-card">
           <div class="text-row margin-bottom-small">
             <div class="medium border-right">Medie anuală</div>
-            <h1 class=""> 10 </h1>
+            <h1 class="{{
+              isFirstSemesterEnded
+                ? (
+                    (!isSecondSemesterEnded
+                      ? childStatistics?.avg_sem1
+                      : childStatistics?.avg_annual
+                    ) > 4
+                      ? 'blue-text' : 'red-text'
+                  ) : ''}}"
+            >
+              {{ isFirstSemesterEnded && !isSecondSemesterEnded
+              ? childStatistics?.avg_sem1
+              : isSecondSemesterEnded
+                ? childStatistics?.avg_annual : '-' }}
+            </h1>
           </div>
           <hr>
           <div class="text-row">
             <div class="border-right simple-text">Loc clasă în funcție de medie</div>
-            <div
-              class="big-text margin-top">{{ childStatistics?.class_place_by_avg_sem1 ? childStatistics?.class_place_by_avg_sem1
-              : (childStatistics?.class_place_by_avg_annual ? childStatistics?.class_place_by_avg_annual : '-')}}</div>
+            <div class="big-text margin-top">
+              {{ isFirstSemesterEnded && !isSecondSemesterEnded
+              ? childStatistics?.class_place_by_avg_sem1
+              : isSecondSemesterEnded
+                ? childStatistics?.class_place_by_avg_annual : '-' }}
+            </div>
           </div>
           <div class="text-row">
             <div class="border-right simple-text">Loc școala în funcție de medie</div>
-            <div
-              class="big-text margin-top">{{ childStatistics?.school_place_by_avg_sem1 ? childStatistics?.school_place_by_avg_sem1
-              : (childStatistics?.school_place_by_avg_annual ? childStatistics?.school_place_by_avg_annual : '-')}}</div>
+            <div class="big-text margin-top">
+              {{ isFirstSemesterEnded && !isSecondSemesterEnded
+              ? childStatistics?.school_place_by_avg_sem1
+              : isSecondSemesterEnded
+                ? childStatistics?.school_place_by_avg_annual : '-' }}
+            </div>
           </div>
         </div>
         <div class="card grey-background text-card">
           <div class="text-row margin-bottom-small">
             <div class="medium border-right">Număr absențe / an</div>
-            <h1
-              class="red-text">{{ childStatistics?.unfounded_abs_count_sem1 ? childStatistics?.unfounded_abs_count_sem1
-              : (childStatistics?.unfounded_abs_count_annual ? childStatistics?.unfounded_abs_count_annual : '-')}}</h1>
+            <h1 class="{{
+              isFirstSemesterEnded
+                ? (
+                    !isSecondSemesterEnded
+                      ? childStatistics?.abs_count_sem1
+                        < 11
+                          ? 'blue-text' : 'red-text'
+                      : childStatistics?.abs_count_annual < 22
+                        ? 'blue-text' : 'red-text'
+                  )
+                : ''}}"
+            >
+              {{ isFirstSemesterEnded && !isSecondSemesterEnded
+              ? childStatistics?.abs_count_sem1 : isSecondSemesterEnded
+                ? childStatistics?.abs_count_annual : '-' }}
+            </h1>
           </div>
           <hr>
           <div class="text-row">
             <div class="border-right simple-text">Loc clasă în funcție de absențe</div>
-            <div
-              class="big-text margin-top">{{ childStatistics?.class_place_by_abs_sem1 ? childStatistics?.class_place_by_abs_sem1
-              : (childStatistics?.class_place_by_abs_annual ? childStatistics?.class_place_by_abs_annual : '-')}}</div>
+            <div class="big-text margin-top">
+              {{ isFirstSemesterEnded && !isSecondSemesterEnded
+              ? childStatistics?.class_place_by_abs_sem1
+              : isSecondSemesterEnded
+                ? childStatistics?.class_place_by_abs_annual : '-' }}
+            </div>
           </div>
           <div class="text-row">
             <div class="border-right simple-text">Loc școală în funcție de absențe</div>
-            <div
-              class="big-text margin-top">{{ childStatistics?.school_place_by_abs_sem1 ? childStatistics?.school_place_by_abs_sem1
-              : (childStatistics?.school_place_by_abs_annual ? childStatistics?.school_place_by_abs_annual : '-')}}</div>
+            <div class="big-text margin-top">
+              {{ isFirstSemesterEnded && !isSecondSemesterEnded
+              ? childStatistics?.school_place_by_abs_sem1
+              : isSecondSemesterEnded
+                ? childStatistics?.school_place_by_abs_annual : '-' }}
+            </div>
           </div>
         </div>
       </div>
@@ -66,7 +116,8 @@
           <div class="big-text bold card-title-text">Istoric activitate școlară</div>
           <div class="text-item link-content blue-text bold web more-button arrow-right"
                [routerLink]="['/reports']" [queryParams]="{top_tab: 'student_school_activity'}"
-          >Mai multe rapoarte</div>
+          >Mai multe rapoarte
+          </div>
         </div>
         <div class="table-container">
           <app-reports-table [tableColumns]="childActivityTable"
@@ -75,16 +126,19 @@
         </div>
         <div class="text-item link-content blue-text bold mobile more-button arrow-right"
              [routerLink]="['/reports']" [queryParams]="{top_tab: 'student_school_activity'}"
-        >Mai multe rapoarte</div>
+        >Mai multe rapoarte
+        </div>
       </div>
     </div>
 
-    <div class="card-table-container card">
+    <div class="card-table-container card"
+         *ngIf="isFirstSemesterEnded">
       <div class="card-table-header">
         <div class="big-text bold card-title-text">Top materii cu risc</div>
         <div class="text-item link-content blue-text bold more-button arrow-right web"
              [routerLink]="['/reports']" [queryParams]="{top_tab: 'student_subjects_at_risk'}"
-        >Mai multe rapoarte</div>
+        >Mai multe rapoarte
+        </div>
       </div>
       <div class="table-container">
         <app-reports-table [tableColumns]="childSubjectsAtRiskTable"
@@ -93,7 +147,8 @@
       </div>
       <div class="text-item link-content blue-text bold more-button arrow-right mobile"
            [routerLink]="['/reports']" [queryParams]="{top_tab: 'student_subjects_at_risk'}"
-      >Mai multe rapoarte</div>
+      >Mai multe rapoarte
+      </div>
     </div>
 
     <div class="chart-container">
@@ -101,7 +156,8 @@
         <div class="big-text bold">Evoluție număr absențe</div>
         <div class="text-item link-content blue-text bold more-button arrow-right web"
              [routerLink]="['/reports']" [queryParams]="{top_tab: 'student_absences_evolution'}"
-        >Mai multe rapoarte</div>
+        >Mai multe rapoarte
+        </div>
       </div>
       <div class="chart-subtitle blue-text regular">{{ graphSubtitle }}</div>
       <div class="chart-holder" *ngIf="displayChart">
@@ -138,7 +194,8 @@
       <div *ngIf="!displayChart" class="big-text bold padded-top info-card">Nu există date disponibile</div>
       <div class="text-item link-content blue-text bold more-button arrow-right mobile"
            [routerLink]="['/reports']" [queryParams]="{top_tab: 'student_absences_evolution'}"
-      >Mai multe rapoarte</div>
+      >Mai multe rapoarte
+      </div>
     </div>
   </div>
 </div>

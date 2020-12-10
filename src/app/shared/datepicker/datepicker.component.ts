@@ -7,6 +7,7 @@ import {
 export class RawMatrixDay {
   dayNumber: number;
   month: 'previous' | 'current' | 'next';
+  isDisabled: boolean;
 }
 
 export class InternalDate {
@@ -16,19 +17,21 @@ export class InternalDate {
 }
 
 /**
- The datepicker can be open/closed from its parent by accessing the component via ViewChild
- and calling the open()/close() public methods.
- Its internal dates are represented as objects with three properties: year, month, day.
- It closes on Esc keypress or on outside click.
-
- Inputs:
- - layout - in the future, we will have multiple layouts to choose from
- - dateValue - the currently applied date value from the parent (can be any date format - ignored if invalid format)
- - withConfirmButtons - if true, the datepicker will emit the new date to its parent only when the apply button is clicked
- - color - you can specify the theme color
-
- Outputs:
- - dateChanged - emits to its parent the new date as an instance of Date
+ * The datepicker can be open/closed from its parent by accessing the component via ViewChild
+ * and calling the open()/close() public methods.
+ * Its internal dates are represented as objects with three properties: year, month, day.
+ * It closes on Esc keypress or on outside click.
+ *
+ * Inputs:
+ * - layout - in the future, we will have multiple layouts to choose from
+ * - dateValue - the currently applied date value from the parent (can be any date format - ignored if invalid format)
+ * - minDateValue - the min date that can be applied
+ * - maxDateValue - the max date that can be applied
+ * - withConfirmButtons - if true, the datepicker will emit the new date to its parent only when the apply button is clicked
+ * - color - you can specify the theme color
+ *
+ * Outputs:
+ * - dateChanged - emits to its parent the new date as an instance of Date
  */
 
 @Component({
@@ -39,6 +42,8 @@ export class InternalDate {
 export class DatepickerComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() readonly layout?: number = 1;
   @Input() readonly dateValue: Date | string;
+  @Input() readonly minDateValue?: Date;
+  @Input() readonly maxDateValue?: Date;
   @Input() readonly withConfirmButtons?: boolean;
   @Input() readonly color?: string;
   @Output() dateChanged = new EventEmitter<Date>();
@@ -120,8 +125,7 @@ export class DatepickerComponent implements OnInit, AfterViewInit, OnDestroy {
       node = node.parentNode;
     }
     return false;
-  };
-
+  }
 
   private initialiseCssVariables() {
     const rootStyle = this.rootElement.nativeElement.style;
@@ -151,20 +155,36 @@ export class DatepickerComponent implements OnInit, AfterViewInit, OnDestroy {
         if (i === 0 && j < firstDayOfTheWeek - 1) {
           daysMatrix[i][j] = {
             dayNumber: previousMonthDays - firstDayOfTheWeek + j + 2,
-            month: 'previous'
+            month: 'previous',
+            isDisabled: false
           };
+
+          const year = this.inView.month === 0 ? this.inView.year - 1 : this.inView.year;
+          const month = this.inView.month === 0 ? 11 : this.inView.month - 1;
+          const date = new Date(year, month, daysMatrix[i][j].dayNumber);
+          this.setIsDisabled(date, daysMatrix[i][j]);
         } else {
           const currentMonthDay = i * 7 + j - firstDayOfTheWeek + 2;
           if (currentMonthDay <= currentMonthDays) {
             daysMatrix[i][j] = {
               dayNumber: currentMonthDay,
-              month: 'current'
+              month: 'current',
+              isDisabled: false
             };
+
+            const date = new Date(this.inView.year, this.inView.month, daysMatrix[i][j].dayNumber);
+            this.setIsDisabled(date, daysMatrix[i][j]);
           } else {
             daysMatrix[i][j] = {
               dayNumber: currentMonthDay - currentMonthDays,
-              month: 'next'
+              month: 'next',
+              isDisabled: false
             };
+
+            const year = this.inView.month === 11 ? this.inView.year + 1 : this.inView.year;
+            const month = this.inView.month === 11 ? 0 : this.inView.month + 1;
+            const date = new Date(year, month, daysMatrix[i][j].dayNumber);
+            this.setIsDisabled(date, daysMatrix[i][j]);
           }
         }
       }
@@ -172,6 +192,11 @@ export class DatepickerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rawDaysMatrix = daysMatrix.slice();
   }
 
+  setIsDisabled(date: Date, matrixDay: RawMatrixDay) {
+    if ((this.minDateValue && date < this.minDateValue) || (this.maxDateValue && date > this.maxDateValue)) {
+      matrixDay.isDisabled = true;
+    }
+  }
 
   setToday() {
     if (this.inView.year !== this.today.year || this.inView.month !== this.today.month) {
@@ -216,6 +241,10 @@ export class DatepickerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectDayFromCell(dayCell: RawMatrixDay) {
+    if (dayCell.isDisabled) {
+      return;
+    }
+
     if (dayCell.month === 'previous') {
       this.selectPreviousMonth();
     } else if (dayCell.month === 'next') {

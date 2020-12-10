@@ -118,7 +118,11 @@
         Am uitat parola
       </button>
       <button *ngSwitchCase="'forgot-password'"
-              (click)="switchToLogin($event)" id="switch-to-login" class="text-button">
+              (click)="switchToLogin($event)" id="forgot-pass-switch-to-login" class="text-button">
+        Înapoi la pagina de autentificare
+      </button>
+      <button *ngSwitchCase="'reset-password'"
+              (click)="switchToLogin($event)" id="reset-pass-switch-to-login" class="text-button">
         Înapoi la pagina de autentificare
       </button>
     </ng-container>

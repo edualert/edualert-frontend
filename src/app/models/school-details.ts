@@ -27,8 +27,6 @@ export class SchoolCategory extends IdName {
 }
 
 export class SchoolDetailRequiredFields {
-  city = '';
-  district = '';
   name = '';
   categories = '';
   academic_profile = '';

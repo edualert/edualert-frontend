@@ -266,12 +266,12 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       name: 'Nume profil',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '230'
+      minWidth: '230px'
     }));
     this.academicProgramsAtRiskTable.push(new Column({
       name: 'Număr elevi cu risc',
       dataKey: 'students_at_risk_count',
-      minWidth: '130',
+      minWidth: '130px',
       columnType: 'numbered-cell'
     }));
   }
@@ -282,12 +282,12 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       name: 'Nume profil',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '230'
+      minWidth: '230px'
     }));
     this.academicProgramsAveragesTable.push(new Column({
       name: 'Medie anuală profil',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0].avg_annual ? 'avg_annual' : 'avg_sem1',
-      minWidth: '130',
+      minWidth: '130px',
       columnType: 'graded-cell'
     }));
   }
@@ -298,13 +298,13 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       name: 'Nume profil',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '230'
+      minWidth: '230px'
     }));
     this.academicProgramsAbsencesTable.push(new Column({
       name: 'Număr mediu absențe nemotivate pe elev pe an',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0].unfounded_abs_avg_annual ? 'unfounded_abs_avg_annual' : 'unfounded_abs_avg_sem1',
       columnType: 'numbered-cell',
-      minWidth: '275'
+      minWidth: '275px'
     }));
   }
 
@@ -314,13 +314,13 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       name: 'Nume clasă',
       dataKey: 'class_full_name',
       columnType: 'class-name',
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.schoolStudyClassesAtRiskTable.push(new Column({
       name: 'Număr elevi cu risc',
       dataKey: 'students_at_risk_count',
       columnType: 'numbered-cell',
-      minWidth: '130'
+      minWidth: '130px'
     }));
   }
 
@@ -330,13 +330,13 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       name: 'Nume clasă',
       dataKey: 'class_full_name',
       columnType: 'class-name',
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.schoolStudyClassesAveragesTable.push(new Column({
       name: 'Medie anuală clasă',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0].avg_annual ? 'avg_annual' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '130'
+      minWidth: '130px'
     }));
   }
 
@@ -346,13 +346,13 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       name: 'Nume clasă',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '230'
+      minWidth: '230px'
     }));
     this.schoolStudyClassesAbsencesTable.push(new Column({
       name: 'Număr mediu absențe nemotivate pe elev pe an',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0].unfounded_abs_avg_annual ? 'unfounded_abs_avg_annual' : 'unfounded_abs_avg_sem1',
       columnType: 'numbered-cell',
-      minWidth: '275'
+      minWidth: '275px'
     }));
   }
 
@@ -365,37 +365,37 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       link: (value: StudentAtRisk) => {
         return value.student.id;
       },
-      minWidth: '210'
+      minWidth: '210px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Clasă',
       dataKey: 'class_full_name',
       columnType: 'simple-cell',
-      minWidth: '100'
+      minWidth: '100px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Medie generală anuală',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0].avg_final ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '140'
+      minWidth: '140px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Număr corigențe pe an',
       dataKey: 'second_examinations_count',
       columnType: 'numbered-cell',
-      minWidth: '140'
+      minWidth: '140px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Număr total absențe nemotivate pe an',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0].unfounded_abs_count_annual ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
       columnType: 'numbered-cell',
-      minWidth: '240'
+      minWidth: '240px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Notă anuală purtare',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0].behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
       columnType: 'graded-cell',
-      minWidth: '120'
+      minWidth: '120px'
     }));
   }
 
@@ -408,7 +408,7 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       link: (value: InactiveTeacher) => {
         return value.id;
       },
-      minWidth: '200',
+      minWidth: '200px',
     }));
     this.inactiveTeachersTable.push(new Column({
       name: 'Data ultimei modificări',
@@ -416,7 +416,7 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       displayFormatter: (value: string) => {
         return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
       },
-      minWidth: '150'
+      minWidth: '150px'
     }));
   }
 

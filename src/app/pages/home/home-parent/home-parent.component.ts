@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import {findIndex} from 'lodash';
 import {AccountService} from '../../../services/account.service';
 import {IdFullname} from '../../../models/id-fullname';
+import {CurrentAcademicYearService} from '../../../services/current-academic-year.service';
 
 @Component({
   selector: 'app-home-parent',
@@ -19,7 +20,11 @@ export class HomeParentComponent implements OnInit {
   @Input() userDetails: UserDetails;
   getDayOfTheWeek = getDayOfTheWeek;
   currentMonth = moment().month();
+
   graphSubtitle: string;
+
+  isFirstSemesterEnded: boolean = false;
+  isSecondSemesterEnded: boolean = false;
 
   childStatistics: ChildStatistics;
 
@@ -45,11 +50,25 @@ export class HomeParentComponent implements OnInit {
               private ownChildAbsencesEvolutionService: ChildAbsencesEvolutionService,
               private childSchoolActivityService: ChildSchoolActivityService,
               private childSubjectsAtRiskService: ChildSubjectsAtRiskService,
-              private accountService: AccountService) {
+              private accountService: AccountService,
+              private currentAcademicYearService: CurrentAcademicYearService) {
     this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
   }
 
   ngOnInit(): void {
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
+      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
+
+      if (now > firstSemEnd) {
+        this.isFirstSemesterEnded = true;
+      }
+      if (now > secondSemEnd) {
+        this.isSecondSemesterEnded = true;
+      }
+    });
+
     this.childAbsencesChartView = handleChartWidthHeight();
     this.account = this.accountService.account.getValue();
 
@@ -63,7 +82,9 @@ export class HomeParentComponent implements OnInit {
   fetchPageData(): void {
     const childId = this.selectedChild ? (this.selectedChild.id as string) : this.userDetails.children[0].id.toString();
     this.childStatisticsService.getData(true, childId)
-      .subscribe(response => this.childStatistics = response);
+      .subscribe(response => {
+        this.childStatistics = response;
+      });
     this.childSchoolActivityService.getData(true, childId)
       .subscribe(response => {
         this.childSchoolActivity = response;
@@ -89,21 +110,21 @@ export class HomeParentComponent implements OnInit {
       name: 'Dată',
       dataKey: 'date',
       displayFormatter: (value: string) => {
-        return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
+        return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM').toString();
       },
-      minWidth: '80'
+      minWidth: '25%'
     }));
     this.childActivityTable.push(new Column({
       name: 'Nume materie',
       dataKey: 'subject_name',
       columnType: 'simple-cell',
-      minWidth: '100'
+      minWidth: '50%'
     }));
     this.childActivityTable.push(new Column({
       name: 'Activitate',
       dataKey: 'event',
       columnType: 'custom-text',
-      minWidth: '160'
+      minWidth: '25%'
     }));
   }
 
@@ -113,20 +134,20 @@ export class HomeParentComponent implements OnInit {
       name: 'Nume materie',
       dataKey: 'subject_name',
       columnType: 'simple-cell',
-      minWidth: '150'
+      minWidth: '150px'
     }));
     this.childSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
       data: this.childSubjectsAtRisk[0]?.avg_final ? 'avg_final' : 'avg_sem1',
       columnType: 'simple-cell',
-      minWidth: '120'
+      minWidth: '120px'
     }));
     this.childSubjectsAtRiskTable.push(new Column({
       name: 'Număr absențe nemotivate / an',
       dataKey: this.childSubjectsAtRisk[0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual'
         : 'unfounded_abs_count_sem1',
       columnType: 'graded-cell',
-      minWidth: '240'
+      minWidth: '240px'
     }));
   }
 

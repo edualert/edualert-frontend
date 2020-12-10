@@ -10,13 +10,14 @@
            (click)="openPicker()"
            readOnly
            placeholder="Dată"
-           value="{{ currentDate }}"
+           value="{{ displayDate(selectedDate) }}"
          >
          <div class="datepicker-container">
            <app-datepicker
              color="#0077DB"
              #datepicker
-             [dateValue]="convertStringToDate(currentDate)"
+             [maxDateValue]="today"
+             [dateValue]="selectedDate"
              (dateChanged)="changeDate($event)"
            >
            </app-datepicker>

@@ -1,7 +1,7 @@
 <div class="animated-page">
   <app-header>
     <div id="error-alert">
-      <div class="error-toast" *ngIf="hasSchoolOrClass">
+      <div class="error-toast" *ngIf="displayErrorToast">
         <div class="request-error">
           {{ toastErrorMessage }}
         </div>
@@ -75,23 +75,23 @@
     <hr class="margin-list">
     <div class="detail-element-container">
       <div class="label-container fixed-width">Număr de telefon</div>
-      <div class="value-container bold">{{ formatPhoneNumber(userDetails?.phone_number) }}</div>
+      <div class="value-container bold">{{ userDetails?.phone_number ? formatPhoneNumber(userDetails.phone_number) : '-'}}</div>
     </div>
     <div class="detail-element-container">
       <div class="label-container fixed-width">Adresă de email</div>
-      <div class="value-container bold">{{ userDetails?.email }}</div>
+      <div class="value-container bold">{{ userDetails?.email ? userDetails.email : '-'}}</div>
     </div>
     <div *ngIf="availableFields?.address" class="detail-element-container">
       <div class="label-container fixed-width">Adresă</div>
-      <div class="value-container bold">{{ userDetails?.address }}</div>
+      <div class="value-container bold">{{ userDetails?.address ? userDetails.address : '-'}}</div>
     </div>
     <div *ngIf="availableFields?.personalNumber" class="detail-element-container">
       <div class="label-container fixed-width">CNP</div>
-      <div class="value-container bold">{{ userDetails?.personal_id_number }}</div>
+      <div class="value-container bold">{{ userDetails?.personal_id_number ? userDetails.personal_id_number : '-'}}</div>
     </div>
     <div *ngIf="availableFields?.birthDate" class="detail-element-container">
       <div class="label-container fixed-width">Dată naștere</div>
-      <div class="value-container bold">{{ userDetails?.birth_date }}</div>
+      <div class="value-container bold">{{ userDetails?.birth_date ? userDetails.birth_date : '-'}}</div>
     </div>
     <div *ngIf="this.availableFields?.parentSection && userDetails.parents.length !== 0">
       <hr class="margin-list">
@@ -117,15 +117,15 @@
       <div class="border-left">
         <div class="detail-element-container">
           <div class="label-container fixed-width">Nume</div>
-          <div class="value-container bold">{{ userDetails?.educator_full_name }}</div>
+          <div class="value-container bold">{{ userDetails?.educator_full_name ? userDetails.educator_full_name : '-'}}</div>
         </div>
         <div class="detail-element-container">
           <div class="label-container fixed-width">Număr de telefon</div>
-          <div class="value-container bold">{{ formatPhoneNumber(userDetails?.educator_phone_number) }}</div>
+          <div class="value-container bold">{{ userDetails?.educator_phone_number ? formatPhoneNumber(userDetails?.educator_phone_number) : '-'}}</div>
         </div>
         <div class="detail-element-container">
           <div class="label-container fixed-width">Adresă de email</div>
-          <div class="value-container bold">{{ userDetails?.educator_email }}</div>
+          <div class="value-container bold">{{ userDetails?.educator_email ? userDetails.educator_email : '-'}}</div>
         </div>
       </div>
     </div>

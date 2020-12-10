@@ -264,13 +264,13 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
       name: 'Nume institutie',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '220'
+      minWidth: '220px'
     }));
     this.institutionsAtRiskTable.push(new Column({
       name: 'Numar elevi cu risc',
       dataKey: 'students_at_risk_count',
       columnType: 'numbered-cell',
-      minWidth: '120'
+      minWidth: '120px'
     }));
   }
 
@@ -280,12 +280,12 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
       name: 'Nume institutie',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '230',
+      minWidth: '230px',
     }));
     this.inactiveInstitutionsTable.push(new Column({
       name: 'Data ultimei modificari',
       dataKey: 'last_change_in_catalog',
-      minWidth: '130',
+      minWidth: '130px',
       displayFormatter: (value: string) => {
         return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
       },
@@ -298,13 +298,13 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
       name: 'Nume institutie',
       dataKey: 'school_unit_name',
       columnType: 'simple-cell',
-      minWidth: '230',
+      minWidth: '230px',
     }));
     this.institutionsAveragesTable.push(new Column({
       name: 'Medie anuală instituție de învățământ',
       dataKey: this.data[this.activeTab][0].avg_annual ? 'avg_annual' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '217',
+      minWidth: '217px',
     }));
   }
 
@@ -314,13 +314,13 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
       name: 'Nume institutie',
       dataKey: 'school_unit_name',
       columnType: 'simple-cell',
-      minWidth: '230',
+      minWidth: '230px',
     }));
     this.institutionsAbsencesTable.push(new Column({
       name: 'Număr mediu absențe nemotivate pe elev pe an',
       dataKey: this.data[this.activeTab][0].unfounded_abs_avg_annual ? 'unfounded_abs_avg_annual' : 'unfounded_abs_avg_sem1',
       columnType: 'numbered-cell',
-      minWidth: '275',
+      minWidth: '275px',
     }));
   }
 

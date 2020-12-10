@@ -19,6 +19,7 @@
         <div class="datepicker-container">
           <app-datepicker #datepicker
                           [dateValue]="selectedDate"
+                          [maxDateValue]="today"
                           [color]="'#0077DB'"
                           (dateChanged)="selectDate($event)"
           ></app-datepicker>
