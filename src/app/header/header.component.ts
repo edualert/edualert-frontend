@@ -21,7 +21,7 @@ export class HeaderComponent implements AfterViewInit {
     setTimeout(() => {
       const headerHeight = document.getElementById('page-header').getBoundingClientRect().height;
       (document.getElementsByClassName('header-sublayer')[0] as HTMLElement).style.height = `${headerHeight}px`;
-    }, 200);
+    }, 600);
   }
 
 }

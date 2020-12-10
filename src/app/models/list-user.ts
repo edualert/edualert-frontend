@@ -1,7 +1,7 @@
 export class ListUser {
   id: number;
   full_name: number;
-  user_role: number;
+  user_role: string;
   is_active: boolean;
   last_online: string;
   labels: string[];

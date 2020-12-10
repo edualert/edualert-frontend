@@ -18,7 +18,9 @@
     </div>
     <div *ngIf="this.availableFields?.class" class="detail-element-container">
       <div class="label-container fixed-width">Clasă</div>
-      <div class="value-container bold">{{account?.class_grade + ' ' + account?.class_letter}}</div>
+      <div class="value-container bold">
+        {{account?.class_grade && account?.class_letter ? account.class_grade + ' ' + account.class_letter : '-'}}
+      </div>
     </div>
     <div class="detail-element-container">
       <div class="label-container fixed-width">Nume utilizator</div>
@@ -28,6 +30,10 @@
         <div
           class="value-container bold">{{ account?.use_phone_as_username ? account.phone_number : account.email }}</div>
       </div>
+    </div>
+    <div class="detail-element-container">
+      <div class="label-container fixed-width">Parolă</div>
+      <div class="value-container bold password">**************</div>
     </div>
     <hr class="margin-list">
     <div class="detail-element-container subheader">
@@ -39,23 +45,23 @@
     </div>
     <div class="detail-element-container">
       <div class="label-container fixed-width">Număr de telefon</div>
-      <div class="value-container bold">{{ formatPhoneNumber(account?.phone_number) }}</div>
+      <div class="value-container bold">{{ account?.phone_number ? formatPhoneNumber(account.phone_number) : '-'}}</div>
     </div>
     <div class="detail-element-container">
       <div class="label-container fixed-width">Adresă de email</div>
-      <div class="value-container bold">{{ account?.email }}</div>
+      <div class="value-container bold">{{ account?.email ? account.email : '-'}}</div>
     </div>
     <div *ngIf="availableFields.address" class="detail-element-container">
       <div class="label-container fixed-width">Adresă</div>
-      <div class="value-container bold">{{ account?.address }}</div>
+      <div class="value-container bold">{{ account?.address ? account.address : '-'}}</div>
     </div>
     <div *ngIf="availableFields.personal_id_number" class="detail-element-container">
       <div class="label-container fixed-width">CNP</div>
-      <div class="value-container bold">{{ account?.personal_id_number }}</div>
+      <div class="value-container bold">{{ account?.personal_id_number ? account.personal_id_number : '-'}}</div>
     </div>
     <div *ngIf="availableFields.birth_date" class="detail-element-container">
       <div class="label-container fixed-width">Dată naștere</div>
-      <div class="value-container bold">{{ account?.birth_date }}</div>
+      <div class="value-container bold">{{ account?.birth_date ? account.birth_date : '-'}}</div>
     </div>
     <hr class="margin-list">
     <div class="detail-element-container subheader">

@@ -29,19 +29,34 @@ export class ScrollableList {
   }
 
   protected scrollHandle() {
-    const initialHeight = this.initialBodyHeight;
+    let initialHeight;
+    let scrollHeight;
     let scrollTop;
-    const scrollHeight = document.body.scrollHeight;
-    this.keepOldList = true;
+    const tableContainer = document.getElementsByClassName('scrollable-container')[0];
 
-    if (this.isOnReportsPage) {
-      this.scrollPositions[this.activeTab] = document.body.scrollTop;
-      scrollTop = this.scrollPositions[this.activeTab];
+    if (tableContainer) {
+      initialHeight = tableContainer.clientHeight;
+      scrollHeight = tableContainer.scrollHeight;
+      scrollTop = tableContainer.scrollTop;
+
+      this.keepOldList = true;
+      this.listEnded = this.totalCount === this.elementCount;
+
     } else {
-      scrollTop = document.body.scrollTop;
-    }
 
-    this.listEnded = this.totalCount === this.elementCount;
+      initialHeight = this.initialBodyHeight;
+      scrollHeight = document.body.scrollHeight;
+      this.keepOldList = true;
+
+      if (this.isOnReportsPage) {
+        this.scrollPositions[this.activeTab] = document.body.scrollTop;
+        scrollTop = this.scrollPositions[this.activeTab];
+      } else {
+        scrollTop = document.body.scrollTop;
+      }
+
+      this.listEnded = this.totalCount === this.elementCount;
+    }
 
     if (scrollHeight - scrollTop < initialHeight + 100
       && this.elementCount < this.totalCount

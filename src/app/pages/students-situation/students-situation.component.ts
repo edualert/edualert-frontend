@@ -1,16 +1,16 @@
-import {AfterViewInit, Component, Injector, OnDestroy} from '@angular/core';
-import {AccountService} from '../../services/account.service';
-import {UserDetails} from '../../models/user-details';
-import {ListPage} from '../list-page/list-page';
-import {IdText} from '../../models/id-text';
-import {getCurrentAcademicYear} from '../../shared/utils';
-import {HttpClient} from '@angular/common/http';
-import {Params, Router} from '@angular/router';
-import {NetworkingListResponse} from '../../models/networking-list-response';
+import { Component, ElementRef, Injector, OnDestroy, OnInit } from '@angular/core';
+import { AccountService } from '../../services/account.service';
+import { UserDetails } from '../../models/user-details';
+import { ListPage } from '../list-page/list-page';
+import { IdText } from '../../models/id-text';
+import { getCurrentAcademicYear } from '../../shared/utils';
+import { HttpClient } from '@angular/common/http';
+import { Params } from '@angular/router';
+import { NetworkingListResponse } from '../../models/networking-list-response';
 import BaseRequestParameters from '../list-page/base-request-parameters';
-import {PupilStatisticsList, PupilStatisticsListOrs} from '../../models/pupil-statistics-list';
-import {catchError} from 'rxjs/operators';
-import {of} from 'rxjs';
+import { PupilStatisticsList, PupilStatisticsListOrs } from '../../models/pupil-statistics-list';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 class RequestParams extends BaseRequestParameters {
   readonly search: string;
@@ -38,18 +38,18 @@ class RequestParams extends BaseRequestParameters {
   templateUrl: './students-situation.component.html',
   styleUrls: ['./students-situation.component.scss']
 })
-export class StudentsSituationComponent extends ListPage implements AfterViewInit, OnDestroy {
+export class StudentsSituationComponent extends ListPage implements OnInit, OnDestroy {
 
   accountRole: string;
   students: PupilStatisticsListOrs[] | PupilStatisticsList[] = [];
   studentsTotalCount: number;
 
   readonly defaultAcademicYear: IdText = new IdText({id: getCurrentAcademicYear(), text: `${getCurrentAcademicYear()} - ${getCurrentAcademicYear() + 1}`});
-  readonly defaultSortingCriterion: IdText = new IdText({id: 'student_name', text: 'Nume'});
 
   constructor(injector: Injector,
               private accountService: AccountService,
-              private http: HttpClient) {
+              private http: HttpClient,
+              private elementRef: ElementRef) {
     super(injector);
 
     this.accountService.account.subscribe((user: UserDetails) => {
@@ -62,15 +62,17 @@ export class StudentsSituationComponent extends ListPage implements AfterViewIni
       genericAcademicPrograms: null,
       sortCriteria: null
     });
-    this.customUrlParamsChange({'ordering': this.defaultSortingCriterion?.id, 'academicYear': this.defaultAcademicYear?.id});
+    this.customUrlParamsChange({'academicYear': this.defaultAcademicYear?.id});
 
     this.scrollHandle = this.scrollHandle.bind(this);
+    this.initialRequestInProgress = true;
+    this.requestInProgress = true;
     this.requestDataFunc = this.requestData;
     this.initialBodyHeight = document.body.getBoundingClientRect().height;
 
     this.activatedRoute.queryParams.subscribe((urlParams: Params) => {
-      if ( Object.keys(urlParams).length === 0 ) {
-        urlParams = {'ordering': this.defaultSortingCriterion?.id, 'academicYear': this.defaultAcademicYear?.id};
+      if (Object.keys(urlParams).length === 0) {
+        urlParams = {'academicYear': this.defaultAcademicYear?.id};
         this.customUrlParamsChange(urlParams);
       }
       this.students = [];
@@ -78,6 +80,26 @@ export class StudentsSituationComponent extends ListPage implements AfterViewIni
       this.activeUrlParams = urlParams;
       this.requestData(urlParams);
     });
+  }
+
+  ngOnInit(): void {
+    this.setSortingOptionsByUserRole();
+  }
+
+  private setSortingOptionsByUserRole() {
+    const index = this.filterData.sortCriteria.map(function(elem) {
+      return elem.id;
+    }).indexOf('student_name');
+
+    if (this.accountRole === 'ADMINISTRATOR') {
+      if (index > -1) {
+        this.filterData.sortCriteria.splice(index, 1);
+      }
+    } else {
+      if (index < 0) {
+        this.filterData.sortCriteria.push(new IdText({id: 'student_name', text: 'Nume'}));
+      }
+    }
   }
 
   private formatData(students: any) {
@@ -101,13 +123,12 @@ export class StudentsSituationComponent extends ListPage implements AfterViewIni
   }
 
   requestData(urlParams?: Params): void {
-    this.requestInProgress = !this.keepOldList;
-    this.initialRequestInProgress = true;
-
     const responseStudents: any = this.students;
-
     const httpParams = new RequestParams({...urlParams, page_size: 50}).getHttpParams();
     const path = 'pupils-statistics/';
+
+    this.requestInProgress = this.keepOldList;
+
     this.http.get(path, {params: httpParams}).subscribe((response: NetworkingListResponse) => {
       if (this.accountRole === 'ADMINISTRATOR') {
         response.results.map(result => responseStudents.push(result));
@@ -121,6 +142,9 @@ export class StudentsSituationComponent extends ListPage implements AfterViewIni
       this.initialRequestInProgress = false;
       this.requestInProgress = false;
       this.keepOldList = false;
+      setTimeout(() =>
+        (this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0]).addEventListener('scroll', this.scrollHandle),
+        500);
     });
   }
 
@@ -146,12 +170,8 @@ export class StudentsSituationComponent extends ListPage implements AfterViewIni
     }
   }
 
-  ngAfterViewInit(): void {
-    document.body.addEventListener('scroll', this.scrollHandle);
-  }
-
   ngOnDestroy(): void {
-    document.body.removeEventListener('scroll',  this.scrollHandle);
+    this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0].removeEventListener('scroll',  this.scrollHandle);
   }
 
 }

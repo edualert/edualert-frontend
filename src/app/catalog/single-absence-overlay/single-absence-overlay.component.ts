@@ -13,10 +13,12 @@ export class SingleAbsenceOverlayComponent extends OpenCloseable {
   isFounded: boolean = false;
   selectedDate: any;
   existingId: number;
+  today: Date;
   @ViewChild('datepicker', {static: false}) datepicker: DatepickerComponent;
 
   constructor(private elRef: ElementRef) {
     super();
+    this.today = new Date();
   }
 
   selectDate(date: Date): void {

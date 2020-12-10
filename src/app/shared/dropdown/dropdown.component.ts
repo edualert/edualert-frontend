@@ -3,29 +3,7 @@ import {nodeIsDescendant} from '../node-is-descendant';
 import {userRoles} from '../../models/user-roles';
 import {AddUserModalComponent} from '../../pages/manage-users/add-user-modal/add-user-modal.component';
 import {UserDetailsBase} from '../../models/user-details-base';
-import {SchoolCategory} from '../../models/school-details';
 import {findIndex} from 'lodash';
-
-export const dropdownValidations = {
-  'category_level': (selection: { element: SchoolCategory, index: number }[], initialList) => {
-    dropdownValidations['error'].message = '';
-    dropdownValidations['error'].index = '';
-    if (selection.length === 1) {
-      return;
-    }
-    const formattedSelection = selection.map(category => category.element);
-    formattedSelection.forEach((category: any, index: number) => {
-      const tempList = formattedSelection;
-      tempList.splice(index, 1);
-      const hasDuplicate = findIndex(tempList, {category_level: category.category_level});
-      if (hasDuplicate !== -1) {
-        dropdownValidations['error'].message = 'Nu puteți selecta mai multe opțiuni din aceeași categorie.';
-        dropdownValidations['error'].index = findIndex(initialList, {id: tempList[hasDuplicate].id});
-      }
-    });
-  },
-  'error': {message: '', index: null}
-};
 
 @Component({
   selector: 'app-dropdown',
@@ -57,7 +35,6 @@ export class DropdownComponent implements OnDestroy, OnChanges {
   @Input() withMultipleSelection?: boolean = false;
   @Input() showCurrentSelection?: boolean = false;
   @Input() appliedSelection?: any[];
-  @Input() validationKey?: string;
   @Output() selectionHasBeenConfirmed?: EventEmitter<{ element, index }[]> = new EventEmitter();
   // END MULTI-CHOICE
 
@@ -250,19 +227,8 @@ export class DropdownComponent implements OnDestroy, OnChanges {
   }
 
   confirmSelection() {
-    if (this.validationKey) {
-      dropdownValidations[this.validationKey](this.currentFullSelection, this.list);
-      if (dropdownValidations['error'].index) {
-        this.dropdownErrors = dropdownValidations['error'];
-      } else {
-        this.dropdownErrors = null;
-        this.selectionHasBeenConfirmed.emit(this.currentFullSelection);
-        this.close();
-      }
-    } else {
-      this.selectionHasBeenConfirmed.emit(this.currentFullSelection);
-      this.close();
-    }
+    this.selectionHasBeenConfirmed.emit(this.currentFullSelection);
+    this.close();
   }
 
   searchChange(value: string) {

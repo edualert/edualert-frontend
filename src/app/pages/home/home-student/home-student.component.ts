@@ -3,11 +3,10 @@ import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWee
 import {UserDetails} from '../../../models/user-details';
 import {MyOwnAbsencesEvolutionService, MyOwnSchoolActivityService, MyOwnStatisticsService, MyOwnSubjectsAtRiskService} from '../../../services/statistics-services/my-own-statistics.service';
 import {ChildSchoolActivity, ChildStatistics, SubjectForChild} from '../../../models/child-statistics';
-import {AbsencesStatistics} from '../../../models/graph-statistics';
 import {Column} from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
-import {weekdays} from '../../../shared/constants';
 import {findIndex} from 'lodash';
+import {CurrentAcademicYearService} from '../../../services/current-academic-year.service';
 
 @Component({
   selector: 'app-home-student',
@@ -20,6 +19,9 @@ export class HomeStudentComponent implements OnInit {
   getDayOfTheWeek = getDayOfTheWeek;
   graphSubtitle: string;
   currentMonth = moment().month();
+
+  isFirstSemesterEnded: boolean = false;
+  isSecondSemesterEnded: boolean = false;
 
   myOwnStatistics: ChildStatistics;
 
@@ -43,19 +45,36 @@ export class HomeStudentComponent implements OnInit {
   constructor(private myOwnStatisticsService: MyOwnStatisticsService,
               private myOwnSchoolActivityService: MyOwnSchoolActivityService,
               private myOwnSubjectsAtRiskService: MyOwnSubjectsAtRiskService,
-              private myOwnAbsencesEvolutionService: MyOwnAbsencesEvolutionService) {
+              private myOwnAbsencesEvolutionService: MyOwnAbsencesEvolutionService,
+              private currentAcademicYearService: CurrentAcademicYearService) {
     this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
   }
 
   ngOnInit(): void {
     this.fetchPageData();
     this.myOwnAbsencesView = handleChartWidthHeight();
+
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
+      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
+
+      if (now > firstSemEnd) {
+        this.isFirstSemesterEnded = true;
+      }
+      if (now > secondSemEnd) {
+        this.isSecondSemesterEnded = true;
+      }
+    });
+
     this.forceRequest = false;
   }
 
   fetchPageData(): void {
     this.myOwnStatisticsService.getData(this.forceRequest)
-      .subscribe(response => this.myOwnStatistics = response);
+      .subscribe(response => {
+        this.myOwnStatistics = response;
+      });
     this.myOwnSchoolActivityService.getData(this.forceRequest)
       .subscribe(response => {
         this.myOwnSchoolActivity = response;
@@ -79,21 +98,21 @@ export class HomeStudentComponent implements OnInit {
       name: 'Dată',
       dataKey: 'date',
       displayFormatter: (value: string) => {
-        return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
+        return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM').toString();
       },
-      minWidth: '80'
+      minWidth: '25%'
     }));
     this.myOwnSchoolActivityTable.push(new Column({
       name: 'Nume materie',
       dataKey: 'subject_name',
       columnType: 'simple-cell',
-      minWidth: '100'
+      minWidth: '50%'
     }));
     this.myOwnSchoolActivityTable.push(new Column({
       name: 'Activitate',
       dataKey: 'event',
       columnType: 'custom-text',
-      minWidth: '160'
+      minWidth: '25%'
     }));
   }
 
@@ -103,19 +122,19 @@ export class HomeStudentComponent implements OnInit {
       name: 'Nume materie',
       dataKey: 'subject_name',
       columnType: 'simple-cell',
-      minWidth: '150'
+      minWidth: '150px'
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
       data: this.myOwnSubjectsAtRisk[0]?.avg_final ? 'avg_final' : 'avg_sem1',
       columnType: 'simple-cell',
-      minWidth: '120',
+      minWidth: '120px',
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Număr absențe nemotivate / an',
       dataKey: this.myOwnSubjectsAtRisk[0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
       columnType: 'graded-cell',
-      minWidth: '240'
+      minWidth: '240px'
     }));
     if (!Column.checkSumOfWidths(this.myOwnSubjectsAtRiskTable)) {
 

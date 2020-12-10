@@ -76,26 +76,29 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.scrollContainer.nativeElement.addEventListener('scroll', this.bringExpandedCellToScreen);
-    document.body.addEventListener('scroll', this.stickTableHeadBelowPageHeader);
+    this.scrollContainer.nativeElement.addEventListener('scroll', this.stickTableHeadBelowPageHeader);
   }
 
   private stickTableHeadBelowPageHeader() {
     const pageHeader = window.innerWidth > 1024
       ? document.getElementById('page-header')
       : document.getElementById('nav-bar');
-    const table = this.scrollContainer.nativeElement;
     const tableHeader = this.tableHeader.nativeElement;
     const tableSubheader = this.tableSubheader.nativeElement;
-    const pointToStickTo = pageHeader.getBoundingClientRect().top + pageHeader.getBoundingClientRect().height;
+    const dataRows = document.getElementsByClassName('data-rows')[0];
+    const pointToStickTo = pageHeader.getBoundingClientRect().top + pageHeader.getBoundingClientRect().height
+      + tableHeader.getBoundingClientRect().height + tableSubheader.getBoundingClientRect().height + 20; // 20 -> page-content padding
 
-    if (table.getBoundingClientRect().top < pointToStickTo) {
-      tableHeader.style.transform = `translateY(${pointToStickTo - table.getBoundingClientRect().top}px)`;
+    this.headerService.refreshHeaderHeight();
+
+    if (dataRows.getBoundingClientRect().top < pointToStickTo) {
+      tableHeader.style.transform = `translateY(${pointToStickTo - dataRows.getBoundingClientRect().top}px)`;
     } else {
       tableHeader.style.transform = 'none';
     }
 
-    if (table.getBoundingClientRect().top < pointToStickTo) {
-      tableSubheader.style.transform = `translateY(${pointToStickTo - table.getBoundingClientRect().top}px)`;
+    if (dataRows.getBoundingClientRect().top < pointToStickTo) {
+      tableSubheader.style.transform = `translateY(${pointToStickTo - dataRows.getBoundingClientRect().top}px)`;
     } else {
       tableSubheader.style.transform = 'none';
     }
@@ -273,7 +276,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.scrollContainer.nativeElement.removeEventListener('scroll', this.bringExpandedCellToScreen);
-    document.body.removeEventListener('scroll', this.stickTableHeadBelowPageHeader);
+    this.scrollContainer.nativeElement.removeEventListener('scroll', this.stickTableHeadBelowPageHeader);
   }
 
 }

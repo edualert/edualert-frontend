@@ -1,7 +1,7 @@
 <div class="animated-page">
   <app-header>
     <div id="error-alert">
-      <div class="error-toast" *ngIf="hasSchoolOrClass">
+      <div class="error-toast" *ngIf="displayErrorToast">
         <div class="request-error">
           {{ toastErrorMessage }}
         </div>

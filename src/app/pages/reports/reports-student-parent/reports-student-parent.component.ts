@@ -15,6 +15,8 @@ import * as moment from 'moment';
 import {parentStudentTabs} from '../reports-tabs';
 import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
 import {IdFullname} from '../../../models/id-fullname';
+import {ActivatedRoute} from '@angular/router';
+import {CurrentAcademicYearService} from '../../../services/current-academic-year.service';
 
 @Component({
   selector: 'app-reports-student-parent',
@@ -45,8 +47,15 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
   userDetails: UserDetails;
   accountRole: string;
   selectedChild: IdFullname;
+  initialSelectedChild: IdFullname;
+  forceRequestOnTables: {}[] = [
+    {student_school_activity: true},
+    {student_subjects_at_risk: true},
+    {student_absences_evolution: true},
+    {student_statistics: true}
+  ];
 
-  activeTab = 'student_school_activity';
+  activeTab: string;
   month: number = moment().month();
 
   getDayOfTheWeek = getDayOfTheWeek;
@@ -68,10 +77,13 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
               private ownChildAbsencesEvolutionService: ChildAbsencesEvolutionService,
               private childSchoolActivityService: ChildSchoolActivityService,
               private childSubjectsAtRiskService: ChildSubjectsAtRiskService,
-              private accountService: AccountService) {
+              private accountService: AccountService,
+              private activatedRoute: ActivatedRoute,
+              private currentAcademicYearService: CurrentAcademicYearService) {
     this.generateStudentActivityTable = this.generateStudentActivityTable.bind(this);
     this.generateStudentSubjectsAtRiskTable = this.generateStudentSubjectsAtRiskTable.bind(this);
 
+    this.activeTab = this.activatedRoute.snapshot.params['top_tab'];
     accountService.account.subscribe((account: UserDetails) => {
       this.userDetails = account;
       this.accountRole = account.user_role;
@@ -113,6 +125,20 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
   }
 
   fetchDataParent(id: string) {
+    if (this.initialSelectedChild && this.selectedChild.id !== this.initialSelectedChild.id) {
+      this.initialSelectedChild = this.selectedChild;
+      this.myOwnSchoolActivityTable = [];
+      this.myOwnSubjectsAtRiskTable = [];
+
+      // clear the data regarding previous student
+      this.data['student_school_activity'] = null;
+      this.data['student_subjects_at_risk'] = null;
+      this.data['student_absences_evolution'] = null;
+      this.data['student_statistics'] = null;
+      this.forceRequestOnTables['student_school_activity'] = true;
+      this.forceRequestOnTables['student_subjects_at_risk'] = true;
+      this.forceRequestOnTables['student_statistics'] = true;
+    }
     // If we already have data for that id don't make a request
     if (this.data[id] !== null && id !== 'student_absences_evolution') {
       return;
@@ -125,16 +151,15 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
     // Else we are going to get the data from api
     this.loading = true;
     const childId = this.selectedChild ? (this.selectedChild.id as string) : this.userDetails.children[0].id.toString();
-
     const months_students = this.getPreviousCurrentAndNextMonth(this.month);
 
     const requests: { [tab in parentStudentTabs]: any } = {
       student_school_activity: {
-        request: this.childSchoolActivityService.getData(false, childId),
+        request: this.childSchoolActivityService.getData(this.forceRequestOnTables['student_school_activity'], childId),
         generate: this.generateStudentActivityTable
       },
       student_subjects_at_risk: {
-        request: this.childSubjectsAtRiskService.getData(false, childId),
+        request: this.childSubjectsAtRiskService.getData(this.forceRequestOnTables['student_subjects_at_risk'] ? this.forceRequestOnTables['student_school_activity'] : true, childId),
         generate: this.generateStudentSubjectsAtRiskTable
       },
       student_absences_evolution: {
@@ -142,7 +167,7 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
         requestPrevious: this.ownChildAbsencesEvolutionService.getData(true, '', childId, months_students.prev, true)
       },
       student_statistics: {
-        request: this.childStatisticsService.getData(false, childId)
+        request: this.childStatisticsService.getData(this.forceRequestOnTables['student_statistics'], childId)
       },
     };
 
@@ -170,19 +195,21 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
       });
       return;
     } else {
-      req.request.subscribe((response) => {
+      const sub = req.request.subscribe((response) => {
         this.data[id] = response;
         this.loading = false;
+        this.forceRequestOnTables[id] = false;
         if (req.generate) {
           req.generate();
         }
+        sub.unsubscribe();
       });
     }
   }
 
   fetchDataChild(id: string) {
     // If we already have data for that id don't make a request
-    if (this.data[id] !== null && id !== 'student_absences_evolution') {
+    if (this.data[id] !== null && id !== 'student_absences_evolution' || this.loading) {
       return;
     }
     if (id === 'student_absences_evolution' && this.data.student_absences_evolution[this.month - 1] && this.data.student_absences_evolution[this.month + 1]) {
@@ -251,21 +278,21 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
       name: 'Dată',
       dataKey: 'date',
       displayFormatter: (value: string) => {
-        return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
+        return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM').toString();
       },
-      minWidth: '80'
+      minWidth: '25%'
     }));
     this.myOwnSchoolActivityTable.push(new Column({
       name: 'Nume materie',
       dataKey: 'subject_name',
       columnType: 'simple-cell',
-      minWidth: '100'
+      minWidth: '50%'
     }));
     this.myOwnSchoolActivityTable.push(new Column({
       name: 'Activitate',
       dataKey: 'event',
       columnType: 'custom-text',
-      minWidth: '160'
+      minWidth: '25%'
     }));
   }
 
@@ -275,19 +302,19 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
       name: 'Nume materie',
       dataKey: 'subject_name',
       columnType: 'simple-cell',
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
       data: this.data[this.activeTab][0]?.avg_final ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '120'
+      minWidth: '120px'
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Număr absențe nemotivate / an',
       dataKey: this.data[this.activeTab][0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
       columnType: 'numbered-cell',
-      minWidth: '240'
+      minWidth: '240px'
     }));
   }
 
@@ -295,12 +322,20 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
     this.changeUrlParamsEvent.next({top_tab: this.activeTab});
     window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
     this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
+    this.initialSelectedChild = this.selectedChild;
+    this.currentAcademicYearService.getData().subscribe(response => {
+      if (moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf() <= moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.tabs.splice(this.tabs.findIndex(x => x.id === 'student_subjects_at_risk'), 1);
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
       this.activeTab = changes.initialQueryParams.currentValue;
-      this.fetchData(this.activeTab);
+      if (!this.data[this.activeTab] && !this.loading) {
+        this.fetchData(this.activeTab);
+      }
     }
   }
 

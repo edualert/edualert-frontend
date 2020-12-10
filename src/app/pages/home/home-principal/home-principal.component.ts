@@ -95,12 +95,12 @@ export class HomePrincipalComponent implements OnInit {
       name: 'Nume profil',
       dataKey: 'name',
       columnType: 'simple-cell',
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.academicProgramsAtRiskColumns.push(new Column({
       name: 'Număr elevi cu risc',
       dataKey: 'students_at_risk_count',
-      minWidth: '130',
+      minWidth: '130px',
       columnType: 'numbered-cell'
     }));
   }
@@ -111,13 +111,13 @@ export class HomePrincipalComponent implements OnInit {
       name: 'Nume clasă',
       dataKey: 'class_full_name',
       columnType: 'class-name',
-      minWidth: '100'
+      minWidth: '100px'
     }));
     this.schoolStudyClassesAtRiskColumns.push(new Column({
       name: 'Număr elevi cu risc',
       dataKey: 'students_at_risk_count',
       columnType: 'numbered-cell',
-      minWidth: '130'
+      minWidth: '130px'
     }));
   }
 
@@ -130,7 +130,7 @@ export class HomePrincipalComponent implements OnInit {
       link: (value: InactiveTeacher) => {
         return `manage-users/${value.id}/view`;
       },
-      minWidth: '200',
+      minWidth: '200px',
     }));
     this.inactiveTeachersTable.push(new Column({
       name: 'Data ultimei modificări',
@@ -138,7 +138,7 @@ export class HomePrincipalComponent implements OnInit {
       displayFormatter: (value: string) => {
         return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
       },
-      minWidth: '150'
+      minWidth: '150px'
     }));
   }
 
@@ -151,37 +151,37 @@ export class HomePrincipalComponent implements OnInit {
       link: (value: StudentAtRisk) => {
         return `manage-users/${value.student.id}/view`;
       },
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Clasă',
       dataKey: 'class_full_name',
       columnType: 'simple-cell',
-      minWidth: '60'
+      minWidth: '60px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Medie anuală',
       dataKey: this.schoolStudentsAtRiskList[0].avg_final ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '100'
+      minWidth: '100px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Număr corigențe',
       dataKey: 'second_examinations_count',
       columnType: 'numbered-cell',
-      minWidth: '110'
+      minWidth: '110px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Număr total absențe nemotivate / an',
       dataKey: this.schoolStudentsAtRiskList[0].unfounded_abs_count_annual ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
       columnType: 'numbered-cell',
-      minWidth: '240'
+      minWidth: '240px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Notă purtare',
       dataKey: this.schoolStudentsAtRiskList[0].behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
       columnType: 'numbered-cell',
-      minWidth: '100'
+      minWidth: '100px'
     }));
   }
 

@@ -1,9 +1,7 @@
-import {Component, Input, ViewChild, HostListener, OnDestroy} from '@angular/core';
-import {ModalComponent} from "../../../shared/modal/modal.component";
+import {Component, ViewChild, HostListener, OnDestroy} from '@angular/core';
+import {ModalComponent} from '../../../shared/modal/modal.component';
 import {DatepickerComponent} from '../../../shared/datepicker/datepicker.component';
 import {CanComponentDeactivate} from '../../../services/can-leave-guard.service';
-import {getCurrentAcademicYear} from '../../../shared/utils';
-import {HttpClient} from "@angular/common/http";
 import * as moment from 'moment';
 
 @Component({
@@ -17,18 +15,24 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
   students: any[];
   classGrade: string;
   classLetter: string;
-  currentDate: string = moment().format("DD-MM");
+  selectedDate: Date;
+  today: Date;
   isGloballySelected: boolean;
   hasModifiedData: boolean = false;
- 
-  constructor(private httpClient: HttpClient) { }
+
+  constructor() {
+    this.today = new Date();
+  }
 
   saveAbsencesAction() {
   }
 
-  open(modalData: BulkAddAbsencesModalData) : void {
+  open(modalData: BulkAddAbsencesModalData): void {
+    this.selectedDate = this.today;
     window.addEventListener('click', this.handleClick.bind(this));
-    this.students = modalData.students.map(element => { return {...element, addedAbsences: []} });
+    this.students = modalData.students.map(element => {
+      return {...element, addedAbsences: []};
+    });
     this.classGrade = modalData.classGrade;
     this.classLetter = modalData.classLetter;
 
@@ -37,14 +41,14 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
       this.students.forEach(studentData => {
         studentData.addedAbsences.forEach(is_founded => {
           student_absences.push({
-            is_founded, 
+            is_founded,
             'student': studentData.student.id
-          })
-        })
-      })
+          });
+        });
+      });
 
       modalData.saveAbsencesCallback({
-        'taken_at': `${this.currentDate}-${moment().year()}`,
+        'taken_at': `${moment(this.selectedDate).format('DD-MM-YYYY')}`,
         student_absences
       });
       this.hasModifiedData = false;
@@ -54,7 +58,7 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
     return;
   }
 
-  close() : void {
+  close(): void {
     if (this.canDeactivate()) {
       this.hasModifiedData = false;
       this.isGloballySelected = false;
@@ -68,21 +72,24 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
     this.datepicker.open();
   }
 
-  convertStringToDate(dateString) : Date {
-    return moment(dateString, "DD-MM").toDate();
+  changeDate(date: Date): void {
+    this.selectedDate = date;
   }
 
-  changeDate(value: string): void {
-    this.currentDate = moment(value).format("DD-MM");
+  displayDate(date: Date): string {
+    if (date) {
+      return moment(date).format('DD.MM');
+    }
+    return '';
   }
 
-  absenceChanged(event: any, studentIndex: number, absenceIndex: number) : void {
+  absenceChanged(event: any, studentIndex: number, absenceIndex: number): void {
     event.stopPropagation();
 
     this.students[studentIndex].addedAbsences[absenceIndex] = !this.students[studentIndex].addedAbsences[absenceIndex];
   }
 
-  addAbsenceForStudent(studentIndex: number, event: any = null) : void {
+  addAbsenceForStudent(studentIndex: number, event: any = null): void {
     if (event) {
       event.stopPropagation();
     }
@@ -91,7 +98,7 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
     this.students[studentIndex].addedAbsences.push(false);
   }
 
-  removeAbsenceForStudent(studentIndex: number, absenceIndex: number, event: any = null) : void {
+  removeAbsenceForStudent(studentIndex: number, absenceIndex: number, event: any = null): void {
     if (event) {
       event.stopPropagation();
     }
@@ -110,8 +117,7 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
       if (this.isGloballySelected) {
         this.isGloballySelected = false;
       }
-    }
-    else {
+    } else {
       this.students[studentIndex].addedAbsences.push(false);
       this.hasModifiedData = true;
     }
@@ -122,28 +128,27 @@ export class AddAbsencesBulkModalComponent implements CanComponentDeactivate, On
       if (!this.students[i].addedAbsences.length) {
         this.addAbsenceForStudent(i);
       }
-    })
+    });
   }
 
   removeAbsencesForAllStudents() {
     this.students.forEach(studentData => {
       studentData.addedAbsences = [];
-    })
+    });
   }
 
   globalAbsencesToggle() {
     if (this.isGloballySelected) {
       this.removeAbsencesForAllStudents();
       this.isGloballySelected = false;
-    }
-    else {
+    } else {
       this.addAbsencesForAllStudents();
       this.isGloballySelected = true;
     }
   }
 
-   @HostListener("window:beforeunload")
-   canDeactivate(): boolean {
+  @HostListener('window:beforeunload')
+  canDeactivate(): boolean {
     if (this.hasModifiedData) {
       if (confirm('Doriti sa continuati? Datele introduse vor fi pierdute.')) {
         return true;

@@ -1,9 +1,7 @@
-import {Component, Input, ViewChild, HostListener, OnDestroy} from '@angular/core';
-import {ModalComponent} from "../../../shared/modal/modal.component";
+import {Component, ViewChild, HostListener, OnDestroy} from '@angular/core';
+import {ModalComponent} from '../../../shared/modal/modal.component';
 import {DatepickerComponent} from '../../../shared/datepicker/datepicker.component';
 import {CanComponentDeactivate} from '../../../services/can-leave-guard.service';
-import {getCurrentAcademicYear} from '../../../shared/utils';
-import {HttpClient} from "@angular/common/http";
 import * as moment from 'moment';
 
 @Component({
@@ -17,18 +15,24 @@ export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDe
   students: any[];
   classGrade: string;
   classLetter: string;
-  currentDate: string = moment().format("DD-MM");
+  selectedDate: Date;
+  today: Date;
   availableGrades: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   hasModifiedData: boolean = false;
- 
-  constructor(private httpClient: HttpClient) { }
+
+  constructor() {
+    this.today = new Date();
+  }
 
   saveGradesAction() {
   }
 
-  open(modalData: BulkAddGradesModalData) : void {
+  open(modalData: BulkAddGradesModalData): void {
+    this.selectedDate = this.today;
     window.addEventListener('click', this.handleClick.bind(this));
-    this.students = modalData.students.map(element => { return {...element, addedGrades: []} });
+    this.students = modalData.students.map(element => {
+      return {...element, addedGrades: []};
+    });
     this.classGrade = modalData.classGrade;
     this.classLetter = modalData.classLetter;
 
@@ -37,14 +41,14 @@ export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDe
       this.students.forEach(studentData => {
         studentData.addedGrades.forEach(grade => {
           student_grades.push({
-            grade, 
+            grade,
             'student': studentData.student.id
-          })
-        })
-      })
+          });
+        });
+      });
 
       modalData.saveGradesCallback({
-        'taken_at': `${this.currentDate}-${moment().year()}`,
+        'taken_at': `${moment(this.selectedDate).format('DD-MM-YYYY')}`,
         student_grades
       });
       this.hasModifiedData = false;
@@ -53,7 +57,7 @@ export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDe
     return;
   }
 
-  close() : void {
+  close(): void {
     if (this.canDeactivate()) {
       this.hasModifiedData = false;
       window.removeEventListener('click', this.handleClick);
@@ -66,33 +70,36 @@ export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDe
     this.datepicker.open();
   }
 
-  convertStringToDate(dateString) : Date {
-    return moment(dateString, "DD-MM").toDate();
+  changeDate(date: Date): void {
+    this.selectedDate = date;
   }
 
-  changeDate(value: string): void {
-    this.currentDate = moment(value).format("DD-MM");
+  displayDate(date: Date): string {
+    if (date) {
+      return moment(date).format('DD.MM');
+    }
+    return '';
   }
 
-  gradeDropdownChanged(event: { element, index }, studentIndex: number, gradeIndex: number) : void {
+  gradeDropdownChanged(event: { element, index }, studentIndex: number, gradeIndex: number): void {
     this.students[studentIndex].addedGrades[gradeIndex] = event.element;
   }
 
-  addGradeForStudent(event: any, studentIndex: number) : void {
-     event.stopPropagation();
+  addGradeForStudent(event: any, studentIndex: number): void {
+    event.stopPropagation();
 
-     this.hasModifiedData = true;
-     this.students[studentIndex].addedGrades.push(10);
+    this.hasModifiedData = true;
+    this.students[studentIndex].addedGrades.push(10);
   }
 
-  removeGradeForStudent(event: any, studentIndex: number, gradeIndex: number) : void {
+  removeGradeForStudent(event: any, studentIndex: number, gradeIndex: number): void {
     event.stopPropagation();
 
     this.students[studentIndex].addedGrades.splice(gradeIndex, 1);
   }
 
-   @HostListener("window:beforeunload")
-   canDeactivate(): boolean {
+  @HostListener('window:beforeunload')
+  canDeactivate(): boolean {
     if (this.hasModifiedData) {
       if (confirm('Doriti sa continuati? Datele introduse vor fi pierdute.')) {
         return true;

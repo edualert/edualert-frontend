@@ -1,11 +1,11 @@
-import {Component, OnInit, ViewChild, ElementRef, Injector} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
-import {AccountService} from '../../services/account.service';
-import {LocalStorageService} from '../../services/local-storage.service';
-import {AuthService} from '../../services/auth.service';
-import {SchoolNamesService} from '../../services/school-names.service';
-import {getLoginPageRoute} from '../../shared/utils';
-import {IdName} from '../../models/id-name';
+import { Component, OnInit, ViewChild, ElementRef, Injector } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { AccountService } from '../../services/account.service';
+import { LocalStorageService } from '../../services/local-storage.service';
+import { AuthService } from '../../services/auth.service';
+import { SchoolNamesService } from '../../services/school-names.service';
+import { getLoginPageRoute } from '../../shared/utils';
+import { IdName } from '../../models/id-name';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +14,7 @@ import {IdName} from '../../models/id-name';
 })
 export class LoginComponent implements OnInit {
   readonly schoolNamesService: SchoolNamesService;
-  
+
   schools: IdName[];
   selectedSchool: IdName;
   schoolId: string | number;
@@ -39,24 +39,26 @@ export class LoginComponent implements OnInit {
     this.accessKeyResetPassword = page.length >= 2 ? page[1] : '';
     this.schoolNamesService = injector.get(SchoolNamesService);
 
-    this.initialiseLoginPage()
+    this.initialiseLoginPage();
   }
 
   initialiseLoginPage() {
     switch (this.page) {
-      case "login-admin":
+      case 'login-admin':
         LocalStorageService.setIsFaculty(false);
         this.page = 'login';
         this.isFaculty = false;
         break;
-      case "login-faculty":
+      case 'login-faculty':
         LocalStorageService.setIsFaculty(true);
         this.page = 'login';
         this.isFaculty = true;
         this.schoolId = LocalStorageService.getSchoolId();
         this.schoolNamesService.getCustomData(false, true).subscribe((response) => {
           this.schools = response;
-          if (this.schools.length > 0) this.handleSchoolChange({element: this.schools[0], index: 0});
+          if (this.schools.length > 0) {
+            this.handleSchoolChange({element: this.schools[0], index: 0});
+          }
 
           if (this.schoolId) {
             this.selectedSchool = this.schools.find(element => element.id.toString() === this.schoolId);
@@ -99,8 +101,7 @@ export class LoginComponent implements OnInit {
     if (this.isFaculty) {
       if (this.schoolId) {
         sent_username = `${this.schoolId}_${this.username}`;
-      }
-      else {
+      } else {
         this.router.navigateByUrl(getLoginPageRoute());
       }
     }
@@ -110,9 +111,9 @@ export class LoginComponent implements OnInit {
     }, (error) => {
       if (error.error.error === 'invalid_grant' || error.error.error === 'invalid_request') {
         this.errorLogin = 'Credențiale incorecte sau cont dezactivat. Contactați un administrator.';
-      } else {{
+      } else {
         this.errorLogin = error.error.errorMessage;
-      }}
+      }
     });
   }
 
@@ -121,35 +122,42 @@ export class LoginComponent implements OnInit {
     this.username = this.username.trim();
     let sent_username = this.username;
 
+    if (!this.username) {
+      this.forgotPasswordError = 'Câmpul este obligatoriu.';
+      this.forgotPasswordSuccess = null;
+      return;
+    }
+
     if (this.isFaculty) {
       if (this.schoolId) {
         sent_username = `${this.schoolId}_${this.username}`;
-      }
-      else {
+      } else {
         this.router.navigateByUrl(getLoginPageRoute());
       }
     }
     this.authService.forgotPassword(sent_username).subscribe((response: any) => {
-      this.forgotPasswordSuccess = 'Un email pentru resetarea parolei a fost trimis!';
-      this.forgotPasswordError = null;
+        this.forgotPasswordSuccess = 'Un email pentru resetarea parolei a fost trimis!';
+        this.forgotPasswordError = null;
       },
       (error) => {
-      this.forgotPasswordError = error.error.message;
-      this.forgotPasswordSuccess = null;
-    });
+        this.forgotPasswordError = error.error.message;
+        this.forgotPasswordSuccess = null;
+      });
   }
 
   saveNewPassword(event): void {
     event.preventDefault();
-    if (!this.isResetPasswordFormValid()) { return }
+    if (!this.isResetPasswordFormValid()) {
+      return;
+    }
     this.authService.resetPassword(this.accessKeyResetPassword, this.password).subscribe((response) => {
       this.router.navigateByUrl(getLoginPageRoute());
     }, (error1) => {
-      this.forgotPasswordError = error1.error.message
+      this.resetPasswordError = error1.error.message;
     });
   }
 
-  isResetPasswordFormValid() : boolean {
+  isResetPasswordFormValid(): boolean {
     if (!this.password && !this.repeatPassword) {
       this.resetPasswordError = 'Aceste câmpuri sunt obligatori.';
       this.errorLogin = ' ';
@@ -202,11 +210,12 @@ export class LoginComponent implements OnInit {
   switchToLogin(event): void {
     this.username = '';
     this.password = '';
-    this.forgotPasswordError = '';
+    this.errorLogin = '';
     this.forgotPasswordSuccess = null;
     this.forgotPasswordError = null;
+    this.resetPasswordError = null;
     event.preventDefault();
-    this.router.navigateByUrl(this.isFaculty ? '/login-faculty' : '/login-admin');
+    this.router.navigateByUrl(getLoginPageRoute());
   }
 
   handleSchoolChange(entry: { element, index }): void {

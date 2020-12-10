@@ -1,4 +1,4 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {AccountService} from '../../../services/account.service';
 import {Account} from '../../../models/account';
 import {userRoles} from '../../../models/user-roles';
@@ -50,6 +50,9 @@ export class EditMyAccountComponent implements OnInit {
       this.newPassword[key] = event;
       this.passwordFormShouldBeSubmitted = !(event === '' && !this.newPassword['current_password'] && !this.newPassword['new_password'] && !this.newPassword['repeatNewPassword']);
     }
+    if (event === '') {
+      this.account[key] = null;
+    }
   }
 
   @HostListener('window:beforeunload')
@@ -71,8 +74,8 @@ export class EditMyAccountComponent implements OnInit {
       }
     }
     this.errors.full_name = InputValidator.isRequiredError(this.account.full_name);
-    this.errors.email = InputValidator.isRequiredError(this.account.email) || InputValidator.validateEmail(this.account.email);
-    this.errors.phone_number = InputValidator.isRequiredError(this.account.phone_number) || InputValidator.validatePhoneNumber(this.account.phone_number);
+    this.errors.email = this.account?.use_phone_as_username ? '' : InputValidator.isRequiredError(this.account.email) || InputValidator.validateEmail(this.account.email);
+    this.errors.phone_number = this.account?.use_phone_as_username ? InputValidator.isRequiredError(this.account.phone_number) || InputValidator.validatePhoneNumber(this.account.phone_number) : '';
     this.errors.personal_id_number = this.account.user_role === 'STUDENT' ? InputValidator.validatePersonalID(this.account.personal_id_number) : null;
 
     Object.keys(this.errors).forEach(key => {

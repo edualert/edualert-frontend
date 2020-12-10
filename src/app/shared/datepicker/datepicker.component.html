@@ -51,6 +51,7 @@
       <div class="matrix">
         <div *ngFor="let row of rawDaysMatrix" class="row">
           <div *ngFor="let dayCell of row;" class="cell day-cell"
+               [class.disabled-date]="dayCell.isDisabled"
                [class.today]="inView.year === today.year && inView.month === today.month && dayCell.dayNumber === today.day && dayCell.month === 'current'"
                [class.selected]="selectedDate.year === inView.year && selectedDate.month === inView.month && selectedDate.day === dayCell.dayNumber && dayCell.month === 'current'"
                [class.not-current-month]="dayCell.month !== 'current'"

@@ -1,19 +1,18 @@
-import {Component, HostListener, Injector, Input, ViewChild} from '@angular/core';
-import {SchoolCategory, SchoolDetail, SchoolDetailRequiredFields} from '../../../models/school-details';
-import {findIndex} from 'lodash';
-import {HttpClient} from '@angular/common/http';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-import {SchoolCategoriesService} from '../../../services/school-categories.service';
-import {SchoolNamesService} from '../../../services/school-names.service';
-import {SchoolPrincipalsService} from '../../../services/school-principals.service';
-import {SchoolPrincipal} from '../../../models/school-principal';
-import {SchoolProfilesService} from '../../../services/school-profiles-service';
-import {IdName} from '../../../models/id-name';
-import {IdText} from '../../../models/id-text';
-import {InputValidator} from '../../../services/field-validation';
-import {AddUserModalComponent} from '../../manage-users/add-user-modal/add-user-modal.component';
-import {UserDetailsBase} from '../../../models/user-details-base';
-import {IdFullname} from '../../../models/id-fullname';
+import { Component, HostListener, Injector, Input, ViewChild } from '@angular/core';
+import { SchoolCategory, SchoolDetail, SchoolDetailRequiredFields } from '../../../models/school-details';
+import { findIndex } from 'lodash';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { SchoolCategoriesService } from '../../../services/school-categories.service';
+import { SchoolNamesService } from '../../../services/school-names.service';
+import { SchoolPrincipalsService } from '../../../services/school-principals.service';
+import { SchoolPrincipal } from '../../../models/school-principal';
+import { SchoolProfilesService } from '../../../services/school-profiles-service';
+import { IdName } from '../../../models/id-name';
+import { IdText } from '../../../models/id-text';
+import { InputValidator } from '../../../services/field-validation';
+import { AddUserModalComponent } from '../../manage-users/add-user-modal/add-user-modal.component';
+import { UserDetailsBase } from '../../../models/user-details-base';
 
 class DropdownData {
   districts: IdText[];
@@ -52,7 +51,7 @@ export class AddEditSchoolsComponent {
     // districts: Object.keys(districts).map((districtName) => ({id: districtName, text: capitalizeString(districtName, [' ', '-'])})),
     // cities: cities,
     districts: [{id: 'cluj', text: 'Cluj'}],
-    cities: [{'id':'cluj-napoca','text':'Cluj-Napoca','district':'cluj'}],
+    cities: [{'id': 'cluj-napoca', 'text': 'Cluj-Napoca', 'district': 'cluj'}],
     categories: [],
     names: [],
     academic_profiles: [],
@@ -71,7 +70,7 @@ export class AddEditSchoolsComponent {
     this.schoolCategoriesService.getData(false).subscribe((response) => {
       this.data.categories = response;
     });
-    this.schoolNamesService.getDataUregisteredSchools(true).subscribe((response) => {
+    this.schoolNamesService.getDataUnregisteredSchools(true).subscribe((response) => {
       this.data.names = response;
     });
     this.schoolPrincipalsService.getData(true).subscribe((response) => {
@@ -93,21 +92,23 @@ export class AddEditSchoolsComponent {
         // this.data.cities = object?.element?.id ? cities.filter(city => city.district === object?.element?.id) : cities;
         this.schoolDetails.city = null;
         this.schoolDetails.district = object?.element?.text;
-        this.schoolDetailsError.district = '';
         this.inputChanged();
         break;
       case 'city':
         // Commented for MVP (just 'Cluj' district and 'Cluj-Napoca' city should be available)
         // this.schoolDetails.city = cities[findIndex(cities, {id: object?.element?.id})].text;
         this.schoolDetails.city = 'Cluj-Napoca';
-        this.schoolDetailsError.city = '';
         this.inputChanged();
         break;
       case 'categories':
         this.schoolDetails.categories = [];
+        this.schoolDetailsError.categories = '';
         if (object.length > 0) {
           for (const selection of object) {
             this.schoolDetails.categories.push(this.data.categories[findIndex(this.data.categories, {id: selection?.element?.id})]);
+          }
+          if (object.length > 1) {
+            this.checkObject({categories: object}, this.schoolDetailsError);
           }
           this.schoolDetailsError['academic_profile'] = '';
           this.getAcademicProfiles();
@@ -115,7 +116,6 @@ export class AddEditSchoolsComponent {
           this.data.academic_profiles = [];
           this.schoolDetails.academic_profile = null;
         }
-        this.schoolDetailsError.categories = '';
         this.inputChanged();
         break;
       case 'school_principal':
@@ -151,6 +151,23 @@ export class AddEditSchoolsComponent {
 
   checkObject(dict, requiredFields): void {
     this.hasUnfilledFields = false;
+
+    if (Object.keys(dict).length === 1 && Object.keys(dict)[0] === 'categories') {
+
+      if (dict.categories.length > 1) {
+        const formattedSelection = dict.categories.map(category => category.element);
+        formattedSelection.forEach((category: any, index: number) => {
+          const tempList = formattedSelection;
+          tempList.splice(index, 1);
+          const hasDuplicate = findIndex(tempList, {category_level: category.category_level});
+          if (hasDuplicate !== -1) {
+            this.schoolDetailsError.categories = 'Nu se pot adăuga mai multe categorii de același nivel.';
+          }
+        });
+      }
+      return;
+    }
+
     Object.keys(requiredFields)
       .forEach(key => {
         if (key === 'academic_profile' && this.data.academic_profiles.length === 0) {
@@ -160,7 +177,7 @@ export class AddEditSchoolsComponent {
         if (requiredFields.hasOwnProperty(key) && data) {
           if (typeof data !== 'object') {
             let inputError = InputValidator.isRequiredError(data);
-            if ( inputError ) {
+            if (inputError) {
               requiredFields[key] = inputError ? inputError : '';
               this.hasUnfilledFields = true;
             }

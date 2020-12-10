@@ -105,7 +105,7 @@
       </div>
     </div>
     <div class="detail-element-container">
-      <div class="label-container fixed-width">Număr de telefon*</div>
+      <div class="label-container fixed-width">Număr de telefon{{account?.use_phone_as_username ? '*' : ''}}</div>
       <div class="value-container full-width">
         <app-input-new
           (inputChange)="addInput($event, 'phone_number')"
@@ -115,7 +115,7 @@
       </div>
     </div>
     <div class="detail-element-container">
-      <div class="label-container fixed-width">Adresă de email*</div>
+      <div class="label-container fixed-width">Adresă de email{{account?.use_phone_as_username ? '' : '*'}}</div>
       <div class="value-container full-width">
         <app-input-new
           (inputChange)="addInput($event, 'email')"

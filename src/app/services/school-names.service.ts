@@ -12,7 +12,7 @@ export class SchoolNamesService extends OneTimeDataGetter {
     super(injector);
   }
 
-  getDataUregisteredSchools(forceRequest?: boolean, requestPath?: string): Observable<IdName[]> {
+  getDataUnregisteredSchools(forceRequest?: boolean, requestPath?: string): Observable<IdName[]> {
     return super.getData(forceRequest, 'unregistered-school-units/')
       .pipe(map((response: any[]) => (response).map(
         name => new IdName(name)
@@ -31,7 +31,9 @@ export class SchoolNamesService extends OneTimeDataGetter {
       .pipe(map((response: any[]) => (response).map(
         entry => {
           if (includeCityInName) {
-            entry.name += ` ${entry.city}`;
+            if (!entry.name.includes(entry.city)) {
+              entry.name += ` ${entry.city}`;
+            }
           }
           return new IdName(entry);
         }

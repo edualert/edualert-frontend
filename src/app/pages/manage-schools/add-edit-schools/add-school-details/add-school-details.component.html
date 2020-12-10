@@ -22,11 +22,11 @@
         <div class="label">Județ*</div>
         <div class="dropdown-parent value">
           <app-dropdown
-            [error]="schoolDetailsError?.district"
             [list]="data.districts"
             [displayedProperty]="'text'"
             (elementHasBeenSelected)="handleInputChange($event, 'district')"
-            [appliedElement]="schoolDetails?.district"
+            [appliedElement]="schoolDetails?.district ? schoolDetails.district : 'Cluj'"
+            [isDisabled]="true"
             [withSearch]="true"
             [required]="true"
           ></app-dropdown>
@@ -36,12 +36,11 @@
         <div class="label">Localitate*</div>
         <div class="dropdown-parent value">
           <app-dropdown
-            [error]="schoolDetailsError?.city"
-            [componentDisabled]="!schoolDetails?.district"
             [list]="data.cities"
             [displayedProperty]="'text'"
             (elementHasBeenSelected)="handleInputChange($event, 'city')"
-            [appliedElement]="schoolDetails?.district && schoolDetails?.city ? schoolDetails.city : ''"
+            [appliedElement]="schoolDetails?.district && schoolDetails?.city ? schoolDetails.city : 'Cluj-Napoca'"
+            [isDisabled]="true"
             [withSearch]="true"
             [required]="true"
           ></app-dropdown>
@@ -74,7 +73,6 @@
             [displayedProperty]="'name'"
             (selectionHasBeenConfirmed)="handleInputChange($event, 'categories')"
             [appliedSelection]="schoolDetails?.categories"
-            [validationKey]="'category_level'"
             [placeholder]="'-'"
             [required]="true"
           ></app-dropdown>

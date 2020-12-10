@@ -83,6 +83,7 @@
           [appliedElement]="getUserRole(userDetails?.user_role)"
           [errorMessage]="errors?.user_role"
           [error]="errors?.user_role"
+          [isDisabled]="disableRoleDropdown"
         ></app-dropdown>
       </div>
     </div>
@@ -166,6 +167,7 @@
             color="#0077DB"
             #datepicker
             [dateValue]="convertStringToDate(userDetails?.birth_date)"
+            [maxDateValue]="yesterday"
             (dateChanged)="changeCreatedDate($event)"
           >
           </app-datepicker>

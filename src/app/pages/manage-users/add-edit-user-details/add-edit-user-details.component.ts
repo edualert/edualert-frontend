@@ -8,21 +8,21 @@ import {
   EventEmitter,
   OnDestroy, ViewChild, ChangeDetectorRef,
 } from '@angular/core';
-import {UserDetails} from '../../../models/user-details';
-import {AccountService} from '../../../services/account.service';
-import {HttpClient} from '@angular/common/http';
-import {findIndex} from 'lodash';
+import { UserDetails } from '../../../models/user-details';
+import { AccountService } from '../../../services/account.service';
+import { HttpClient } from '@angular/common/http';
+import { findIndex } from 'lodash';
 import _ from 'lodash';
-import {get} from 'lodash';
-import {IdText} from '../../../models/id-text';
-import {IdName} from '../../../models/id-name';
-import {IdFullname} from '../../../models/id-fullname';
-import {userRolesArray} from '../../../models/user-roles';
-import {convertStringToDate} from '../../../shared/calendar/calendar-utils';
-import {DatepickerComponent} from '../../../shared/datepicker/datepicker.component';
+import { get } from 'lodash';
+import { IdText } from '../../../models/id-text';
+import { IdName } from '../../../models/id-name';
+import { IdFullname } from '../../../models/id-fullname';
+import { userRolesArray } from '../../../models/user-roles';
+import { convertStringToDate } from '../../../shared/calendar/calendar-utils';
+import { DatepickerComponent } from '../../../shared/datepicker/datepicker.component';
 import * as moment from 'moment';
-import {InputValidator} from '../../../services/field-validation';
-import {UserDetailsBase} from '../../../models/user-details-base';
+import { InputValidator } from '../../../services/field-validation';
+import { UserDetailsBase } from '../../../models/user-details-base';
 
 @Component({
   selector: 'app-add-edit-user-details',
@@ -64,6 +64,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   convertStringToDate = convertStringToDate;
 
   passwordShouldBeSubmitted: boolean = false;
+  disableRoleDropdown: boolean = false;
 
   // Extra Data
   parents: IdFullname[];
@@ -76,17 +77,25 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   loadingSubjects: boolean = false;
 
   get = get;
+  yesterday: Date;
 
   constructor(
     accountService: AccountService,
     private httpClient: HttpClient,
     private changeDetector: ChangeDetectorRef,
   ) {
+    this.setYesterday();
+
     accountService.account.subscribe((account: UserDetails) => {
       this.account = account;
       this.addUserRoleDropdownData(account.user_role);
     });
     this.emitFormData = this.emitFormData.bind(this);
+  }
+
+  private setYesterday() {
+    this.yesterday = new Date();
+    this.yesterday.setDate(this.yesterday.getDate() - 1);
   }
 
   addUserRoleDropdownData(userRole: string) {
@@ -114,7 +123,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
 
   isObjectValid(userDetails: UserDetails): boolean {
     let resp = true;
-    if ( this.passwordShouldBeSubmitted ) {
+    if (this.passwordShouldBeSubmitted) {
       if (this.isEdit && (this.newPassword['new_password'] || this.newPassword['repeatNewPassword'])) {
         Object.keys(this.newPassword).forEach(key => {
           this.errors[key] = InputValidator.isRequiredError(this.newPassword[key]);
@@ -158,15 +167,17 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       this.errors.phone_number = 'Format incorect. Scrieți minim 10, maxim 20 caractere: doar cifre și semnul \'+\' sunt acceptate, fără spații.';
       resp = false;
     }
-    if (this.userDetails.educator_phone_number && (!/\+?[0-9]+/.test(userDetails.educator_phone_number) || !(userDetails.educator_phone_number?.length >= 10 && userDetails.educator_phone_number?.length <= 20))) {
+    if (this.userDetails.educator_phone_number && (!/\+?[0-9]+/.test(userDetails.educator_phone_number) ||
+      !(userDetails.educator_phone_number?.length >= 10 && userDetails.educator_phone_number?.length <= 20))) {
       this.errors.educator_phone_number = 'Format incorect. Scrieți minim 10, maxim 20 caractere: doar cifre și semnul \'+\' sunt acceptate, fără spații.';
       resp = false;
     }
     if (this.userDetails.educator_phone_number === '') {
       this.userDetails.educator_phone_number = null;
     }
-    if (this.userDetails.personal_id_number && !/^[1-9]\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])(0[1-9]|[1-4]\d|5[0-2]|99)(00[1-9]|0[1-9]\d|[1-9]\d\d)\d$/.test(userDetails.personal_id_number)) {
-      this.errors.personal_id_number = 'Format incorect. Scrieți 13 caractere, fără spații.';
+    const personalIDError = InputValidator.validatePersonalID(this.userDetails.personal_id_number);
+    if (this.userDetails.personal_id_number && personalIDError !== null) {
+      this.errors.personal_id_number = personalIDError;
       resp = false;
     }
     if (userDetails.user_role === 'STUDENT' && userDetails.educator_full_name) {
@@ -196,7 +207,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
     this.hasModifiedDataOutput.emit(true);
     if (['new_password', 'repeatNewPassword', 'password'].includes(key)) {
       this.passwordShouldBeSubmitted = true;
-      if ( this.isEdit ) {
+      if (this.isEdit) {
         this.newPassword[key] = event;
         if (!this.newPassword.repeatNewPassword && !this.newPassword.new_password) {
           this.passwordShouldBeSubmitted = false;
@@ -219,7 +230,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
     switch (key) {
       case 'userRole': {
         this.userDetails.user_role = object.element?.id;
-        if ( object.element ) {
+        if (object.element) {
           this.hasModifiedDataOutput.emit(true);
           this.updateUserDetails(this.userDetails);
           this.userDetails.taught_subjects = [];
@@ -381,7 +392,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   }
 
   updateUserDetails(userDetails: UserDetails): void {
-    this.userDetails = userDetails;
+    this.userDetails = new UserDetails(userDetails);
     this.availableFields = AddEditUserDetailsComponent.constructAvailableFields(userDetails?.user_role);
     if (!this.userDetails || !this.userDetails.user_role) {
       return;
@@ -390,13 +401,19 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
     this.getLabelsFromBackend();
     this.getParentsFromBackend();
     this.changeDetector.detectChanges();
+
+    if (this.userDetails.last_online !== null ||
+      (this.userDetails.user_role === 'TEACHER' && this.userDetails.assigned_study_classes.length !== 0) ||
+      (this.userDetails.user_role === 'STUDENT' && this.userDetails.class_id)) {
+      this.disableRoleDropdown = true;
+    }
   }
 
   emitFormData(): void {
     this.errors = {};
     const isValid = this.isObjectValid(this.userDetails);
     if (isValid) {
-      if ( this.passwordShouldBeSubmitted ) {
+      if (this.passwordShouldBeSubmitted) {
         this.userDetails.password = this.isEdit ? this.newPassword.new_password : this.userDetails.password;
       } else {
         delete this.userDetails.password;

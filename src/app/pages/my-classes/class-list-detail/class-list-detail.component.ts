@@ -1,19 +1,19 @@
-import {Component, Injector, OnInit, ViewChild} from '@angular/core';
-import {Params} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {ClassDetails, Subject} from '../../../models/class-details';
-import {AddGradesBulkModalComponent} from '../../../catalog/modals/add-grades-bulk-modal/add-grades-bulk-modal.component';
-import {AddAbsencesBulkModalComponent} from '../../../catalog/modals/add-absences-bulk-modal/add-absences-bulk-modal.component';
-import {SettingsModalComponent} from '../../../catalog/settings-modal/settings-modal.component';
-import {findIndex} from 'lodash';
-import {IdName} from '../../../models/id-name';
-import {forkJoin, Observable} from 'rxjs';
+import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
+import { Params } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { ClassDetails, Subject } from '../../../models/class-details';
+import { AddGradesBulkModalComponent } from '../../../catalog/modals/add-grades-bulk-modal/add-grades-bulk-modal.component';
+import { AddAbsencesBulkModalComponent } from '../../../catalog/modals/add-absences-bulk-modal/add-absences-bulk-modal.component';
+import { SettingsModalComponent } from '../../../catalog/settings-modal/settings-modal.component';
+import { findIndex } from 'lodash';
+import { IdName } from '../../../models/id-name';
+import { Observable } from 'rxjs';
 import * as moment from 'moment';
-import {cloneDeep} from 'lodash';
-import {ListPage} from '../../list-page/list-page';
-import {IdText} from '../../../models/id-text';
+import { cloneDeep } from 'lodash';
+import { ListPage } from '../../list-page/list-page';
+import { IdText } from '../../../models/id-text';
 import BaseRequestParameters from '../../list-page/base-request-parameters';
-import {ViewUserModalComponent} from '../../manage-users/view-user-modal/view-user-modal.component';
+import { ViewUserModalComponent } from '../../manage-users/view-user-modal/view-user-modal.component';
 
 class RequestParams extends BaseRequestParameters {
   readonly ordering: string;
@@ -56,6 +56,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
   @ViewChild('addAbsencesBulkModal', {static: false}) addAbsencesBulkModal: AddAbsencesBulkModalComponent;
   @ViewChild('settingsModal', {static: false}) settingsModal: SettingsModalComponent;
   @ViewChild('appViewUserModal', {'static': false}) appViewUserModal: ViewUserModalComponent;
+  @ViewChild('scrollContainer', {static: false}) scrollContainerRef: ElementRef;
 
   readonly defaultSortingCriterion: IdText = new IdText({id: 'student_name', text: 'Nume'});
   urlParams = {'ordering': this.defaultSortingCriterion?.id};
@@ -65,7 +66,8 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
   classMasterTab: string | number = -1;
 
   constructor(injector: Injector,
-              private httpClient: HttpClient) {
+              private httpClient: HttpClient,
+              private elementRef: ElementRef) {
     super(injector);
     this.sendClassMessageList = this.sendClassMessageList.bind(this);
 
@@ -81,7 +83,9 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
         this.customUrlParamsChange(urlParams);
       }
       this.activeUrlParams = urlParams;
-      this.fetchClassData(urlParams);
+      if (this.classId) {
+        this.fetchClassData(urlParams);
+      }
     });
   }
 
@@ -98,8 +102,21 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
     this.fetchCatalogData(this.activeTab.id, this.urlParams);
   }
 
-  private fetchClassData(urlParams?): void {
+  private setScrollableContainerHeight(): void {
+    setTimeout(() => {
+      const scrollableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
+      const toolbar = this.elementRef.nativeElement.getElementsByClassName('toolbar')[0];
+      const pageHeaderHeight = document.getElementById('page-header').clientHeight;
 
+      if (scrollableContainer.clientHeight > (document.body.clientHeight - pageHeaderHeight - toolbar.clientHeight)) {
+        const scrollableContainerComputedHeight = scrollableContainer.clientHeight - toolbar.clientHeight;
+        scrollableContainer.style.height = scrollableContainerComputedHeight + 'px';
+        document.body.style.overflow = 'unset';
+      }
+    }, 400);
+  }
+
+  private fetchClassData(urlParams?): void {
     // Get the overall class details
     this.httpClient.get(`own-study-classes/${this.classId}/`).subscribe((response: ClassDetails) => {
 
@@ -124,6 +141,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
       } else {
         this.fetchCatalogData(this.classDetails.taught_subjects[0].id, urlParams);
       }
+      this.setScrollableContainerHeight();
     });
   }
 
@@ -151,6 +169,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
     const dataPath = 'own-study-classes/' + this.classId + '/pupils/';
     this.httpClient.get(dataPath, {params: httpParams}).subscribe((response: any[]) => {
       this.ownPupilsData = response;
+      this.pupilCount = response.length;
     });
   }
 
@@ -161,6 +180,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
       this.subjectsDataList[subjectId] = {studentListData: response, subjectId};
       this.tableData = response;
       this.pupilCount = response.length;
+      this.setScrollableContainerHeight();
     });
   }
 
@@ -169,6 +189,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
 
     if (parseInt(tab, 10) === this.classPupilsTab && this.classDetails?.is_class_master) {
       this.tableData = this.ownPupilsData;
+      this.setScrollableContainerHeight();
     } else {
       this.setDataForTab(tab);
     }
@@ -180,6 +201,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
     if (this.subjectsDataList[id]) {
       this.tableData = this.subjectsDataList[id].studentListData;
       this.pupilCount = this.tableData.length;
+      this.setScrollableContainerHeight();
     } else {
       // Else, fetch it from the server and set it;
       this.fetchCatalogData(id, this.activeUrlParams);

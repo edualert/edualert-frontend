@@ -31,12 +31,13 @@ export class UserDetails extends UserDetailsBase {
   current_password?: string;
   new_password?: string;
   children?: IdFullname[];
+  assigned_study_classes?: any[];
 
   constructor(value?: any) {
     super(value);
     if (value) {
       this.username = get(value, 'username', null);
-      this.username = get(value, 'full_name', null);
+      this.full_name = get(value, 'full_name', null);
       this.user_role = get(value, 'user_role', null);
       this.use_phone_as_username = get(value, 'use_phone_as_username', null);
       this.is_active = get(value, 'is_active', null);
@@ -45,8 +46,8 @@ export class UserDetails extends UserDetailsBase {
       this.taught_subjects = get(value, 'taught_subjects', null) ? get(value, 'taught_subjects').map(taught_subjects => new IdName(taught_subjects)) : [];
       this.parents = get(value, 'parents', null) ? get(value, 'parents').map(parents => new UserDetailsBase(parents)) : [];
       this.children = get(value, 'children', null) ? get(value, 'children', null).map( child => new IdFullname(child)) : [];
-      this.class_grade = value.hasOwnProperty('student_in_class') ? get(value, 'student_in_class.class_grade', null) : get(value, 'class_grade');
-      this.class_letter = value.hasOwnProperty('student_in_class') ? get(value, 'student_in_class.class_letter', null) : get(value, 'class_letter');
+      this.class_grade = value.hasOwnProperty('student_in_class') ? get(value, 'student_in_class.class_grade', null) : get(value, 'class_grade', null);
+      this.class_letter = value.hasOwnProperty('student_in_class') ? get(value, 'student_in_class.class_letter', null) : get(value, 'class_letter', null);
       this.class_id = get(value, 'student_in_class.id', null) ;
       this.personal_id_number = get(value, 'personal_id_number', null);
       this.birth_date = get(value, 'birth_date', null);
@@ -58,6 +59,7 @@ export class UserDetails extends UserDetailsBase {
       this.sms_notifications_enabled = get(value, 'sms_notifications_enabled', null);
       this.push_notifications_enabled = get(value, 'push_notifications_enabled', null);
       this.password = get(value, 'password', null);
+      this.assigned_study_classes = get(value, 'assigned_study_classes', []);
     }
   }
 }

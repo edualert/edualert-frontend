@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {AccountService} from '../services/account.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {NavBarSize} from '../models/types';
@@ -23,7 +23,9 @@ export class NavBarComponent {
   children: IdFullname[];
   selectedChild: IdFullname;
 
-  constructor(private accountService: AccountService, private router: Router, private authService: AuthService) {
+  constructor(private accountService: AccountService,
+              private router: Router,
+              private authService: AuthService) {
     router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         this.isOpen = false;
@@ -43,7 +45,7 @@ export class NavBarComponent {
   }
 
   selectChild(child: {element: IdFullname, index: number}) {
-      this.accountService.selectChild(child.element.id as number);
+    this.accountService.selectChild(child.element.id as number);
   }
 
   toggleIsOpen(event) {

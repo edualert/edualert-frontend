@@ -48,7 +48,7 @@
     </div>
 
     <div class="detail-element-container" *ngIf="this.hasCoreSubject">
-      <div class="label-container fixed-large-column bold">Disciplină de specialitate{{page === 'add' ? '*' : ''}}</div>
+      <div class="label-container fixed-large-column bold">Disciplină de specialitate*</div>
       <div class="value-container">
         <app-dropdown [list]="coreSubjectsList"
                       [displayedProperty]="'subject_name'"
@@ -94,20 +94,20 @@
                *ngFor="let subject of academicProgram?.subjects[yearGradeActiveTab]?.optional_subjects; let $i = index;">
 
             <div class="detail-element-container">
-              <div class="label-container">Nume</div>
+              <div class="label-container">Nume*</div>
               <div class="value-container">
                 <app-input-new [value]="subject.subject_name"
                                [error]="errors[yearGradeActiveTab]?.optional_subjects[$i]?.subject_name"
                                (inputChange)="subjectNameChange($i, $event)"></app-input-new>
               </div>
-              <ng-container *ngIf="academicProgram.subjects[yearGradeActiveTab]?.optional_subjects?.length > 1">
+              <ng-container>
                 <div class="vertical-line"></div>
                 <div class="delete-button text-button dark-text" (click)="deleteSubject($i)">Șterge</div>
               </ng-container>
             </div>
 
             <div class="detail-element-container">
-              <div class="label-container">Număr de ore săptămână</div>
+              <div class="label-container">Număr de ore săptămână*</div>
               <div class="value-container small">
                 <app-dropdown
                   [list]="totalOptionalClasses"

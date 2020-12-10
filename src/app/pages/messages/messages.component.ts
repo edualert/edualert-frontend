@@ -36,11 +36,14 @@ export class MessagesComponent extends ListPage {
   totalCount: number = 0;
   accountRole: string;
   accountService: AccountService;
+  today: Date;
 
   convertStringToDate = convertStringToDate;
 
   constructor(injector: Injector) {
     super(injector);
+    this.today = new Date();
+
     this.initFilters({
       createdDate: null
     });

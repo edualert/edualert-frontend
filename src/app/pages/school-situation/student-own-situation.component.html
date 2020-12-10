@@ -23,10 +23,12 @@
           <div class="value bold blue-text link-content" *ngIf="rip">...</div>
         </div>
       </div>
-      <div class="student-labels-container">
-        <div class="label" *ngFor="let label of student?.labels">
-          {{label.text}}
-        </div>
+    </div>
+    <div id="labels-container">
+      <div class="tags">
+        <div class="label">Etichete</div>
+        <div class="tag" *ngFor="let tag of student?.labels">{{tag.text}}</div>
+        <span class="no-tags" *ngIf="!student?.labels || !student?.labels.length">-</span>
       </div>
     </div>
     <div id="header-filter">

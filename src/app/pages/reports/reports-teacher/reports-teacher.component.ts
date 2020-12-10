@@ -251,13 +251,13 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       name: 'Nume clasă',
       dataKey: 'class_full_name',
       columnType: 'class-name',
-      minWidth: '150'
+      minWidth: '150px'
     }));
     this.studyClassesAtRiskTable.push(new Column({
       name: 'Număr elevi cu risc',
       dataKey: 'students_at_risk_count',
       columnType: 'numbered-cell',
-      minWidth: '110'
+      minWidth: '110px'
     }));
   }
 
@@ -270,32 +270,32 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       link: (value: StudentAtRisk) => {
         return value.student.id;
       },
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Medie generală anuală',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.avg_final ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '130'
+      minWidth: '130px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Număr corigențe pe an',
       dataKey: 'second_examinations_count',
       columnType: 'numbered-cell',
-      minWidth: '150'
+      minWidth: '150px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Număr total absențe nemotivate pe an',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual'
         : 'unfounded_abs_count_sem1',
       columnType: 'numbered-cell',
-      minWidth: '240'
+      minWidth: '240px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Notă anuală purtare',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
       columnType: 'graded-cell',
-      minWidth: '115'
+      minWidth: '115px'
     }));
   }
 
@@ -308,13 +308,13 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       link: (value: StudentAtRisk) => {
         return value.student.id;
       },
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.ownStudentsAverageTable.push(new Column({
       name: 'Medie generală anuală',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.avg_final ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '120'
+      minWidth: '120px'
     }));
   }
 
@@ -327,14 +327,14 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       link: (value: StudentAtRisk) => {
         return value.student.id;
       },
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.ownStudentsAbsencesTable.push(new Column({
       name: 'Număr total absențe nemotivate pe an',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual'
         : 'unfounded_abs_count_sem1',
       columnType: 'numbered-cell',
-      minWidth: '240'
+      minWidth: '240px'
     }));
   }
 
@@ -347,13 +347,13 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       link: (value: StudentAtRisk) => {
         return value.student.id;
       },
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.ownStudentsBehaviourGradeTable.push(new Column({
       name: 'Notă anuală purtare',
       dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
       columnType: 'graded-cell',
-      minWidth: '115'
+      minWidth: '115px'
     }));
   }
 
@@ -366,7 +366,7 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       link: (value: InactiveParent) => {
         return value.id;
       },
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.inactiveParentsTable.push(new Column({
       name: 'Nume elev',
@@ -375,7 +375,7 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       link: (value: InactiveParent) => {
         return value.children[0].id;
       },
-      minWidth: '200'
+      minWidth: '200px'
     }));
     this.inactiveParentsTable.push(new Column({
       name: 'Ultima dată activ',
@@ -383,7 +383,7 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
       displayFormatter: (value: string) => {
         return moment(value, 'DD-MM-YYYYThh:mm:ss').format('DD.MM.YYYY').toString();
       },
-      minWidth: '100'
+      minWidth: '100px'
     }));
   }
 

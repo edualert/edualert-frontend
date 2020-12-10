@@ -22,7 +22,7 @@
 
     <!-- SEMESTER AVERAGE ----------------------------------  -->
     <div *ngSwitchCase="'sem-avg'" class="semester-average-cell">
-      <div *ngIf="!data" class="list-element">-</div>
+      <div *ngIf="!data" class="bg-element">-</div>
       <div *ngIf="data" class="bg-element {{data >= pivotPoint ? 'blue-text' : 'red-text'}}">
         {{data}}
       </div>
@@ -46,7 +46,7 @@
 
     <!-- ABSENCES TOTAL ----------------------------------  -->
     <div *ngSwitchCase="'absences-count'" class="absences-count-cell total">
-      <div *ngIf="!data" class="list-element">-</div>
+      <div *ngIf="!data" class="bg-element big-bg-element">0</div>
       <div *ngIf="data" class="bg-element big-bg-element" [class.red-text]="data > exceptionRule ? true : data >= pivotPoint">{{data}}</div>
     </div>
 
@@ -136,25 +136,32 @@
 
     <!-- LABELS ----------------------------------  -->
     <div *ngSwitchCase="'labels'" class="labels-observations">
-      <div class="tags">
-        <div class="tag" *ngIf="(data && data[0]) || (data?.labels && data?.labels[0])">{{data[0]?.text ? data[0]?.text : data?.labels[0]?.text }}</div>
-        <div *ngIf="(!data || !data[0]) && !data?.labels?.length">-</div>
-        <ng-container *ngIf="(data && data?.length > 1) || (data?.labels && data?.labels.length > 1)">
-          <div class="bold plus-tags">+{{data?.length ? data?.length - 1 : data?.labels.length - 1}}</div>
+      <div class="tags" *ngIf="isStudentsSituation">
+        <div class="tag" *ngIf="data && data[0]">
+          {{data[0].text.length > 15 ? data[0].text.slice(0, 15) + '...' : data[0].text}}
+        </div>
+        <div *ngIf="!data || !data[0]">-</div>
+        <ng-container *ngIf="data && data?.length > 1">
+          <div class="bold plus-tags">+{{data?.length - 1}}</div>
           <div class="tags-overlay" *ngIf="data?.length">
             <div class="tag" *ngFor="let tag of data">{{tag.text}}</div>
           </div>
-          <div class="tags-overlay" *ngIf="data?.labels?.length">
-            <div class="tag" *ngFor="let tag of data?.labels">{{tag.text}}</div>
-          </div>
         </ng-container>
       </div>
-      <div class="button observations" (click)="openObservationsModal(studentData, studentCatalogID, tableLayoutAsIdentifier)">
+
+      <div class="button labels" *ngIf="!isStudentsSituation"
+           (click)="openLabelsModal(studentData)">
+        <div>Etichete</div>
+        <div class="label-count">{{studentData?.labels?.length}}</div>
+      </div>
+      <div class="button observations" *ngIf="!isStudentsSituation"
+           (click)="openObservationsModal(studentData, studentCatalogID, tableLayoutAsIdentifier)">
         Observații
       </div>
     </div>
   </ng-container>
 </div>
 
-<app-pupil-remarks-modal #viewRemarksLabelsModal></app-pupil-remarks-modal>
+<app-pupil-labels-modal #viewLabelsModal></app-pupil-labels-modal>
+<app-pupil-remarks-modal #viewRemarksModal></app-pupil-remarks-modal>
 <app-view-user-modal #userDetailsModal></app-view-user-modal>
