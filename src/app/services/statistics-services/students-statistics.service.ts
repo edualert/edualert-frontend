@@ -10,7 +10,7 @@ import {InactiveParent} from '../../models/parent';
 @Injectable({
   providedIn: 'root'
 })
-export class StudentsAtRiskService extends OneTimeDataGetter {
+export class SchoolStudentsAtRiskService extends OneTimeDataGetter {
 
   constructor(injector: Injector) {
     super(injector);
@@ -28,6 +28,21 @@ export class StudentsAtRiskService extends OneTimeDataGetter {
         return studentsAtRiskList;
       }));
   }
+
+    downloadStudentsAtRiskCSVReport() {
+        super.getCsv('school-students-at-risk/export/', {responseType: 'blob'})
+            .subscribe(blob => {
+                // create dynamic anchor with file content and click it to trigger browser's flow for file saving
+                const url = window.URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+                anchor.href = url;
+                anchor.download = "raport-top-elevi-cu-risc.csv";
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+                window.URL.revokeObjectURL(url);
+            });
+    }
 
 }
 
