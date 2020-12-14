@@ -7,7 +7,7 @@ import {AcademicProfileAtRisk} from '../../../models/academic-program-details';
 import {InactiveTeacher} from '../../../models/teacher';
 import {StudentAtRisk} from '../../../models/student-data-list';
 import {AcademicProgramsAtRiskService} from '../../../services/statistics-services/academic-programs-statistics.service';
-import {StudentsAtRiskService, StudentsRiskEvolutionService} from '../../../services/statistics-services/students-statistics.service';
+import {SchoolStudentsAtRiskService, StudentsRiskEvolutionService} from '../../../services/statistics-services/students-statistics.service';
 import {InactiveTeachersService} from '../../../services/statistics-services/inactive-teachers.service';
 import {Column} from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
@@ -48,7 +48,7 @@ export class HomePrincipalComponent implements OnInit {
   displayChart: boolean;
 
   constructor(private studyClassesAtRiskService: StudyClassesAtRiskService,
-              private studentsAtRiskService: StudentsAtRiskService,
+              private studentsAtRiskService: SchoolStudentsAtRiskService,
               private studentsEvolutionService: StudentsRiskEvolutionService,
               private academicProgramsAtRiskService: AcademicProgramsAtRiskService,
               private inactiveTeachersService: InactiveTeachersService) {

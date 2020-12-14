@@ -3,7 +3,9 @@
     <h1 id="header-title">Rapoarte</h1>
     <div id="header-top-right-container">
       <div class="button-container">
-        <div class="text-button export_button disabled">Exportă rapoarte</div>
+        <div class="text-button export_button {{ activeTabBottom === 'students_at_risk' ? '' : 'disabled' }}"
+             (click)="downloadCSVReport()"
+        >Exportă rapoarte</div>
       </div>
     </div>
     <div id="tabs-container">

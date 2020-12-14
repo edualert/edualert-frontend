@@ -30,4 +30,8 @@ export class OneTimeDataGetter {
       return this.data;
     }
   }
+
+  getCsv(requestPath: string, args?): Observable<any> {
+    return this.httpClient.get(requestPath, args);
+  }
 }

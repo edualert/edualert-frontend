@@ -4,7 +4,7 @@ import {
   StudyClassesAtRiskService, StudyClassesAverageService
 } from '../../../services/statistics-services/school-statistics.service';
 import {
-  StudentsAtRiskService,
+  SchoolStudentsAtRiskService,
   StudentsRiskEvolutionService
 } from '../../../services/statistics-services/students-statistics.service';
 import {
@@ -144,7 +144,7 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
   constructor(private studyClassesAtRiskService: StudyClassesAtRiskService,
               private studyClassesAbsencesService: StudyClassesAbsencesService,
               private studyClassesAverageService: StudyClassesAverageService,
-              private studentsAtRiskService: StudentsAtRiskService,
+              private schoolStudentsAtRiskService: SchoolStudentsAtRiskService,
               private studentsEvolutionService: StudentsRiskEvolutionService,
               private academicProgramsAtRiskService: AcademicProgramsAtRiskService,
               private academicProgramsAbsencesService: AcademicProgramsAbsencesService,
@@ -207,7 +207,7 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
         generate: this.generateSchoolStudyClassesAbsencesTable
       },
       'students-students_at_risk': {
-        request: this.studentsAtRiskService.getData(false),
+        request: this.schoolStudentsAtRiskService.getData(false),
         generate: this.generateSchoolStudentsAtRiskTable
       },
       'students-students_risk_evolution': {
@@ -449,6 +449,14 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
 
   emitUserIdForModal(event) {
     this.changeUserIdForModal.next(event);
+  }
+
+  downloadCSVReport() {
+    switch (this.activeTabBottom) {
+      case 'students_at_risk':
+        this.schoolStudentsAtRiskService.downloadStudentsAtRiskCSVReport();
+        break;
+    }
   }
 
   @HostListener('window:resize', ['$event'])
