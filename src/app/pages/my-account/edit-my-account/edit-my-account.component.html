@@ -58,6 +58,7 @@
             value="{{newPassword.current_password}}"
             [error]="errors?.current_password"
             inputType="password"
+            [maxLength]="128"
             #currentPass
           ></app-input-new>
           <div class="show-password-button" [class.is-showing]="currentPass.inputType === 'text'" (click)="showHidePassword(currentPass)"></div>
@@ -71,6 +72,7 @@
             value="{{newPassword.new_password}}"
             [error]="errors?.new_password"
             inputType="password"
+            [maxLength]="128"
             #newPass
           ></app-input-new>
           <div class="show-password-button" [class.is-showing]="newPass.inputType === 'text'" (click)="showHidePassword(newPass)"></div>
@@ -84,6 +86,7 @@
             value="{{newPassword.repeatNewPassword}}"
             [error]="errors?.repeatNewPassword"
             inputType="password"
+            [maxLength]="128"
             #repeatPass
           ></app-input-new>
           <div class="show-password-button" [class.is-showing]="repeatPass.inputType === 'text'" (click)="showHidePassword(repeatPass)"></div>
@@ -101,6 +104,7 @@
           (inputChange)="addInput($event, 'full_name')"
           [error]="errors?.full_name"
           [value]="account?.full_name"
+          [maxLength]="180"
         ></app-input-new>
       </div>
     </div>
@@ -111,6 +115,7 @@
           (inputChange)="addInput($event, 'phone_number')"
           [error]="errors?.phone_number"
           [value]="account?.phone_number"
+          [maxLength]="20"
         ></app-input-new>
       </div>
     </div>
@@ -121,6 +126,7 @@
           (inputChange)="addInput($event, 'email')"
           [error]="errors?.email"
           [value]="account?.email"
+          [maxLength]="150"
         ></app-input-new>
       </div>
     </div>
@@ -131,6 +137,7 @@
           (inputChange)="addInput($event, 'address')"
           [error]="errors?.address"
           [value]="account?.address"
+          [maxLength]="100"
         ></app-input-new>
       </div>
     </div>
@@ -141,17 +148,31 @@
           (inputChange)="addInput($event, 'personal_id_number')"
           [error]="errors?.personal_id_number"
           [value]="account?.personal_id_number"
+          [maxLength]="13"
         ></app-input-new>
       </div>
     </div>
     <div class="detail-element-container" *ngIf="this.availableFields?.birth_date">
       <div class="label-container fixed-width">Dată naștere</div>
-      <div class="value-container full-width">
-        <app-input-new
-          (inputChange)="addInput($event, 'birth_date')"
-          [error]="errors?.birth_date"
-          [value]="account?.birth_date"
-        ></app-input-new>
+
+      <div class="datepicker-input-wrapper value-container">
+        <input
+          class="date custom-date"
+          (click)="openPicker()"
+          readOnly
+          placeholder="Dată"
+          value="{{ account?.birth_date ||  '' }}"
+        >
+        <div class="datepicker-container">
+          <app-datepicker
+            color="#0077DB"
+            #datepicker
+            [dateValue]="account?.birth_date"
+            [maxDateValue]="yesterday"
+            (dateChanged)="changeDate($event)"
+          >
+          </app-datepicker>
+        </div>
       </div>
     </div>
     <hr class="margin-list">

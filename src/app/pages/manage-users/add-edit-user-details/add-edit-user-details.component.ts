@@ -191,12 +191,13 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       this.errors.birth_date = 'Data de naștere trebuie să fie în trecut!';
       resp = false;
     }
+
+    if (!this.errors.parents) {
+      this.errors.parentFrontValidation = {};
+    }
     userDetails.parents?.forEach((el, index) => {
       if (!el.id) {
-        if (!this.errors.parents) {
-          this.errors.parentFrontValidation = {};
-        }
-        this.errors.parentFrontValidation[index] = 'Acest camp nu poate ramane necompletat!';
+        this.errors.parentFrontValidation[index] = 'Acest câmp este obligatoriu.';
         resp = false;
       }
     });
@@ -248,8 +249,18 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
         if (!object.element) {
           return;
         }
+
+        if (this.userDetails?.parents[index].id !== undefined) {
+          this.parents.push(this.userDetails.parents[index]);
+        }
         this.userDetails.parents[index] = object.element;
-        this.errors.parentFrontValidation[index] = null;
+
+        if (this.errors?.parentFrontValidation && this.errors?.parentFrontValidation[index]) {
+          this.errors.parentFrontValidation[index] = null;
+        }
+
+        this.parents.splice(findIndex(this.parents, {id: object.element.id}), 1);
+
         break;
       }
     }
@@ -317,8 +328,39 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   }
 
   deleteParent(index: number): void {
+    const newErrors = {};
+    let newErrorsModified: boolean = false;
+
     this.hasModifiedDataOutput.emit(true);
+    this.parents.push(this.userDetails.parents[index]);
     this.userDetails.parents.splice(index, 1);
+
+    if (this.errors.parentFrontValidation) {
+      const errorsCount = _.size(this.errors.parentFrontValidation);
+
+      // keep the errors messages and keys before the deleted dropdown
+      for (let i = 0; i < index; i ++) {
+        if (this.errors.parentFrontValidation[i]) {
+          newErrors[i] = this.errors.parentFrontValidation[i];
+        }
+      }
+
+      // update the key of the error messages after the deleted dropdown
+      for (let i = parseInt(Object.keys(this.errors.parentFrontValidation)[errorsCount - 1], 10); i > index; i--) {
+        if (this.errors.parentFrontValidation[i]) {
+          newErrors[i - 1] = this.errors.parentFrontValidation[i];
+          newErrorsModified = true;
+        }
+      }
+
+      // if the deleted dropdown has error => delete also its error
+      if (this.errors.parentFrontValidation[index]) {
+        delete this.errors.parentFrontValidation[index];
+      }
+      if (newErrorsModified) {
+        this.errors.parentFrontValidation = newErrors;
+      }
+    }
   }
 
   isLabelChecked(id: number): boolean {
@@ -365,7 +407,22 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       return;
     }
     this.httpClient.get<IdFullname[]>(this.pathParent).subscribe(response => {
+      const newArray = [];
+
       this.parents = response.map(parents => new IdFullname(parents));
+
+      for (const backEndParent of this.parents) {
+        let match = false;
+        for (const studentParent of this.userDetails.parents) {
+          if (backEndParent.id === studentParent.id) {
+            match = true;
+          }
+        }
+        if (!match) {
+          newArray.push(backEndParent);
+        }
+      }
+      this.parents = newArray;
     });
   }
 

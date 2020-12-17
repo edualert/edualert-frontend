@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {AccountService} from '../../../services/account.service';
 import {Account} from '../../../models/account';
 import {userRoles} from '../../../models/user-roles';
@@ -6,6 +6,8 @@ import {get} from 'lodash';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {InputValidator} from '../../../services/field-validation';
+import {DatepickerComponent} from '../../../shared/datepicker/datepicker.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-edit-my-account',
@@ -14,6 +16,7 @@ import {InputValidator} from '../../../services/field-validation';
 })
 export class EditMyAccountComponent implements OnInit {
 
+  @ViewChild('datepicker', {'static': false}) datepicker: DatepickerComponent;
   account: Account;
   availableFields: {
     class?: string;
@@ -38,6 +41,7 @@ export class EditMyAccountComponent implements OnInit {
   hasModifiedData: boolean = false;
   hasUnsavedData: boolean = true;
   hasUnfilledFields: boolean = false;
+  yesterday: Date;
 
   addInput(event: string | number | boolean, key: string, formType = 'account'): void {
     this.hasModifiedData = true;
@@ -142,6 +146,7 @@ export class EditMyAccountComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.setYesterday();
     this.accountService.account.subscribe(user => {
       this.account = new Account(user);
       this.availableFields = EditMyAccountComponent.constructAvailableFields(this.account?.user_role);
@@ -154,6 +159,20 @@ export class EditMyAccountComponent implements OnInit {
 
   hideErrorToast() {
     this.displayErrorToast = false;
+  }
+
+  openPicker() {
+    this.datepicker.open();
+  }
+
+  changeDate(event: Date) {
+    this.hasModifiedData = true;
+    this.account.birth_date = moment(event).format('DD-MM-YYYY');
+  }
+
+  private setYesterday() {
+    this.yesterday = new Date();
+    this.yesterday.setDate(this.yesterday.getDate() - 1);
   }
 
 }

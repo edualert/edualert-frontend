@@ -1,16 +1,17 @@
-import {AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
   InactiveInstitutionsService, InstitutionsAbsencesService,
   InstitutionsAtRiskService, InstitutionsAverageService,
   InstitutionsEnrollmentStatisticsService
 } from '../../../services/statistics-services/institutions-statistics.service';
-import {StudentsRiskEvolutionService} from '../../../services/statistics-services/students-statistics.service';
-import {Column} from '../../../shared/reports-table/reports-table.component';
+import { StudentsRiskEvolutionService } from '../../../services/statistics-services/students-statistics.service';
+import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
-import {orsTabs} from '../reports-tabs';
-import {formatChartData, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
-import {findIndex} from 'lodash';
-import {ScrollableList} from '../../list-page/scrollable-list';
+import { orsTabs } from '../reports-tabs';
+import { formatChartData, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { findIndex } from 'lodash';
+import { ScrollableList } from '../../list-page/scrollable-list';
+import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 
 
 @Component({
@@ -77,12 +78,17 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
     institutions_absences: 0
   };
   page_size: number = 50;
+  small_page_size: number = 10;
 
   activeTab: orsTabs = 'enrolled_institutions';
   month_enrolled_institutions: number = moment().month();
-  month_students_risk_evolution: number =  moment().month();
+  month_students_risk_evolution: number = moment().month();
   loading: boolean = false;
   tableIsGenerated: boolean = false;
+
+  isSecondSemesterEnded: boolean = false;
+
+  private readonly chartTitleHeight = 40;
 
   changeMonth(event: string, type: string): void {
     if (type === 'enrolled_institutions') {
@@ -96,7 +102,9 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   changeTab(event: orsTabs): void {
     this.activeTab = event;
     if (!['students_risk_evolution', 'enrolled_institutions'].includes(event)) {
-      if (this.data[this.activeTab] === null) { this.currentPages[this.activeTab] = 1; }
+      if (this.data[this.activeTab] === null) {
+        this.currentPages[this.activeTab] = 1;
+      }
       this.page = this.currentPages[this.activeTab];
     }
     this.changeUrlParamsEvent.next({top_tab: this.activeTab});
@@ -109,7 +117,8 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
               private studentsRiskEvolutionService: StudentsRiskEvolutionService,
               private inactiveInstitutionsService: InactiveInstitutionsService,
               private institutionsAverageService: InstitutionsAverageService,
-              private institutionsAbsencesService: InstitutionsAbsencesService) {
+              private institutionsAbsencesService: InstitutionsAbsencesService,
+              private currentAcademicYearService: CurrentAcademicYearService) {
     super();
     this.generateInstitutionsAtRiskTable = this.generateInstitutionsAtRiskTable.bind(this);
     this.generateInactiveInstitutionsTable = this.generateInactiveInstitutionsTable.bind(this);
@@ -137,8 +146,8 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
     this.tableIsGenerated = !(this.data[id] === null);
     if (this.data[id] === null) {
       this.tableIsGenerated = false;
-      document.body.removeEventListener('scroll',  this.scrollHandle);
-      document.body.addEventListener('scroll',  this.scrollHandle);
+      document.body.removeEventListener('scroll', this.scrollHandle);
+      document.body.addEventListener('scroll', this.scrollHandle);
     }
 
     const months_enrolled = this.getPreviousCurrentAndNextMonth(this.month_enrolled_institutions);
@@ -155,17 +164,17 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
         getTotalCount: this.institutionsAtRiskService.getTotalCount
       },
       inactive_institutions: {
-        request: this.inactiveInstitutionsService.getData(true, null,  this.page_size, this.page),
+        request: this.inactiveInstitutionsService.getData(true, null, this.page_size, this.page),
         generate: this.generateInactiveInstitutionsTable,
         getTotalCount: this.inactiveInstitutionsService.getTotalCount
       },
       institutions_average: {
-        request: this.institutionsAverageService.getData(true, null, this.page_size, this.page),
+        request: this.institutionsAverageService.getData(true, null, this.small_page_size, this.page),
         generate: this.generateInstitutionsAveragesTable,
         getTotalCount: this.institutionsAverageService.getTotalCount
       },
       institutions_absences: {
-        request: this.institutionsAbsencesService.getData(true, null, this.page_size, this.page),
+        request: this.institutionsAbsencesService.getData(true, null, this.small_page_size, this.page),
         generate: this.generateInstitutionsAbsencesTable,
         getTotalCount: this.institutionsAbsencesService.getTotalCount
       },
@@ -183,7 +192,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
 
     // If we already have data for that id don't make a request
     if (!['students_risk_evolution', 'enrolled_institutions'].includes(id)) {
-      if (this.data[id] !== null && (this.listEnded || this.totalCount === this.data[id].length) ) {
+      if (this.data[id] !== null && (this.listEnded || this.totalCount === this.data[id].length)) {
         return;
       }
     } else {
@@ -302,7 +311,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
     }));
     this.institutionsAveragesTable.push(new Column({
       name: 'Medie anuală instituție de învățământ',
-      dataKey: this.data[this.activeTab][0].avg_annual ? 'avg_annual' : 'avg_sem1',
+      dataKey: this.isSecondSemesterEnded ? 'avg_annual' : 'avg_sem1',
       columnType: 'graded-cell',
       minWidth: '217px',
     }));
@@ -318,7 +327,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
     }));
     this.institutionsAbsencesTable.push(new Column({
       name: 'Număr mediu absențe nemotivate pe elev pe an',
-      dataKey: this.data[this.activeTab][0].unfounded_abs_avg_annual ? 'unfounded_abs_avg_annual' : 'unfounded_abs_avg_sem1',
+      dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_avg_annual' : 'unfounded_abs_avg_sem1',
       columnType: 'numbered-cell',
       minWidth: '275px',
     }));
@@ -327,9 +336,24 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   ngOnInit(): void {
     this.isOnReportsPage = true;
     this.changeUrlParamsEvent.next({top_tab: this.activeTab});
-    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
+    window.setTimeout(() =>
+        this.generalChartView = handleChartWidthHeight(window.innerHeight - this.chartTitleHeight),
+      500);
     this.month_students_risk_evolution = moment().month();
     this.month_enrolled_institutions = moment().month();
+
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+
+      if (now <= moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        ['institutions_at_risk', 'institutions_average', 'institutions_absences'].forEach(reportId => {
+          this.tabs.splice(this.tabs.findIndex(item => item.id === reportId), 1);
+        });
+      } else if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.tabs.splice(this.tabs.findIndex(item => item.id === 'inactive_institutions'), 1);
+        this.isSecondSemesterEnded = true;
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -350,7 +374,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
 
   @HostListener('window:resize', ['$event'])
   resizeChart(event) {
-    this.generalChartView = handleChartWidthHeight(window.innerHeight);
+    this.generalChartView = handleChartWidthHeight(window.innerHeight - this.chartTitleHeight);
   }
 
   ngAfterViewInit(): void {
@@ -358,7 +382,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   }
 
   ngOnDestroy(): void {
-    document.body.removeEventListener('scroll',  this.scrollHandle);
+    document.body.removeEventListener('scroll', this.scrollHandle);
   }
 
 }

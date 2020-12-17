@@ -104,6 +104,13 @@
   margin-left: 10px;
 }
 
+.datepicker-container {
+  width: 400px;
+  top: -300px;
+  position: absolute;
+  z-index: 1;
+}
+
 @media screen and (max-width: $mobile-screen-width-normal){
   .full-width {
     width: 100%!important;

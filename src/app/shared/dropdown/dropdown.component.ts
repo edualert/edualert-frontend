@@ -146,7 +146,8 @@ export class DropdownComponent implements OnDestroy, OnChanges {
       }
     }
 
-    if (e.key === 'Escape' || e.code === 'Escape' || e.keyCode === 27 || e.which === 27) {
+    if (e.key === 'Escape' || e.code === 'Escape' || e.keyCode === 27 || e.which === 27 ||
+        e.key === 'Tab' || e.code === 'Tab' || e.which === 9 || e.keyCode === 9) {
       this.close();
     }
 

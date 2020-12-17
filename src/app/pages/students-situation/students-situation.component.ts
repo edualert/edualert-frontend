@@ -43,6 +43,7 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
   accountRole: string;
   students: PupilStatisticsListOrs[] | PupilStatisticsList[] = [];
   studentsTotalCount: number;
+  tableContainer: HTMLElement;
 
   readonly defaultAcademicYear: IdText = new IdText({id: getCurrentAcademicYear(), text: `${getCurrentAcademicYear()} - ${getCurrentAcademicYear() + 1}`});
 
@@ -142,13 +143,17 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
       this.initialRequestInProgress = false;
       this.requestInProgress = false;
       this.keepOldList = false;
-      setTimeout(() =>
-        (this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0]).addEventListener('scroll', this.scrollHandle),
+      setTimeout(() => {
+          this.tableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
+          this.tableContainer.addEventListener('scroll', this.scrollHandle);
+        },
         500);
     });
   }
 
   changeRequestedAcademicYear(value) {
+    this.page = 1;
+    this.tableContainer.scrollTop = 0;
     this.academicYearToRequest = value?.id;
     this.studyClassAvailableGradesService.getData(true).pipe(catchError(() => of(null)))
       .subscribe(availableClassGrade => {

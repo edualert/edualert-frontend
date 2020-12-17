@@ -1,19 +1,19 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
-import {cloneDeep} from 'lodash';
-import {HttpClient} from '@angular/common/http';
-import {YearGrades} from '../../../models/year-grades';
-import {AcademicProgramDetails} from '../../../models/academic-program-details';
-import {IdName} from '../../../models/id-name';
-import {AcademicYearGrade} from '../../../models/academic-year-grade';
-import {AcademicSubject} from '../../../models/academic-subject';
-import {IdText} from '../../../models/id-text';
-import {compareSubjectsName, getCurrentAcademicYear} from '../../../shared/utils';
-import {SchoolDetailsService} from '../../../services/school-details.service';
-import {findIndex} from 'lodash';
-import {AcademicYearCalendarService} from '../../../services/academic-year-calendar.service';
-import {CanComponentDeactivate} from '../../../services/can-leave-guard.service';
-import {Subscription} from 'rxjs';
+import { Component, HostListener, OnDestroy } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { cloneDeep } from 'lodash';
+import { HttpClient } from '@angular/common/http';
+import { YearGrades } from '../../../models/year-grades';
+import { AcademicProgramDetails } from '../../../models/academic-program-details';
+import { IdName } from '../../../models/id-name';
+import { AcademicYearGrade } from '../../../models/academic-year-grade';
+import { AcademicSubject } from '../../../models/academic-subject';
+import { IdText } from '../../../models/id-text';
+import { compareSubjectsName, getCurrentAcademicYear } from '../../../shared/utils';
+import { SchoolDetailsService } from '../../../services/school-details.service';
+import { findIndex } from 'lodash';
+import { AcademicYearCalendarService } from '../../../services/academic-year-calendar.service';
+import { CanComponentDeactivate } from '../../../services/can-leave-guard.service';
+import { Subscription } from 'rxjs';
 
 class SubjectError {
   subject_name?: string;
@@ -154,7 +154,6 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
         this.getCoreSubject();
         this.listAllMandatorySubjects(this.academicProgram);
       }
-      this.setTotalNumberOfOptionalClasses(this.yearGradeActiveTab);
       this.requestInProgress = false;
     });
   }
@@ -162,6 +161,23 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
   private initialiseTabs(subjects: { [yearGrade: string]: AcademicYearGrade }): void {
     this.yearGradesTabList = Object.keys(subjects).map((yearGrade: string) => ({id: yearGrade, name: YearGrades[yearGrade]}));
     this.yearGradeActiveTab = this.yearGradesTabList[0].id.toString();
+    this.setSubjectsTabsList();
+  }
+
+  private setSubjectsTabsList() {
+    if (this.yearGradeActiveTab in this.academicProgram.optional_subjects_weekly_hours &&
+      this.academicProgram.optional_subjects_weekly_hours[this.yearGradeActiveTab] > 0) {
+      this.subjectsTabsList = [
+        {name: 'Materii obligatorii', id: 'mandatory_subjects'},
+        {name: 'Materii opționale', id: 'optional_subjects'}
+      ];
+      this.setTotalNumberOfOptionalClasses();
+    } else {
+      this.subjectsTabsList = [
+        {name: 'Materii obligatorii', id: 'mandatory_subjects'},
+      ];
+      this.subjectActiveTab = 'mandatory_subjects';
+    }
   }
 
   private getCoreSubject() {
@@ -200,7 +216,6 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
     // If already has subjects, it means we've already requested backend for this program: Skip the request
     if (this.unregisteredAcademicPrograms[unregisteredIndex].hasOwnProperty('subjects')) {
       this.setNewProgram(this.unregisteredAcademicPrograms[unregisteredIndex]);
-      this.setTotalNumberOfOptionalClasses(this.yearGradeActiveTab);
       if (this.hasCoreSubject) {
         this.listAllMandatorySubjects(this.academicProgram);
       }
@@ -210,7 +225,6 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
         this.unregisteredAcademicPrograms[unregisteredIndex].subjects = this.convertToAcademicYearGrade(resp.subjects);
         this.unregisteredAcademicPrograms[unregisteredIndex].optional_subjects_weekly_hours = resp.optional_subjects_weekly_hours;
         this.setNewProgram(this.unregisteredAcademicPrograms[unregisteredIndex]);
-        this.setTotalNumberOfOptionalClasses(this.yearGradeActiveTab);
         if (this.hasCoreSubject) {
           this.listAllMandatorySubjects(this.academicProgram);
         }
@@ -231,8 +245,8 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
     return optionalSubjects[selectedProgram].weekly_hours_count;
   }
 
-  setTotalNumberOfOptionalClasses(tabClicked: string) {
-    this.totalOptionalClasses = [...Array(this.academicProgram.optional_subjects_weekly_hours[tabClicked] + 1).keys()];
+  private setTotalNumberOfOptionalClasses() {
+    this.totalOptionalClasses = [...Array(this.academicProgram.optional_subjects_weekly_hours[this.yearGradeActiveTab] + 1).keys()];
     this.totalOptionalClasses.shift();
   }
 
@@ -269,7 +283,7 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
 
   onYearGradeTabClicked(tabClicked: string) {
     this.yearGradeActiveTab = tabClicked;
-    this.setTotalNumberOfOptionalClasses(tabClicked);
+    this.setSubjectsTabsList();
   }
 
   subjectNameChange(index: number, value: string): void {
@@ -296,7 +310,6 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
     this.errors[this.yearGradeActiveTab].optional_subjects.push({});
     this.inputChanged();
   }
-
 
   submit(): void {
     this.hasUnsavedData = false;
@@ -403,7 +416,7 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
       this.isErrorOnOtherTab();
       return;
     }
-    //TODO: Complete the update() once the backend team finds the courage and spirit to implement the PATCH properly
+
     const updatableObject = new UpdatableProgram(this.academicProgram);
     this.httpClient.patch(`academic-programs/${this.academicProgram.id}/`, updatableObject).subscribe((resp) => {
       this.router.navigateByUrl(`manage-class-profiles`);
@@ -411,7 +424,6 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
       this.isErrorOnOtherTab();
     });
   }
-
 
   cancel(): void {
     if (this.page === 'add') {

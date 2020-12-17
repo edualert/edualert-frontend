@@ -16,6 +16,7 @@
   <div class="page-content">
     <ng-container [ngSwitch]="activeTab">
       <ng-container *ngSwitchCase="'enrolled_institutions'">
+        <h1 class="title">Evoluție număr instituții de învățământ înrolate</h1>
         <app-month-picker (dateChanged)="changeMonth($event, 'enrolled_institutions')"></app-month-picker>
         <div class="chart-container">
           <div class="chart-holder" *ngIf="institutionsDisplayChart">
@@ -77,6 +78,7 @@
         </app-reports-table>
       </ng-container>
       <ng-container *ngSwitchCase="'students_risk_evolution'">
+        <h1 class="title">Evolutie număr elevi cu risc</h1>
         <app-month-picker (dateChanged)="changeMonth($event, 'students_risk_evolution')"></app-month-picker>
         <div class="chart-container">
           <div class="chart-holder" *ngIf="studentsDisplayChart">

@@ -11,7 +11,7 @@
         <textarea [(ngModel)]="value"
                   [class.error]="error"
                   name="value" rows="14" cols="77" required
-                  maxlength="501"
+                  maxlength="500"
                   class="remarks-textarea {{ value?.length ? '' : 'grey-text' }}"
                   placeholder="Adaugă observațiile aici" (input)="handleChange($event)">
         </textarea>

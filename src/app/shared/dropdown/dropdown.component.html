@@ -37,7 +37,7 @@
   </div>
 
   <ng-template #searchInput>
-    <ng-container *ngIf="!withMultipleSelection; else withMutipleAndSearch">
+    <ng-container *ngIf="!withMultipleSelection; else withMultipleAndSearch">
       <input class="{{ error ? 'error-input' : ''}}"
              [disabled]="componentDisabled"
              [ngClass]="componentDisabled ? 'disabled' : ''"
@@ -49,7 +49,7 @@
       <div class="error-message" *ngIf="errorMessage !== ''">{{ errorMessage }}</div>
     </ng-container>
 
-    <ng-template #withMutipleAndSearch>
+    <ng-template #withMultipleAndSearch>
       <div *ngIf="isOpen">
         <input class="{{ error ? 'error-input' : ''}}"
                [disabled]="componentDisabled"

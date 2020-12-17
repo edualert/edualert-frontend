@@ -98,7 +98,8 @@
               <div class="value-container">
                 <app-input-new [value]="subject.subject_name"
                                [error]="errors[yearGradeActiveTab]?.optional_subjects[$i]?.subject_name"
-                               (inputChange)="subjectNameChange($i, $event)"></app-input-new>
+                               (inputChange)="subjectNameChange($i, $event)"
+                               [maxLength]="100"></app-input-new>
               </div>
               <ng-container>
                 <div class="vertical-line"></div>

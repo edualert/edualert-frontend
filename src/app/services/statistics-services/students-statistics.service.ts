@@ -6,20 +6,32 @@ import {map} from 'rxjs/operators';
 import {NetworkingListResponse} from '../../models/networking-list-response';
 import {GraphStatistics} from '../../models/graph-statistics';
 import {InactiveParent} from '../../models/parent';
+import {getFileFromBlobResponse} from '../../shared/utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SchoolStudentsAtRiskService extends OneTimeDataGetter {
 
+  totalCount: number;
+
   constructor(injector: Injector) {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<StudentAtRisk[]> {
-    return super.getData(forceRequest, 'school-students-at-risk/')
+  getData(forceRequest: boolean, requestPath?: string, page_size?: number, page?: number): Observable<StudentAtRisk[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `school-students-at-risk/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `school-students-at-risk/?page_size=${page_size}`;
+    } else {
+      path = `school-students-at-risk/`;
+    }
+    return super.getData(forceRequest, path)
       .pipe(map((response: NetworkingListResponse) => {
         const studentsAtRiskList = [];
+        this.totalCount = response.count;
         if (response.count > 0) {
           response.results.forEach(student => {
             studentsAtRiskList.push(new StudentAtRisk(student));
@@ -29,20 +41,13 @@ export class SchoolStudentsAtRiskService extends OneTimeDataGetter {
       }));
   }
 
-    downloadStudentsAtRiskCSVReport() {
-        super.getCsv('school-students-at-risk/export/', {responseType: 'blob'})
-            .subscribe(blob => {
-                // create dynamic anchor with file content and click it to trigger browser's flow for file saving
-                const url = window.URL.createObjectURL(blob);
-                const anchor = document.createElement('a');
-                anchor.href = url;
-                anchor.download = "raport-top-elevi-cu-risc.csv";
-                document.body.appendChild(anchor);
-                anchor.click();
-                anchor.remove();
-                window.URL.revokeObjectURL(url);
-            });
-    }
+  downloadStudentsAtRiskCSVReport() {
+    super.downloadXlsx('school-students-at-risk/export/').subscribe(
+      blobResponse => {
+        getFileFromBlobResponse(blobResponse, 'raport-top-elevi-cu-risc', '.xlsx');
+      }
+    );
+  }
 
 }
 
@@ -174,7 +179,7 @@ export class OwnStudentsRiskEvolutionService extends OneTimeDataGetter {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?:string, classId?: string, monthId?: string): Observable<GraphStatistics[]> {
+  getData(forceRequest: boolean, requestPath?: string, classId?: string, monthId?: string): Observable<GraphStatistics[]> {
     let url: string;
     if (classId && monthId) {
       url = `students-risk-evolution/?school_unit=${classId}&month=${monthId}`;
@@ -183,13 +188,13 @@ export class OwnStudentsRiskEvolutionService extends OneTimeDataGetter {
     } else if (monthId) {
       url = `students-risk-evolution/?month=${monthId}`;
     } else {
-      url = `students-risk-evolution/`
+      url = `students-risk-evolution/`;
     }
     return super.getData(forceRequest, url)
-      .pipe(map( (response: GraphStatistics[]) => {
+      .pipe(map((response: GraphStatistics[]) => {
         const listOfStudentsEvolution = [];
-        if ( response.length > 0 ) {
-          response.forEach( dayOfEvolution => {
+        if (response.length > 0) {
+          response.forEach(dayOfEvolution => {
             listOfStudentsEvolution.push(new GraphStatistics(dayOfEvolution));
           });
         }
@@ -208,13 +213,13 @@ export class StudentsRiskEvolutionService extends OneTimeDataGetter {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string , classId?: string): Observable<GraphStatistics[]> {
+  getData(forceRequest: boolean, requestPath?: string, classId?: string): Observable<GraphStatistics[]> {
     const path = classId ? `students-risk-evolution/?month=${classId}` : `students-risk-evolution/`;
     return super.getData(forceRequest, path)
-      .pipe(map( (response: GraphStatistics[]) => {
+      .pipe(map((response: GraphStatistics[]) => {
         const listOfStudentsEvolution = [];
-        if ( response.length > 0 ) {
-          response.forEach( dayOfEvolution => {
+        if (response.length > 0) {
+          response.forEach(dayOfEvolution => {
             listOfStudentsEvolution.push(new GraphStatistics(dayOfEvolution));
           });
         }

@@ -1,12 +1,12 @@
-import { Component, HostListener, Input, OnInit} from '@angular/core';
-import {UserDetails} from '../../../models/user-details';
-import {InactiveInstitutionsService, InstitutionsAtRiskService, InstitutionsEnrollmentStatisticsService} from '../../../services/statistics-services/institutions-statistics.service';
-import {InactiveInstitution, InstitutionAtRisk} from '../../../models/institution';
-import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
-import {StudentsRiskEvolutionService} from '../../../services/statistics-services/students-statistics.service';
-import {Column} from '../../../shared/reports-table/reports-table.component';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { UserDetails } from '../../../models/user-details';
+import { InactiveInstitutionsService, InstitutionsAtRiskService, InstitutionsEnrollmentStatisticsService } from '../../../services/statistics-services/institutions-statistics.service';
+import { InactiveInstitution, InstitutionAtRisk } from '../../../models/institution';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { StudentsRiskEvolutionService } from '../../../services/statistics-services/students-statistics.service';
+import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
-import {findIndex} from 'lodash';
+import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 
 @Component({
   selector: 'app-home-ors',
@@ -43,14 +43,28 @@ export class HomeOrsComponent implements OnInit {
   studentsRiskChartView: any[];
   studentsRiskDisplayChart: boolean;
 
+  isFirstSemesterEnded: boolean = false;
+  isSecondSemesterEnded: boolean = false;
+
   constructor(private institutionsAtRiskService: InstitutionsAtRiskService,
               private institutionsEnrollmentService: InstitutionsEnrollmentStatisticsService,
               private studentsRiskEvolutionService: StudentsRiskEvolutionService,
-              private inactiveInstitutionsService: InactiveInstitutionsService) {
+              private inactiveInstitutionsService: InactiveInstitutionsService,
+              private currentAcademicYearService: CurrentAcademicYearService) {
     this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
   }
 
   ngOnInit(): void {
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+      if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.isFirstSemesterEnded = true;
+      }
+      if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.isSecondSemesterEnded = true;
+      }
+    });
+
     this.fetchPageData();
     this.institutionsChartView = handleChartWidthHeight();
     this.studentsRiskChartView = handleChartWidthHeight();

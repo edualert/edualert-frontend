@@ -31,7 +31,7 @@ export class OneTimeDataGetter {
     }
   }
 
-  getCsv(requestPath: string, args?): Observable<any> {
-    return this.httpClient.get(requestPath, args);
+  downloadXlsx(requestPath: string) {
+    return this.httpClient.get(requestPath, {responseType: 'blob'});
   }
 }

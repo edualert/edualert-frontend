@@ -64,6 +64,9 @@ export class ScrollableList {
       if (this.isOnReportsPage) {
         this.page += 1;
         this.requestDataFunc(this.activeTab);
+      } else if (this.activeTab === 'students_at_risk') {
+        this.page += 1;
+        this.requestDataFunc('students', this.activeTab);
       } else {
         this.requestedPageCount += 1;
         this.requestDataFunc({...this.activeUrlParams, page: this.requestedPageCount});

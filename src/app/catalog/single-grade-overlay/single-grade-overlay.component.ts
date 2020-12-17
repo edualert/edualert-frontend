@@ -14,6 +14,7 @@ export class SingleGradeOverlayComponent extends OpenCloseable {
   readonly grades = new Array(10).fill(null).map((val, i) => i + 1);
   selectedGrade: number;
   selectedDate: Date;
+  gradeError: boolean = false;
   existingId: number;
   isThesis: boolean;
   today: Date;
@@ -33,7 +34,14 @@ export class SingleGradeOverlayComponent extends OpenCloseable {
   }
 
   open(target?: EventTarget, containerElement?: HTMLElement, existingGrade?: any, isThesis?: boolean) {
+    this.gradeError = false;
     super.open();
+    setTimeout(() => {
+      if (!existingGrade) {
+        const datePickerContainer = document.querySelectorAll(`div.date-container > div.datepicker-container`)[0];
+        datePickerContainer.classList.add('centered-datepicker');
+      }
+    }, 200);
     this.resetData(existingGrade);
     this.setPosition((target as HTMLElement), containerElement);
     this.isThesis = isThesis ? isThesis : null;
@@ -84,6 +92,10 @@ export class SingleGradeOverlayComponent extends OpenCloseable {
   }
 
   saveClick(): void {
-    this.save.emit({selectedGrade: this.selectedGrade, selectedDate: this.selectedDate, id: this.existingId, isThesis: this.isThesis ? this.isThesis : null});
+    if (this.selectedGrade) {
+      this.save.emit({selectedGrade: this.selectedGrade, selectedDate: this.selectedDate, id: this.existingId, isThesis: this.isThesis ? this.isThesis : null});
+    } else {
+      this.gradeError = true;
+    }
   }
 }

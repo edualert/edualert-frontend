@@ -69,12 +69,13 @@
       </div>
     </div>
     <div class="detail-element-container margin-top-small">
-      <div class="label-container fixed-width">Adresă</div>
+      <div class="label-container fixed-width">Adresă*</div>
       <div class="value-container full-width">
         <app-input-new
           (inputChange)="addInput($event, 'address')"
           [error]="schoolDetailsError?.address"
           [value]="schoolDetails?.address"
+          [maxLength]="100"
         ></app-input-new>
       </div>
     </div>
@@ -85,6 +86,7 @@
           (inputChange)="addInput($event, 'phone_number')"
           [error]="schoolDetailsError?.phone_number"
           [value]="schoolDetails?.phone_number"
+          [maxLength]="20"
         ></app-input-new>
       </div>
     </div>
@@ -95,6 +97,7 @@
           (inputChange)="addInput($event, 'email')"
           [error]="schoolDetailsError?.email"
           [value]="schoolDetails?.email"
+          [maxLength]="150"
         ></app-input-new>
       </div>
     </div>
