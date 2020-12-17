@@ -84,13 +84,16 @@
       Adresă de email / număr de telefon
       <input type="text" id="username" name="username" autofocus
              [attr.disabled]="page !== 'login' && page !== 'forgot-password' ? '' : null"
-             [(ngModel)]="username" class="{{ (errorLogin !== '' && errorLogin !== undefined) || forgotPasswordError ? 'error-input' : ''}}">
+             [(ngModel)]="username"
+             class="{{ (errorLogin !== '' && errorLogin !== undefined) || forgotPasswordError ? 'error-input' : ''}}"
+             [maxlength]="150">
     </label>
     <label for="password" [class.hidden]="page !== 'login' && page !== 'reset-password'">
       Parolă
       <input type="password" id="password" name="password"
              [attr.disabled]="page !== 'login' && page !== 'reset-password' ? '' : null"
              [(ngModel)]="password" class="{{ errorLogin !== '' && errorLogin !== undefined ? 'error-input' : ''}}"
+             [maxlength]="128"
               #pass>
       <div class="show-password-button-login" [class.is-showing]="pass.type === 'text'" (click)="showHidePassword(pass)"></div>
     </label>
@@ -100,6 +103,7 @@
       <input type="password" id="repeat-password" name="repeat-password"
              [attr.disabled]="page !== 'reset-password' ? '' : null"
              [(ngModel)]="repeatPassword" class="{{ errorRepeatPassword !== '' && errorRepeatPassword !== undefined ? 'error-input' : ''}}"
+             [maxlength]="128"
               #passRepeat>
       <div class="show-password-button-login" [class.is-showing]="passRepeat.type === 'text'" (click)="showHidePassword(passRepeat)"></div>
     </label>

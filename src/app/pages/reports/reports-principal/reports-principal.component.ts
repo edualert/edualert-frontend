@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, HostListener, Injector, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   StudyClassesAbsencesService,
   StudyClassesAtRiskService, StudyClassesAverageService
@@ -20,13 +20,14 @@ import * as moment from 'moment';
 import {Absences} from '../../../models/institution-statistics';
 import {principalTabsMappingTypes, principalTabs} from '../reports-tabs';
 import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
+import {ScrollableList} from '../../list-page/scrollable-list';
 
 @Component({
   selector: 'app-reports-principal',
   templateUrl: './reports-principal.component.html',
   styleUrls: ['./reports-principal.component.scss', '../reports.component.scss']
 })
-export class ReportsPrincipalComponent implements OnInit, OnChanges {
+export class ReportsPrincipalComponent extends ScrollableList implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Output() changeUrlParamsEvent = new EventEmitter<object>();
   @Output() changeUserIdForModal = new EventEmitter<string | number>();
   @Input() initialQueryParams: string;
@@ -99,6 +100,10 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
   generalChartView: any[];
   displayChart: boolean;
 
+  pageSize: number = 30;
+  tableIsGenerated: boolean = false;
+  initialPageRequested: number;
+
   changeTab(event: principalTabs, type: string): void {
     if (type === 'top') {
       this.activeTabTop = event;
@@ -141,7 +146,8 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
     this.fetchData(this.activeTabTop, this.activeTabBottom);
   }
 
-  constructor(private studyClassesAtRiskService: StudyClassesAtRiskService,
+  constructor(injector: Injector,
+              private studyClassesAtRiskService: StudyClassesAtRiskService,
               private studyClassesAbsencesService: StudyClassesAbsencesService,
               private studyClassesAverageService: StudyClassesAverageService,
               private schoolStudentsAtRiskService: SchoolStudentsAtRiskService,
@@ -150,6 +156,11 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
               private academicProgramsAbsencesService: AcademicProgramsAbsencesService,
               private academicProgramsAverageService: AcademicProgramsAverageService,
               private inactiveTeachersService: InactiveTeachersService) {
+    super();
+    this.scrollHandle = this.scrollHandle.bind(this);
+    this.initialBodyHeight = document.body.getBoundingClientRect().height;
+    this.requestDataFunc = this.fetchData;
+
     this.generateAcademicProfilesAtRiskTable = this.generateAcademicProfilesAtRiskTable.bind(this);
     this.generateAcademicProgramsAveragesTable = this.generateAcademicProgramsAveragesTable.bind(this);
     this.generateAcademicProgramsAbsencesTable = this.generateAcademicProgramsAbsencesTable.bind(this);
@@ -158,6 +169,14 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
     this.generateSchoolStudyClassesAbsencesTable = this.generateSchoolStudyClassesAbsencesTable.bind(this);
     this.generateSchoolStudentsAtRiskTable = this.generateSchoolStudentsAtRiskTable.bind(this);
     this.generateInactiveTeachersTable = this.generateInactiveTeachersTable.bind(this);
+  }
+
+  ngAfterViewInit(): void {
+    document.body.addEventListener('scroll', this.scrollHandle);
+  }
+
+  ngOnDestroy(): void {
+    document.body.removeEventListener('scroll', this.scrollHandle);
   }
 
   getPreviousCurrentAndNextMonth(month: number) {
@@ -170,7 +189,17 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
   }
 
   fetchData(id_top: string, id_bottom: string) {
-    if (this.data[id_top] !== undefined && this.data[id_top][id_bottom] !== null && id_bottom !== 'students_risk_evolution') {
+    this.tableIsGenerated = !(this.data[id_top][id_bottom] === null || this.data[id_top][id_bottom] === undefined);
+    if (this.data[id_top][id_bottom] === null) {
+      this.tableIsGenerated = false;
+      document.body.removeEventListener('scroll', this.scrollHandle);
+      document.body.addEventListener('scroll', this.scrollHandle);
+    }
+
+    if (id_bottom === 'students_at_risk' && this.page === this.initialPageRequested && this.data[id_top][id_bottom] !== null) {
+      return;
+    }
+    if (this.data[id_top] !== undefined && this.data[id_top][id_bottom] !== null && !['students_risk_evolution', 'students_at_risk'].includes(id_bottom)) {
       return;
     }
     if (id_top === 'students' && this.data['students'] !== undefined && this.data['students']['students_risk_evolution'][this.month - 1] && this.data['students']['students_risk_evolution'][this.month]) {
@@ -178,7 +207,7 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.loading = true;
+    this.loading = this.initialRequestInProgress = true;
     const months_students = this.getPreviousCurrentAndNextMonth(this.month);
 
     const requests: { [tab in principalTabsMappingTypes] } = {
@@ -207,7 +236,7 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
         generate: this.generateSchoolStudyClassesAbsencesTable
       },
       'students-students_at_risk': {
-        request: this.schoolStudentsAtRiskService.getData(false),
+        request: this.schoolStudentsAtRiskService.getData(true, null, this.pageSize, this.page),
         generate: this.generateSchoolStudentsAtRiskTable
       },
       'students-students_risk_evolution': {
@@ -244,18 +273,31 @@ export class ReportsPrincipalComponent implements OnInit, OnChanges {
     }
 
     req.request.subscribe((response) => {
-     if (id_bottom === 'study_classes_absences') {
+      if (id_bottom === 'study_classes_absences') {
         this.data[id_top][id_bottom] = response.map(item => new Absences(
           {
             ...item,
             name: `Clasa ${item.class_grade} ${item.class_letter}`
           }));
+      } else if (id_bottom === 'students_at_risk') {
+        if (this.data[id_top][id_bottom] !== null) {
+          response.forEach(student => {
+            this.data[id_top][id_bottom].push(student);
+          });
+        } else {
+          this.data[id_top][id_bottom] = response;
+        }
+        this.totalCount = this.schoolStudentsAtRiskService.totalCount;
+        this.elementCount = this.data[id_top][id_bottom].length;
+        this.activeTab = this.activeTabBottom;
+        this.initialPageRequested = this.page;
       } else {
         this.data[id_top][id_bottom] = response;
       }
-      this.loading = false;
-      if (req.generate) {
+      this.loading = this.initialRequestInProgress = false;
+      if (req.generate && !this.tableIsGenerated) {
         req.generate();
+        this.tableIsGenerated = true;
       }
     });
   }

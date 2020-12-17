@@ -6,6 +6,7 @@
         (inputChange)="addInput($event, 'full_name')"
         [error]="errors?.full_name"
         [value]="userDetails?.full_name"
+        [maxLength]="180"
       ></app-input-new>
     </div>
   </div>
@@ -34,6 +35,7 @@
         value="{{userDetails?.password}}"
         [error]="errors?.password"
         inputType="password"
+        [maxLength]="128"
         #newUserPassword
       ></app-input-new>
       <div class="show-password-button" [class.is-showing]="newUserPassword.inputType === 'text'" (click)="showHidePassword(newUserPassword)"></div>
@@ -51,6 +53,7 @@
           value="{{newPassword.new_password}}"
           [error]="errors?.new_password ? errors?.new_password : (backendErrors.hasOwnProperty('password') ? backendErrors['password'] : '')"
           inputType="password"
+          [maxLength]="128"
           #newPass
         ></app-input-new>
         <div class="show-password-button" [class.is-showing]="newPass.inputType === 'text'" (click)="showHidePassword(newPass)"></div>
@@ -64,6 +67,7 @@
           value="{{newPassword.repeatNewPassword}}"
           [error]="errors?.repeatNewPassword"
           inputType="password"
+          [maxLength]="128"
           #newPassRepeat
         ></app-input-new>
         <div class="show-password-button" [class.is-showing]="newPassRepeat.inputType === 'text'" (click)="showHidePassword(newPassRepeat)"></div>
@@ -116,6 +120,7 @@
         (inputChange)="addInput($event, 'phone_number')"
         [error]="errors?.phone_number || (userDetails?.use_phone_as_username ? errors?.username : null)"
         [value]="userDetails?.phone_number"
+        [maxLength]="20"
       ></app-input-new>
     </div>
   </div>
@@ -126,6 +131,7 @@
         [value]="userDetails?.email"
         (inputChange)="addInput($event, 'email')"
         [error]="errors?.email || (!userDetails?.use_phone_as_username ? errors?.username : null)"
+        [maxLength]="150"
       ></app-input-new>
     </div>
   </div>
@@ -136,6 +142,7 @@
         [value]="userDetails?.address"
         (inputChange)="addInput($event, 'address')"
         [error]="errors?.address"
+        [maxLength]="100"
       ></app-input-new>
     </div>
   </div>
@@ -147,6 +154,7 @@
         [value]="userDetails?.personal_id_number"
         (inputChange)="addInput($event, 'personal_id_number')"
         [error]="errors?.personal_id_number"
+        [maxLength]="13"
       ></app-input-new>
     </div>
   </div>
@@ -199,6 +207,7 @@
               [appliedElement]="parent.full_name"
               [error]="get(errors, 'parentFrontValidation['+ i + ']', false) ? errors.parentFrontValidation[i] : ''"
               [withSearch]="true"
+              [required]="true"
             ></app-dropdown>
           </div>
           <div class="button-container">
@@ -218,14 +227,25 @@
       <div class="label-container fixed-width">Pedagog</div>
     </div>
     <div class="border-left">
-      <app-input label="Nume" type="regular" [value]="userDetails?.educator_full_name"
-                 (inputChange)="addInput($event, 'educator_full_name')">
+      <app-input label="Nume"
+                 type="regular"
+                 [value]="userDetails?.educator_full_name"
+                 (inputChange)="addInput($event, 'educator_full_name')"
+                 [maxLength]="180">
       </app-input>
-      <app-input label="Număr de telefon" type="regular" [value]="userDetails?.educator_phone_number"
-                 [errorMessage]="errors?.educator_phone_number" (inputChange)="addInput($event, 'educator_phone_number')" >
+      <app-input label="Număr de telefon"
+                 type="regular"
+                 [value]="userDetails?.educator_phone_number"
+                 [errorMessage]="errors?.educator_phone_number"
+                 (inputChange)="addInput($event, 'educator_phone_number')"
+                 [maxLength]="20">
       </app-input>
-      <app-input label="Adresă de email" type="regular" [value]="userDetails?.educator_email"
-                 [errorMessage]="errors?.educator_email" (inputChange)="addInput($event, 'educator_email')">
+      <app-input label="Adresă de email"
+                 type="regular"
+                 [value]="userDetails?.educator_email"
+                 [errorMessage]="errors?.educator_email"
+                 (inputChange)="addInput($event, 'educator_email')"
+                 [maxLength]="150">
       </app-input>
     </div>
   </div>

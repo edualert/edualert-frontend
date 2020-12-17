@@ -249,4 +249,5 @@ export class LoginComponent implements OnInit {
   showHidePassword(element) {
     element.type = element.type === 'password' ? 'text' : 'password';
   }
+
 }

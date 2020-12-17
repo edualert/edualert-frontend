@@ -2,6 +2,7 @@ import * as moment from 'moment';
 import {LocalStorageService} from '../services/local-storage.service';
 import {monthDatesAndNames, weekdays} from './constants';
 import {findIndex} from 'lodash';
+import {saveAs} from 'file-saver';
 
 export const academicYearStart = moment(`07.09.${moment().year()}`, 'DD.MM.YYYY');
 export const initialAcademicYear = 2019;
@@ -103,8 +104,6 @@ export function formatChartData(dataArray: any[], tooltipTitle: string, monthOfT
   }];
   const xAxisTicks = [];
 
-  const date = moment(`${moment().year()}-${monthOfTheYear + 1}`).toDate();
-
   const daysInMonth = moment(`${moment().year()}-${monthOfTheYear + 1}`).daysInMonth();
   for (let i = 1; i <= daysInMonth; i++) {
     xAxisTicks.push(i);
@@ -169,4 +168,16 @@ export function compare(a, b, field) {
     }
   }
   return comparison;
+}
+
+// fileExt should be accordingly to the response type
+export function getFileFromBlobResponse(blobResponse: Blob, fileName: string, fileExt: string) {
+  let responseType = '';
+  switch (fileExt) {
+    case '.xlsx':
+      responseType = 'application/vnd.ms-excel';
+  }
+  const blob = new Blob([blobResponse], {type: responseType});
+  const file = new File([blob], fileName + fileExt, {type: responseType});
+  saveAs(file);
 }

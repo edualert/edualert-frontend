@@ -12,7 +12,7 @@ input:not([type="submit"]), textarea {
   transition: box-shadow 0.1s, background-color 0.05s, background-image 0.1s, border-radius 0.1s, filter 0.05s;
 
   &::placeholder {
-    color: $color-text-normal!important;
+    color: $color-text-light;
   }
 
   &:hover {
@@ -38,7 +38,7 @@ input:not([type="submit"]) {
   height: 30px;
 
   &::placeholder {
-    color: $color-text-normal!important;
+    color: $color-text-light;
   }
 
   &.modal-input {

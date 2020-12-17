@@ -11,6 +11,8 @@
           [appliedElement]="selectedGrade"
           (elementHasBeenSelected)="selectGrade($event)"
           [placeholder]="'-'"
+          [errorMessage]="gradeError ? ' ': ''"
+          (click)="gradeError=false"
         ></app-dropdown>
       </div>
       <div class="label">Dată</div>

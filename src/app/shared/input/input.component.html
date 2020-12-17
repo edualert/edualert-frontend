@@ -1,5 +1,9 @@
 <div class="root {{type}}">
   <label class="{{ customLabelClass }}">{{ label }}</label>
-  <input type="{{inputType}}" class="{{ customInputClass }} {{ errorMessage !== '' && errorMessage !== undefined ? 'error-input' : ''}}" (input)="sendValue($event)" [ngModel]="value">
+  <input type="{{inputType}}"
+         class="{{ customInputClass }} {{ errorMessage !== '' && errorMessage !== undefined ? 'error-input' : ''}}"
+         (input)="sendValue($event)"
+         [ngModel]="value"
+         [maxlength]="maxLength">
   <div *ngIf="errorMessage" class="error-message red-text">{{errorMessage}}</div>
 </div>

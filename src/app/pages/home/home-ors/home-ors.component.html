@@ -2,9 +2,6 @@
   <app-header>
     <h1 id="header-title">Acasă</h1>
     <h2 id="header-subtitle">Bine ai revenit, <span class="bold">{{ userDetails?.full_name }}</span>!</h2>
-    <!--<div id="header-top-right-container">-->
-    <!--<button class="action-button">Adauga o unitate noua</button>-->
-    <!--</div>-->
   </app-header>
   <div class="page-content">
     <div class="chart-container">
@@ -51,7 +48,7 @@
       >Mai multe rapoarte</div>
     </div>
 
-    <div class="card-table-container card">
+    <div class="card-table-container card" *ngIf="isFirstSemesterEnded">
       <div class="card-table-header">
         <div class="big-text bold card-title-text">Top instituții de învățământ cu risc</div>
         <div class="text-item link-content blue-text bold more-button arrow-right web"
@@ -68,7 +65,7 @@
       >Mai multe rapoarte</div>
     </div>
 
-    <div class="card-table-container card">
+    <div class="card-table-container card" *ngIf="!isSecondSemesterEnded">
       <div class="card-table-header">
         <div class="big-text bold card-title-text">Top instituții de învățământ inactive</div>
         <div class="text-item link-content blue-text bold more-button arrow-right web"

@@ -15,6 +15,7 @@ export class InputComponent {
   @Input() errorMessage: string;
   @Input() inputType?: string;
   @Input() error: string;
+  @Input() maxLength?: string;
 
   @Output() inputChange: EventEmitter<string> = new EventEmitter<string>();
 

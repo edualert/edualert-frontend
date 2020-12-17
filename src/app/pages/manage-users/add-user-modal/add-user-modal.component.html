@@ -13,6 +13,7 @@
         (inputChange)="nameChange($event)"
         [error]="errors?.full_name"
         [errorMessage]="errors?.full_name"
+        [maxLength]="180"
       ></app-input>
       <div class="mail-phone-switch">
         <div class="label">Nume utilizator*</div>
@@ -29,6 +30,7 @@
                 [value]="email"
                 (inputChange)="addInput($event, 'email')"
                 [error]="errors?.email"
+                [maxLength]="150"
               ></app-input-new>
             </div>
           </div>
@@ -44,6 +46,7 @@
                 [value]="phone"
                 (inputChange)="addInput($event, 'phone_number')"
                 [error]="errors?.phone_number"
+                [maxLength]="20"
               ></app-input-new>
             </div>
           </div>

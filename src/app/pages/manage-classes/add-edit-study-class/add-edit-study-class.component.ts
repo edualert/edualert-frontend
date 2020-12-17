@@ -73,7 +73,7 @@ export class AddEditStudyClassComponent implements OnInit {
               private subjectsListService: SubjectsListService,
               private academicProgramsListService: AcademicProgramsService,
               private studentService: StudentsService,
-              private studyClassAvaliableGradesList: StudyClassAvailableGradesList,
+              private studyClassAvailableGradesList: StudyClassAvailableGradesList,
               private cloneClassService: CloneClassService,
               private academicYearCalendarService: AcademicYearCalendarService,
               private httpClient: HttpClient,
