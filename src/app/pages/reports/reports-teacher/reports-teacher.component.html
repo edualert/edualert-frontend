@@ -6,7 +6,7 @@
         <div class="text-button export_button disabled">Exportă rapoarte</div>
       </div>
     </div>
-    <div id="tabs-container">
+    <div id="tabs-container" *ngIf="!shouldDisplayNoDataMessage">
       <app-tabs
         [tabsList]="tabs_top"
         [activeTab]="activeTabTop"
@@ -18,7 +18,9 @@
     </div>
   </app-header>
   <div class="page-content">
-    <ng-container [ngSwitch]="activeTabTop">
+    <ng-container [ngSwitch]="activeTabTop"
+                  *ngIf="!shouldDisplayNoDataMessage; else noDataMessageView"
+    >
       <ng-container *ngSwitchCase="'my_classes'">
         <ng-container [ngSwitch]="activeTabBottom">
           <ng-container *ngSwitchCase="'study_classes_at_risk'">
@@ -77,7 +79,7 @@
                         </div>
                         <div class="bottom-tooltip more-bottom-tabs">
                           <div class="padded">{{ model[0].name }}</div>
-                          <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                          <div>{{ model[0].weekday }}</div>
                         </div>
                       </div>
                     </div>
@@ -101,3 +103,7 @@
     </ng-container>
   </div>
 </div>
+
+<ng-template #noDataMessageView>
+  <div class="big-text bold padded-top info-card">{{ noDataMessage }}</div>
+</ng-template>

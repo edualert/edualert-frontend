@@ -1,4 +1,9 @@
 <div class="scrollable-container" #scrollContainer>
+  <!--
+    Required for 'position: sticky' to work properly under flexbox for Safari.
+    More info and examples here: https://bugs.webkit.org/show_bug.cgi?id=175029
+   -->
+  <div class="content-wrapper">
 
   <!-- HEADER ROWS -->
   <div class="row header" *ngIf="internalLayout?.headerRow?.length" #tableHeader>
@@ -28,7 +33,7 @@
         <div *ngFor="let layoutCell of internalLayout.dataRow; let colIndex = index;"
              class="cell {{internalLayout.cellWidths[colIndex]}} {{layoutCell.identifier}}">
           <app-table-cell
-            [data]="layoutCell.dataKey === 'avg_annual' ? [dataRow[layoutCell.dataKey], dataRow['avg_after_2nd_examination']] : dataRow[layoutCell.dataKey]"
+            [data]="layoutCell.dataKey === 'avg_annual' && dataRow['avg_after_2nd_examination'] != null ? [dataRow[layoutCell.dataKey], dataRow['avg_after_2nd_examination']] : dataRow[layoutCell.dataKey]"
             [cellType]="layoutCell.type"
             [cellIdentifier]="layoutCell.identifier"
             [isExpandable]="expandableCells && expandableCells[rowIndex] && expandableCells[rowIndex][colIndex]"
@@ -36,10 +41,11 @@
             (onLinkClick)="onLinkClick.emit({cellIdentifier: layoutCell.identifier, dataRow: dataRow})"
             (onExpandCell)="expandCell(rowIndex, colIndex)"
             (onCloseExpand)="closeExpand()"
-            [pivotPoint]="layoutCell.pivotPoint"
+            [pivotPoint]="dataRow[layoutCell.pivotPoint] ? dataRow[layoutCell.pivotPoint] : layoutCell.pivotPoint"
             [exceptionRule]="dataRow[layoutCell.exceptionRuleKey]"
             [studentCatalogID]="dataRow?.id"
             [studentData]="dataRow?.student"
+            [dataRow]="dataRow"
             [tableLayoutAsIdentifier]="tableLayout"
             [activeTabId]="activeTabId"
           ></app-table-cell>
@@ -61,5 +67,7 @@
         ></app-expanded-cell>
       </div>
     </div>
+  </div>
+
   </div>
 </div>

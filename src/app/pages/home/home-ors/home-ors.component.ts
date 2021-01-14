@@ -2,7 +2,7 @@ import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { UserDetails } from '../../../models/user-details';
 import { InactiveInstitutionsService, InstitutionsAtRiskService, InstitutionsEnrollmentStatisticsService } from '../../../services/statistics-services/institutions-statistics.service';
 import { InactiveInstitution, InstitutionAtRisk } from '../../../models/institution';
-import { formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
 import { StudentsRiskEvolutionService } from '../../../services/statistics-services/students-statistics.service';
 import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
@@ -16,7 +16,6 @@ import { CurrentAcademicYearService } from '../../../services/current-academic-y
 export class HomeOrsComponent implements OnInit {
   @Input() userDetails: UserDetails;
   graphSubtitle: string;
-  getDayOfTheWeek = getDayOfTheWeek;
 
   institutionsAtRiskList: InstitutionAtRisk[];
   inactiveInstitutionList: InactiveInstitution[];
@@ -74,23 +73,23 @@ export class HomeOrsComponent implements OnInit {
   fetchPageData(): void {
     this.institutionsAtRiskService.getData(this.forceRequest).subscribe(response => {
       this.institutionsAtRiskList = response;
-      this.generateFirstTableLayout();
+      this.generateInstitutionsAtRiskTableLayout();
     });
     this.inactiveInstitutionsService.getData(this.forceRequest).subscribe(response => {
       this.inactiveInstitutionList = response;
-      this.generateSecondTableLayout();
+      this.generateInactiveInstitutionsTableLayout();
     });
     this.institutionsEnrollmentService.getData(true).subscribe(response => {
       this.displayChart = shouldDisplayChart(response);
-      this.institutionsEnrollmentStatistics = formatChartData(response, 'Institutii', moment().month());
+      this.institutionsEnrollmentStatistics = formatChartData(response, 'Institutii');
     });
     this.studentsRiskEvolutionService.getData(true).subscribe(response => {
       this.studentsRiskDisplayChart = shouldDisplayChart(response);
-      this.studentsRiskEvolutionStatistics = formatChartData(response, 'Elevi', moment().month());
+      this.studentsRiskEvolutionStatistics = formatChartData(response, 'Elevi');
     });
   }
 
-  generateFirstTableLayout(): void {
+  generateInstitutionsAtRiskTableLayout(): void {
     this.institutionsAtRiskTableLayout.push(new Column({
       backgroundColor: '#FFFFFF',
       name: 'Nume institutie',
@@ -106,7 +105,7 @@ export class HomeOrsComponent implements OnInit {
     }));
   }
 
-  generateSecondTableLayout(): void {
+  generateInactiveInstitutionsTableLayout(): void {
     this.inactiveInstitutionsTableLayout.push(new Column({
       backgroundColor: '#FFFFFF',
       name: 'Nume institutie',

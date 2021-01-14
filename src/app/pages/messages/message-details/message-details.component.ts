@@ -1,11 +1,11 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {AccountService} from '../../../services/account.service';
-import {UserDetails} from '../../../models/user-details';
-import {Message, ReceivedMessage, SentMessage} from '../../../models/message';
-import {ActivatedRoute} from '@angular/router';
-import {get} from 'lodash';
-import {HttpClient} from '@angular/common/http';
-import {ViewUserModalComponent} from '../../manage-users/view-user-modal/view-user-modal.component';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AccountService } from '../../../services/account.service';
+import { UserDetails } from '../../../models/user-details';
+import { Message, ReceivedMessage, SentMessage } from '../../../models/message';
+import { ActivatedRoute, Router } from '@angular/router';
+import { get } from 'lodash';
+import { HttpClient } from '@angular/common/http';
+import { ViewUserModalComponent } from '../../manage-users/view-user-modal/view-user-modal.component';
 
 @Component({
   selector: 'app-message-details',
@@ -19,11 +19,10 @@ export class MessageDetailsComponent implements OnInit {
   sendOrReceivedTemplate: 'sent' | 'received' | 'loading' = 'loading';
   @ViewChild('userDetailsModal', {static: false}) userDetailModal: ViewUserModalComponent;
 
-  constructor(
-    private accountService: AccountService,
-    private activatedRoute: ActivatedRoute,
-    private httpClient: HttpClient,
-  ) {
+  constructor(private accountService: AccountService,
+              private router: Router,
+              private activatedRoute: ActivatedRoute,
+              private httpClient: HttpClient) {
   }
 
   openViewUserModal(id: string | number) {
@@ -42,6 +41,10 @@ export class MessageDetailsComponent implements OnInit {
         if (!this.message.is_read) {
           this.markAsRead(this.message.id);
         }
+      }
+    }, error => {
+      if (error.status === 404) {
+        this.router.navigateByUrl('').then();
       }
     });
   }

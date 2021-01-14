@@ -95,7 +95,11 @@
              [(ngModel)]="password" class="{{ errorLogin !== '' && errorLogin !== undefined ? 'error-input' : ''}}"
              [maxlength]="128"
               #pass>
-      <div class="show-password-button-login" [class.is-showing]="pass.type === 'text'" (click)="showHidePassword(pass)"></div>
+      <div class="show-password-button-login"
+           [class.is-showing]="pass.type === 'text'"
+           [class.adjusted-position]="pass.error"
+           (click)="showHidePassword(pass)">
+      </div>
     </label>
     <div *ngIf="errorLogin" class="error-message red-text">{{errorLogin}}</div>
     <label for="repeat-password" [class.hidden]="page !== 'reset-password'">
@@ -105,7 +109,11 @@
              [(ngModel)]="repeatPassword" class="{{ errorRepeatPassword !== '' && errorRepeatPassword !== undefined ? 'error-input' : ''}}"
              [maxlength]="128"
               #passRepeat>
-      <div class="show-password-button-login" [class.is-showing]="passRepeat.type === 'text'" (click)="showHidePassword(passRepeat)"></div>
+      <div class="show-password-button-login"
+           [class.is-showing]="passRepeat.type === 'text'"
+           [class.adjusted-position]="passRepeat.error"
+           (click)="showHidePassword(passRepeat)">
+      </div>
     </label>
     <div *ngIf="errorRepeatPassword" class="error-message red-text">{{errorLogin}}</div>
   </ng-template>

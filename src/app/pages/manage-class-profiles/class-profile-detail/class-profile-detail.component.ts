@@ -51,6 +51,10 @@ export class ClassProfileDetailComponent implements OnInit {
           if (this.academicProgramDetails.core_subject) {
             this.getCoreSubject();
           }
+        }, error => {
+          if (error.status === 404) {
+            this.router.navigateByUrl('').then();
+          }
         });
     });
 

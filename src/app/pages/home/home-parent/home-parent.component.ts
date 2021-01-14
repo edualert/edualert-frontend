@@ -1,24 +1,22 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
-import {UserDetails} from '../../../models/user-details';
-import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
-import {ChildSchoolActivityService, ChildStatisticsService, ChildSubjectsAtRiskService, ChildAbsencesEvolutionService} from '../../../services/statistics-services/child-statistics.service';
-import {ChildSchoolActivity, ChildStatistics, SubjectForChild} from '../../../models/child-statistics';
-import {Column} from '../../../shared/reports-table/reports-table.component';
+import {Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
+import { UserDetails } from '../../../models/user-details';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { ChildSchoolActivityService, ChildStatisticsService, ChildSubjectsAtRiskService, ChildAbsencesEvolutionService } from '../../../services/statistics-services/child-statistics.service';
+import { ChildSchoolActivity, ChildStatistics, SubjectForChild } from '../../../models/child-statistics';
+import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
-import {findIndex} from 'lodash';
-import {AccountService} from '../../../services/account.service';
-import {IdFullname} from '../../../models/id-fullname';
-import {CurrentAcademicYearService} from '../../../services/current-academic-year.service';
+import { AccountService } from '../../../services/account.service';
+import { IdFullname } from '../../../models/id-fullname';
+import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-parent',
   templateUrl: './home-parent.component.html',
   styleUrls: ['./home-parent.component.scss', '../home.component.scss']
 })
-export class HomeParentComponent implements OnInit {
-
+export class HomeParentComponent implements OnInit, OnDestroy {
   @Input() userDetails: UserDetails;
-  getDayOfTheWeek = getDayOfTheWeek;
   currentMonth = moment().month();
 
   graphSubtitle: string;
@@ -45,6 +43,7 @@ export class HomeParentComponent implements OnInit {
   account: UserDetails;
   selectedChild: IdFullname;
 
+  private childSubscription: Subscription;
 
   constructor(private childStatisticsService: ChildStatisticsService,
               private ownChildAbsencesEvolutionService: ChildAbsencesEvolutionService,
@@ -73,7 +72,7 @@ export class HomeParentComponent implements OnInit {
     this.account = this.accountService.account.getValue();
 
     this.selectedChild = this.accountService.selectedChild.getValue();
-    this.accountService.selectedChild.subscribe((child: IdFullname) => {
+    this.childSubscription = this.accountService.selectedChild.subscribe((child: IdFullname) => {
       this.selectedChild = child;
       this.fetchPageData();
     });
@@ -87,6 +86,9 @@ export class HomeParentComponent implements OnInit {
       });
     this.childSchoolActivityService.getData(true, childId)
       .subscribe(response => {
+        if (response.length > 10) {
+          response = response.slice(0, 10);
+        }
         this.childSchoolActivity = response;
         this.childActivityTable = [];
         this.generateChildActivityTable();
@@ -97,10 +99,10 @@ export class HomeParentComponent implements OnInit {
         this.childSubjectsAtRiskTable = [];
         this.generateChildSubjectsAtRiskTable();
       });
-    this.ownChildAbsencesEvolutionService.getData(true, '', childId, this.currentMonth)
+    this.ownChildAbsencesEvolutionService.getData(true, '', childId, this.currentMonth + 1)
       .subscribe(response => {
-        this.displayChart = shouldDisplayChart(response);
-        this.childAbsencesList = formatChartData(response, 'Absențe', this.currentMonth);
+        this.displayChart = shouldDisplayChart(response, 'total_count');
+        this.childAbsencesList = formatChartData(response, 'Absențe', 'total_count');
       });
   }
 
@@ -138,15 +140,17 @@ export class HomeParentComponent implements OnInit {
     }));
     this.childSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
-      data: this.childSubjectsAtRisk[0]?.avg_final ? 'avg_final' : 'avg_sem1',
-      columnType: 'simple-cell',
+      dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 'avg_limit',
       minWidth: '120px'
     }));
     this.childSubjectsAtRiskTable.push(new Column({
       name: 'Număr absențe nemotivate / an',
-      dataKey: this.childSubjectsAtRisk[0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual'
-        : 'unfounded_abs_count_sem1',
-      columnType: 'graded-cell',
+      dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
+      columnType: 'numbered-cell-dynamic-limit-with-third-of-hours',
+      thirdOfHoursPivotPoint: this.isSecondSemesterEnded ? 'third_of_hours_count_annual' : 'third_of_hours_count_sem1',
+      pivotPoint: this.isSecondSemesterEnded ? 22 : 11,
       minWidth: '240px'
     }));
   }
@@ -156,4 +160,7 @@ export class HomeParentComponent implements OnInit {
     this.childAbsencesChartView = handleChartWidthHeight();
   }
 
+  ngOnDestroy() {
+    this.childSubscription.unsubscribe();
+  }
 }

@@ -28,6 +28,7 @@ export class DropdownComponent implements OnDestroy, OnChanges {
   @Output() addUserModalCallbackFunction: EventEmitter<UserDetailsBase> = new EventEmitter();
   @Output() elementHasBeenSelected: EventEmitter<{ element, index }> = new EventEmitter();
   @Input() addNewUser: string;
+  @Input() selectedObject?: any = null; // Represents the selected object in dropdown (for example: it can be a IdFullName object) in order to have access to the id of the selected element, not just the name of it from appliedElement
   @Output() openNewUserModal: EventEmitter<any> = new EventEmitter();
   // END SINGLE-CHOICE
 

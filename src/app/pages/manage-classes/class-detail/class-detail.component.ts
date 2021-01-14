@@ -1,12 +1,12 @@
-import {Component, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
-import {StudyClass} from '../../../models/study-class';
-import {HttpClient} from '@angular/common/http';
-import {ActivatedRoute} from '@angular/router';
-import {NetworkingListResponse} from '../../../models/networking-list-response';
-import {ConfirmationModalComponent} from '../../../shared/confirmation-modal/confirmation-modal.component';
-import {ViewUserModalComponent} from '../../manage-users/view-user-modal/view-user-modal.component';
-import {getCurrentAcademicYear} from '../../../shared/utils';
+import { Component, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { StudyClass } from '../../../models/study-class';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
+import { NetworkingListResponse } from '../../../models/networking-list-response';
+import { ConfirmationModalComponent } from '../../../shared/confirmation-modal/confirmation-modal.component';
+import { ViewUserModalComponent } from '../../manage-users/view-user-modal/view-user-modal.component';
+import { getCurrentAcademicYear } from '../../../shared/utils';
 
 @Component({
   selector: 'app-class-detail',
@@ -20,8 +20,8 @@ export class ClassDetailComponent {
   isEditable: boolean;
   requestInProgress = false;
   tabs = [
-    {name: "Profesorii clasei", id: "teachers_class_through"},
-    {name: "Elevii clasei", id: "students"},
+    {name: 'Profesorii clasei', id: 'teachers_class_through'},
+    {name: 'Elevii clasei', id: 'students'},
   ];
   activeTab;
   currentAcademicYear: number;
@@ -43,22 +43,22 @@ export class ClassDetailComponent {
     }
 
     const modalData = {
-      title: "Vă rugam confirmați",
+      title: 'Vă rugam confirmați',
       description: `Doriți să ștergeți clasa ${this.study_class.class_grade} ${this.study_class.class_letter} ?`,
       cancelButtonText: 'NU',
       confirmButtonText: 'DA',
       confirmButtonCallback: () => {
         this.httpClient.delete(this._path).subscribe((response: any) => {
-           this.router.navigateByUrl('/manage-classes');
+          this.router.navigateByUrl('/manage-classes');
         });
       }
-    }
+    };
     this.appConfirmationModal.open(modalData);
-  }
+  };
 
   requestData(): void {
     this.requestInProgress = true;
-    
+
     this.httpClient.get(this._path).subscribe((response: NetworkingListResponse) => {
       if (Object.keys(response).length) {
         this.study_class = new StudyClass(response);
@@ -69,6 +69,10 @@ export class ClassDetailComponent {
         //  END TODO
       }
       this.requestInProgress = false;
+    }, error => {
+      if (error.status === 404) {
+        this.router.navigateByUrl('').then();
+      }
     });
   }
 

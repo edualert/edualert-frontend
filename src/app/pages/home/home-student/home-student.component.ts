@@ -1,12 +1,11 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
-import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
-import {UserDetails} from '../../../models/user-details';
-import {MyOwnAbsencesEvolutionService, MyOwnSchoolActivityService, MyOwnStatisticsService, MyOwnSubjectsAtRiskService} from '../../../services/statistics-services/my-own-statistics.service';
-import {ChildSchoolActivity, ChildStatistics, SubjectForChild} from '../../../models/child-statistics';
-import {Column} from '../../../shared/reports-table/reports-table.component';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { UserDetails } from '../../../models/user-details';
+import { MyOwnAbsencesEvolutionService, MyOwnSchoolActivityService, MyOwnStatisticsService, MyOwnSubjectsAtRiskService } from '../../../services/statistics-services/my-own-statistics.service';
+import { ChildSchoolActivity, ChildStatistics, SubjectForChild } from '../../../models/child-statistics';
+import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
-import {findIndex} from 'lodash';
-import {CurrentAcademicYearService} from '../../../services/current-academic-year.service';
+import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 
 @Component({
   selector: 'app-home-student',
@@ -14,9 +13,7 @@ import {CurrentAcademicYearService} from '../../../services/current-academic-yea
   styleUrls: ['./home-student.component.scss', '../home.component.scss']
 })
 export class HomeStudentComponent implements OnInit {
-
   @Input() userDetails: UserDetails;
-  getDayOfTheWeek = getDayOfTheWeek;
   graphSubtitle: string;
   currentMonth = moment().month();
 
@@ -77,6 +74,9 @@ export class HomeStudentComponent implements OnInit {
       });
     this.myOwnSchoolActivityService.getData(this.forceRequest)
       .subscribe(response => {
+        if (response.length > 10) {
+          response = response.slice(0, 10);
+        }
         this.myOwnSchoolActivity = response;
         this.generateMyActivityTable();
       });
@@ -85,10 +85,10 @@ export class HomeStudentComponent implements OnInit {
         this.myOwnSubjectsAtRisk = response;
         this.generateMyOwnSubjectsAtRiskTable();
       });
-    this.myOwnAbsencesEvolutionService.getData(true, '', this.currentMonth)
+    this.myOwnAbsencesEvolutionService.getData(true, '', this.currentMonth + 1)
       .subscribe(response => {
-        this.displayChart = shouldDisplayChart(response);
-        this.myOwnAbsencesList = formatChartData(response, 'Absente', this.currentMonth);
+        this.displayChart = shouldDisplayChart(response, 'total_count');
+        this.myOwnAbsencesList = formatChartData(response, 'Absente', 'total_count');
       });
   }
 
@@ -126,14 +126,17 @@ export class HomeStudentComponent implements OnInit {
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
-      data: this.myOwnSubjectsAtRisk[0]?.avg_final ? 'avg_final' : 'avg_sem1',
-      columnType: 'simple-cell',
+      data: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 'avg_limit',
       minWidth: '120px',
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Număr absențe nemotivate / an',
-      dataKey: this.myOwnSubjectsAtRisk[0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
-      columnType: 'graded-cell',
+      dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
+      columnType: 'numbered-cell-dynamic-limit-with-third-of-hours',
+      thirdOfHoursPivotPoint: this.isSecondSemesterEnded ? 'third_of_hours_count_annual' : 'third_of_hours_count_sem1',
+      pivotPoint: this.isSecondSemesterEnded ? 22 : 11,
       minWidth: '240px'
     }));
     if (!Column.checkSumOfWidths(this.myOwnSubjectsAtRiskTable)) {

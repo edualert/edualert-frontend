@@ -1,5 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {findIndex} from 'lodash';
+import {ChildSchoolActivity} from '../../models/child-statistics';
 
 const CUSTOM_TEXTS_COLOR_CODES = [
   {
@@ -38,6 +39,8 @@ export class Column {
   displayFormatter: (...param) => string | number;
   link: (...params) => string;
   linkParams: {};
+  pivotPoint: string | number;
+  thirdOfHoursPivotPoint: string | number;
 
   constructor(object?: any) {
     this.backgroundColor = object?.backgroundColor;
@@ -48,6 +51,8 @@ export class Column {
     this.displayFormatter = object?.displayFormatter;
     this.link = object?.link;
     this.linkParams = object?.linkParams;
+    this.pivotPoint = object?.pivotPoint;
+    this.thirdOfHoursPivotPoint = object?.thirdOfHoursPivotPoint;
   }
 
   public static checkSumOfWidths(columns: Column[]): boolean {
@@ -100,8 +105,13 @@ export class ReportsTableComponent {
     }
   }
 
-  getColorByEventType(event_type: string) {
-    const index = findIndex(CUSTOM_TEXTS_COLOR_CODES, {event: event_type});
+  getColorByEventType(data: ChildSchoolActivity) {
+    const index = findIndex(CUSTOM_TEXTS_COLOR_CODES, {event: data.event_type});
+
+    if (['NEW_GRADE', 'SECOND_EXAMINATION_AVERAGE', 'DIFFERENCE_AVERAGE'].includes(data.event_type)) {
+      return data.grade_value < data.grade_limit ? 'red-text' : 'blue-text';
+    }
+
     return index >= 0 ? CUSTOM_TEXTS_COLOR_CODES[index].color : 'blue-text';
   }
 

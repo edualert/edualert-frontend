@@ -1,19 +1,19 @@
-import {Injectable, Injector} from '@angular/core';
-import {OneTimeDataGetter} from '../one-time-data-getter';
-import {Observable} from 'rxjs';
-import {StudentAtRisk} from '../../models/student-data-list';
-import {map} from 'rxjs/operators';
-import {NetworkingListResponse} from '../../models/networking-list-response';
-import {GraphStatistics} from '../../models/graph-statistics';
-import {InactiveParent} from '../../models/parent';
-import {getFileFromBlobResponse} from '../../shared/utils';
+import { Injectable, Injector } from '@angular/core';
+import { OneTimeDataGetter } from '../one-time-data-getter';
+import { Observable } from 'rxjs';
+import { StudentAtRisk } from '../../models/student-data-list';
+import { map } from 'rxjs/operators';
+import { NetworkingListResponse } from '../../models/networking-list-response';
+import { GraphStatistics } from '../../models/graph-statistics';
+import { InactiveParent } from '../../models/parent';
+import { getFileFromBlobResponse } from '../../shared/utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SchoolStudentsAtRiskService extends OneTimeDataGetter {
 
-  totalCount: number;
+  private totalCount: number;
 
   constructor(injector: Injector) {
     super(injector);
@@ -41,6 +41,10 @@ export class SchoolStudentsAtRiskService extends OneTimeDataGetter {
       }));
   }
 
+  getTotalCount(): number {
+    return this.totalCount;
+  }
+
   downloadStudentsAtRiskCSVReport() {
     super.downloadXlsx('school-students-at-risk/export/').subscribe(
       blobResponse => {
@@ -60,8 +64,13 @@ export class OwnStudentsAtRiskService extends OneTimeDataGetter {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<StudentAtRisk[]> {
-    return super.getData(forceRequest, 'own-students-at-risk/')
+  getData(forceRequest: boolean, requestPath?: string, page_size?: number): Observable<StudentAtRisk[]> {
+    let path = `own-students-at-risk/`;
+    if (page_size) {
+      path = `own-students-at-risk/?page_size=${page_size}`;
+    }
+
+    return super.getData(forceRequest, path)
       .pipe(map((response: NetworkingListResponse) => {
         const studentsAtRiskList = [];
         if (response.count > 0) {
@@ -151,14 +160,25 @@ export class OwnStudentsBehaviourGradesService extends OneTimeDataGetter {
 })
 export class InactiveParentsService extends OneTimeDataGetter {
 
+  totalCount: number;
+
   constructor(injector: Injector) {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<InactiveParent[]> {
-    return super.getData(forceRequest, 'inactive-parents/')
+  getData(forceRequest: boolean, requestPath?: string, page_size?: number, page?: number): Observable<InactiveParent[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `inactive-parents/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `inactive-parents/?page_size=${page_size}`;
+    } else {
+      path = `inactive-parents/`;
+    }
+    return super.getData(forceRequest, path)
       .pipe(map((response: NetworkingListResponse) => {
         const parents = [];
+        this.totalCount = response.count;
         if (response.count > 0) {
           response.results.forEach(student => {
             parents.push(new InactiveParent(student));
@@ -170,39 +190,6 @@ export class InactiveParentsService extends OneTimeDataGetter {
 
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class OwnStudentsRiskEvolutionService extends OneTimeDataGetter {
-
-  constructor(injector: Injector) {
-    super(injector);
-  }
-
-  getData(forceRequest: boolean, requestPath?: string, classId?: string, monthId?: string): Observable<GraphStatistics[]> {
-    let url: string;
-    if (classId && monthId) {
-      url = `students-risk-evolution/?school_unit=${classId}&month=${monthId}`;
-    } else if (classId) {
-      url = `students-risk-evolution/?school_unit=${classId}`;
-    } else if (monthId) {
-      url = `students-risk-evolution/?month=${monthId}`;
-    } else {
-      url = `students-risk-evolution/`;
-    }
-    return super.getData(forceRequest, url)
-      .pipe(map((response: GraphStatistics[]) => {
-        const listOfStudentsEvolution = [];
-        if (response.length > 0) {
-          response.forEach(dayOfEvolution => {
-            listOfStudentsEvolution.push(new GraphStatistics(dayOfEvolution));
-          });
-        }
-        return listOfStudentsEvolution;
-      }));
-  }
-
-}
 
 @Injectable({
   providedIn: 'root'
@@ -213,9 +200,19 @@ export class StudentsRiskEvolutionService extends OneTimeDataGetter {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string, classId?: string): Observable<GraphStatistics[]> {
-    const path = classId ? `students-risk-evolution/?month=${classId}` : `students-risk-evolution/`;
-    return super.getData(forceRequest, path)
+  getData(forceRequest: boolean, requestPath?: string, month?: string, schoolId?: string): Observable<GraphStatistics[]> {
+    let url: string;
+    if (month && schoolId) {
+      url = `students-risk-evolution/?school_unit=${schoolId}&month=${month}`;
+    } else if (schoolId) {
+      url = `students-risk-evolution/?school_unit=${schoolId}`;
+    } else if (month) {
+      url = `students-risk-evolution/?month=${month}`;
+    } else {
+      url = `students-risk-evolution/`;
+    }
+
+    return super.getData(forceRequest, url)
       .pipe(map((response: GraphStatistics[]) => {
         const listOfStudentsEvolution = [];
         if (response.length > 0) {

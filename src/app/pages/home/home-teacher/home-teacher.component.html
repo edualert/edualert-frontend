@@ -14,7 +14,7 @@
     <!-- DISPLAYED ONLY IF TEACHER IS CLASS MASTER -->
     <div *ngIf="isTeacherClassMaster">
       <!-- Clasele Mele tab -->
-      <ng-container *ngIf="activeTab === 'my_own_classes'; else classMasterData">
+      <ng-container *ngIf="activeTab === 'my_own_classes' && isFirstSemesterEnded; else classMasterData">
         <div class="card-table-container card">
           <div class="card-table-header">
             <div class="big-text bold card-title-text">Top clase cu risc</div>
@@ -52,7 +52,8 @@
           >Mai multe rapoarte</div>
         </div>
 
-        <div class="card-table-container card">
+        <div class="card-table-container card"
+             *ngIf="!isSecondSemesterEnded">
           <div class="card-table-header">
             <div class="big-text bold card-title-text">Top părinți inactivi</div>
             <div class="text-item link-content blue-text bold more-button arrow-right web"
@@ -98,7 +99,7 @@
                     </div>
                     <div class="bottom-tooltip">
                       <div class="padded">{{ model[0].name }}</div>
-                      <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                      <div>{{ model[0].weekday }}</div>
                     </div>
                   </div>
                 </div>
@@ -118,7 +119,8 @@
 
     <!-- DISPLAYED ONLY IF TEACHER IS NOT CLASS MASTER -->
     <div *ngIf="!isTeacherClassMaster">
-      <div class="card-table-container card">
+      <div class="card-table-container card"
+           *ngIf="isFirstSemesterEnded; else noDataMessageView">
         <div class="card-table-header">
           <div class="big-text bold card-title-text">Top clase cu risc</div>
           <div class="text-item link-content blue-text bold more-button arrow-right web"
@@ -134,65 +136,10 @@
              [routerLink]="['/reports']" [queryParams]="{top_tab: 'my_classes', bottom_tab: 'study_classes_at_risk'}"
         >Mai multe rapoarte</div>
       </div>
-
-      <div class="card-table-container card">
-        <div class="card-table-header">
-          <div class="big-text bold card-title-text">Top elevi cu risc</div>
-          <div class="text-item link-content blue-text bold more-button arrow-right web"
-               [routerLink]="['/reports']" [queryParams]="{top_tab: 'class_mastery', bottom_tab: 'students_at_risk'}"
-          >Mai multe rapoarte</div>
-        </div>
-        <div class="table-container">
-          <app-reports-table [tableColumns]="ownStudentsAtRiskTable"
-                             [tableData]="ownStudentsAtRiskList">
-          </app-reports-table>
-        </div>
-        <div class="text-item link-content blue-text bold more-button arrow-right mobile"
-             [routerLink]="['/reports']" [queryParams]="{top_tab: 'class_mastery', bottom_tab: 'students_at_risk'}"
-        >Mai multe rapoarte</div>
-      </div>
-
-      <div class="chart-container">
-        <div class="chart-title">
-          <div class="big-text bold">Evoluție număr elevi cu risc</div>
-          <div class="text-item link-content blue-text bold more-button arrow-right web"
-               [routerLink]="['/reports']" [queryParams]="{top_tab: 'class_mastery', bottom_tab: 'own_students_risk_evolution'}"
-          >Mai multe rapoarte</div>
-        </div>
-        <div class="chart-subtitle blue-text regular">{{ graphSubtitle }}</div>
-        <div class="chart-holder" *ngIf="displayChart">
-          <ngx-charts-line-chart
-            [view]="ownStudentsChartView"
-            [xAxis]="xAxis"
-            [yAxis]="yAxis"
-            [scheme]="colorSchemeRed"
-            [results]="ownStudentsEvolutionList.chartData"
-            [xAxisTicks]="ownStudentsEvolutionList.xAxisTicks"
-          >
-
-            <ng-template #seriesTooltipTemplate let-model="model">
-              <div class="tooltip-content">
-                <div class="value">
-                  {{model[0].value}}
-                </div>
-                <div class="label">
-                  {{ ownStudentsEvolutionList["chartData"][0]["name"] }}
-                </div>
-                <div class="bottom-tooltip">
-                  <div class="padded">{{ model[0].name }}</div>
-                  <div>{{ getDayOfTheWeek(model[0].name) }}</div>
-                </div>
-              </div>
-              <!--<div class="selected-container"></div>-->
-            </ng-template>
-
-          </ngx-charts-line-chart>
-        </div>
-        <div *ngIf="!displayChart" class="big-text bold padded-top info-card">Nu există date disponibile</div>
-        <div class="text-item link-content blue-text bold more-button arrow-right mobile"
-             [routerLink]="['/reports']" [queryParams]="{top_tab: 'class_mastery', bottom_tab: 'own_students_risk_evolution'}"
-        >Mai multe rapoarte</div>
-      </div>
     </div>
   </div>
 </div>
+
+<ng-template #noDataMessageView>
+  <div class="big-text bold padded-top info-card">{{ noDataMessage }}</div>
+</ng-template>

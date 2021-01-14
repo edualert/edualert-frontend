@@ -19,6 +19,7 @@ export class TableCellComponent implements OnInit {
   @Input() isExpandable?: boolean;
   @Input() isExpanded?: boolean;
   @Input() pivotPoint: string | number;
+  @Input() dataRow: any;
   @Input() exceptionRule: string | number;
   @Input() studentCatalogID: string | number;
   @Input() tableLayoutAsIdentifier: string;

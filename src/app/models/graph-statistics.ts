@@ -12,10 +12,14 @@ export class GraphStatistics {
 }
 
 export class AbsencesStatistics extends GraphStatistics {
+  total_count: number;
   unfounded_count: number;
+  founded_count: number;
 
   constructor(object?: any) {
     super(object);
+    this.total_count = object?.total_count;
     this.unfounded_count = object?.unfounded_count;
+    this.founded_count = object?.founded_count;
   }
 }

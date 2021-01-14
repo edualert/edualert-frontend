@@ -44,6 +44,7 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
   students: PupilStatisticsListOrs[] | PupilStatisticsList[] = [];
   studentsTotalCount: number;
   tableContainer: HTMLElement;
+  isDeletingFilters: boolean = false;
 
   readonly defaultAcademicYear: IdText = new IdText({id: getCurrentAcademicYear(), text: `${getCurrentAcademicYear()} - ${getCurrentAcademicYear() + 1}`});
 
@@ -79,7 +80,12 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
       this.students = [];
       this.requestedPageCount = 1;
       this.activeUrlParams = urlParams;
-      this.requestData(urlParams);
+      if (this.isDeletingFilters) {
+        this.isDeletingFilters = false;
+        this.setStudyClassGradesFilter();
+      } else {
+        this.requestData(urlParams);
+      }
     });
   }
 
@@ -101,6 +107,13 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
         this.filterData.sortCriteria.push(new IdText({id: 'student_name', text: 'Nume'}));
       }
     }
+  }
+
+  private setStudyClassGradesFilter(academicYear?: string) {
+    this.studyClassAvailableGradesService.getData(true, academicYear).pipe(catchError(() => of(null)))
+      .subscribe((availableClassGrade: string[]) => {
+        this.filterData.studyClassGrades = [...new Set(availableClassGrade)];
+      });
   }
 
   private formatData(students: any) {
@@ -152,19 +165,11 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
   }
 
   changeRequestedAcademicYear(value) {
-    this.page = 1;
+    this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0].removeEventListener('scroll', this.scrollHandle);
     this.tableContainer.scrollTop = 0;
+    this.page = 1;
     this.academicYearToRequest = value?.id;
-    this.studyClassAvailableGradesService.getData(true).pipe(catchError(() => of(null)))
-      .subscribe(availableClassGrade => {
-        availableClassGrade.forEach((element, index) => {
-          const tempArray = availableClassGrade.slice(index, availableClassGrade.length - 1);
-          if (tempArray.includes(element)) {
-            availableClassGrade.splice(index, 1);
-          }
-        });
-        this.filterData.studyClassGrades = availableClassGrade;
-      });
+    this.setStudyClassGradesFilter(this.academicYearToRequest);
   }
 
   onLinkClick(event) {
@@ -175,8 +180,15 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
     }
   }
 
+  clearFilters() {
+    this.isDeletingFilters = true;
+    this.tableContainer.scrollTop = 0;
+    this.page = 1;
+    this.deleteFilters();
+  }
+
   ngOnDestroy(): void {
-    this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0].removeEventListener('scroll',  this.scrollHandle);
+    this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0].removeEventListener('scroll', this.scrollHandle);
   }
 
 }

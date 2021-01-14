@@ -387,7 +387,7 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
         if ((this.errors[key].optional_subjects[index].subject_name ||
           this.errors[key].optional_subjects[index].weekly_hours_count) &&
           this.yearGradeActiveTab !== key) {
-          this.errorOnOtherTab = `Aveti o eroare la clasa a ${key}-a, materii opționale.`;
+          this.errorOnOtherTab = `Aveți o eroare la clasa a ${key}-a, materii opționale.`;
         }
       });
     });

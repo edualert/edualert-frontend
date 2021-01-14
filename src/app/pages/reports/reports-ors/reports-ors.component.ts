@@ -8,7 +8,7 @@ import { StudentsRiskEvolutionService } from '../../../services/statistics-servi
 import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
 import { orsTabs } from '../reports-tabs';
-import { formatChartData, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
 import { findIndex } from 'lodash';
 import { ScrollableList } from '../../list-page/scrollable-list';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
@@ -30,7 +30,6 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   institutionsAveragesTable: Column[] = [];
   institutionsAbsencesTable: Column[] = [];
 
-  getDayOfTheWeek = getDayOfTheWeek;
   colorSchemeYellow = {
     domain: ['#FFB300']
   };
@@ -186,9 +185,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
 
     const req = requests[`${id}`];
     const month = id === 'students_risk_evolution' ? this.month_students_risk_evolution : this.month_enrolled_institutions;
-    if (month === -11) {
-      return;
-    }
+    const previousMonth = month === 0 ? 11 : month - 1;
 
     // If we already have data for that id don't make a request
     if (!['students_risk_evolution', 'enrolled_institutions'].includes(id)) {
@@ -196,17 +193,17 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
         return;
       }
     } else {
-      if (id === 'students_risk_evolution' && this.data.students_risk_evolution[this.month_students_risk_evolution]) {
-        this.studentsDisplayChart = shouldDisplayChart(this.data.students_risk_evolution[this.month_students_risk_evolution]['chartData'][0]['series']);
-        if (!this.data.students_risk_evolution[this.month_students_risk_evolution - 1]) {
-          this.getPreviousMonthData(req.requestPrevious, id, month);
+      if (id === 'students_risk_evolution' && this.data.students_risk_evolution[month]) {
+        this.studentsDisplayChart = shouldDisplayChart(this.data.students_risk_evolution[month]['chartData'][0]['series']);
+        if (!this.data.students_risk_evolution[previousMonth]) {
+          this.getPreviousMonthData(req.requestPrevious, id, previousMonth);
         }
         return;
       }
-      if (id === 'enrolled_institutions' && this.data.enrolled_institutions[this.month_enrolled_institutions]) {
-        this.institutionsDisplayChart = shouldDisplayChart(this.data.enrolled_institutions[this.month_enrolled_institutions]['chartData'][0]['series']);
-        if (!this.data.enrolled_institutions[this.month_enrolled_institutions - 1]) {
-          this.getPreviousMonthData(req.requestPrevious, id, month);
+      if (id === 'enrolled_institutions' && this.data.enrolled_institutions[month]) {
+        this.institutionsDisplayChart = shouldDisplayChart(this.data.enrolled_institutions[month]['chartData'][0]['series']);
+        if (!this.data.enrolled_institutions[previousMonth]) {
+          this.getPreviousMonthData(req.requestPrevious, id, previousMonth);
         }
         return;
       }
@@ -236,10 +233,10 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
     if (req.request && req.requestPrevious) {
       req.request.subscribe((response) => {
         if (id === 'students_risk_evolution') {
-          this.data[id][month] = formatChartData(response, 'Elevi', this.month_students_risk_evolution);
+          this.data[id][month] = formatChartData(response, 'Elevi');
           this.studentsDisplayChart = shouldDisplayChart(response);
         } else if (id === 'enrolled_institutions') {
-          this.data[id][month] = formatChartData(response, 'Instituții', this.month_enrolled_institutions);
+          this.data[id][month] = formatChartData(response, 'Instituții');
           this.institutionsDisplayChart = shouldDisplayChart(response);
         }
         this.loading = false;
@@ -247,21 +244,21 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
         this.data[id][month] = error.detail;
         this.loading = false;
       });
-      this.getPreviousMonthData(req.requestPrevious, id, month);
+      this.getPreviousMonthData(req.requestPrevious, id, previousMonth);
     }
   }
 
-  getPreviousMonthData(request: any, type: string, month: number): void {
-    if (month !== 8) {
+  getPreviousMonthData(request: any, type: string, previousMonth: number): void {
+    if (previousMonth !== 7) {
       request.subscribe((response) => {
         if (type === 'students_risk_evolution') {
-          this.data[type][month - 1] = formatChartData(response, 'Elevi', this.month_students_risk_evolution - 1);
+          this.data[type][previousMonth] = formatChartData(response, 'Elevi');
         } else if (type === 'enrolled_institutions') {
-          this.data[type][month - 1] = formatChartData(response, 'Instituții', this.month_enrolled_institutions - 1);
+          this.data[type][previousMonth] = formatChartData(response, 'Instituții');
         }
         this.loading = false;
       }, error => {
-        this.data[type][month - 1] = error.detail;
+        this.data[type][previousMonth] = error.detail;
         this.loading = false;
       });
     }
@@ -357,7 +354,6 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-
     if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
       this.activeTab = changes.initialQueryParams.currentValue;
       document.body.scrollTo(0, this.scrollPositions[this.activeTab]);

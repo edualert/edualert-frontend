@@ -1,5 +1,5 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { cloneDeep } from 'lodash';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { ViewUserModalComponent } from '../manage-users/view-user-modal/view-use
   templateUrl: './student-catalog.component.html',
   styleUrls: ['./student-catalog.component.scss']
 })
-export class StudentCatalogComponent implements OnInit {
+export class StudentCatalogComponent implements OnInit, OnDestroy {
   classId: string;
   studentId: string;
   student: {
@@ -33,6 +33,7 @@ export class StudentCatalogComponent implements OnInit {
 
 
   constructor(private activatedRoute: ActivatedRoute,
+              private router: Router,
               private httpClient: HttpClient,
               private elementRef: ElementRef) {
   }
@@ -70,6 +71,10 @@ export class StudentCatalogComponent implements OnInit {
       this.studyClass = response.study_class;
       this.catalog = this.formatCatalog(response.catalogs_per_subjects);
       this.rip = false;
+    }, error => {
+      if (error.status === 404) {
+        this.router.navigateByUrl('').then();
+      }
     });
   }
 
@@ -129,5 +134,9 @@ export class StudentCatalogComponent implements OnInit {
 
   openUserModal(event, id) {
     this.appViewUserModal.open(id);
+  }
+
+  ngOnDestroy(): void {
+    document.body.removeAttribute('style');
   }
 }

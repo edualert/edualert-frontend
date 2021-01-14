@@ -31,6 +31,7 @@ export class CatalogLayout {
     exceptionRuleKey: string | number;
     expandableDecider?: (academicCalendar: AcademicYearCalendar, rowData: any) => boolean
     editableDecider?: (academicCalendar: AcademicYearCalendar, rowData: any) => boolean
+    isClassMasteryTable?: boolean;
   }[];
 
   constructor(obj) {
@@ -58,7 +59,7 @@ export class CatalogLayout {
 }
 
 
-export const ownClassSubject = new CatalogLayout({
+export const ownClassSubject = new CatalogLayout({ // TAUGHT SUBJECT
   cellWidths: [
     'regular',
     [widthDecider, 'first_semester'],
@@ -92,7 +93,7 @@ export const ownClassSubject = new CatalogLayout({
   dataRow: [
     {type: 'name-cell', identifier: 'name', dataKey: 'student'},
     {
-      type: 'grades-list', identifier: 'grades_sem_1', dataKey: 'grades_sem1', pivotPoint: 4,
+      type: 'grades-list', identifier: 'grades_sem_1', dataKey: 'grades_sem1', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.first_semester;
         if (semesterIsInFuture(yearStructure.first_semester)) {
@@ -106,7 +107,7 @@ export const ownClassSubject = new CatalogLayout({
       editableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => semesterIsNow(yearStructure.first_semester)
     },
     {
-      type: 'grades-list', identifier: 'grades_sem_2', dataKey: 'grades_sem2', pivotPoint: 4,
+      type: 'grades-list', identifier: 'grades_sem_2', dataKey: 'grades_sem2', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.second_semester;
         if (semesterIsInFuture(semester)) {
@@ -121,7 +122,7 @@ export const ownClassSubject = new CatalogLayout({
         return semesterIsNow(yearStructure.second_semester);
       }
     },
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 4},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit'},
     {
       type: 'absences-list', identifier: 'abs_sem_1', dataKey: 'abs_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
@@ -199,7 +200,7 @@ export const classMastery = new CatalogLayout({   // DIRIGENTIE
   dataRow: [
     {type: 'name-cell', identifier: 'name', dataKey: 'student'},
     {
-      type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1', pivotPoint: 6,
+      type: 'behavior-sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar) => {
         const semester = yearStructure.first_semester;
         if (semesterIsInFuture(semester)) {
@@ -213,7 +214,7 @@ export const classMastery = new CatalogLayout({   // DIRIGENTIE
       editableDecider: (yearStructure: AcademicYearCalendar) => semesterIsNow(yearStructure.first_semester)
     },
     {
-      type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 6,
+      type: 'behavior-sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar) => {
         const semester = yearStructure.second_semester;
         if (semesterIsInFuture(semester)) {
@@ -226,7 +227,7 @@ export const classMastery = new CatalogLayout({   // DIRIGENTIE
       },
       editableDecider: (yearStructure: AcademicYearCalendar) => semesterIsNow(yearStructure.second_semester)
     },
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 6},
+    {type: 'behavior-annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit'},
     {
       type: 'absences-list', identifier: 'abs_sem_1', dataKey: 'abs_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
@@ -300,9 +301,9 @@ export const classPupils = new CatalogLayout({   // ELEVII CLASEI
   ],
   dataRow: [
     {type: 'name-cell', identifier: 'name', dataKey: 'student'},
-    {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1', pivotPoint: 4},
-    {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 4},
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 4},
+    {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1', pivotPoint: 5},
+    {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 5},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 5},
     {type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'abs_count_sem1', pivotPoint: 11},
     {type: 'absences-count', identifier: 'abs_sem_2', dataKey: 'abs_count_sem2', pivotPoint: 11},
     {
@@ -326,12 +327,12 @@ export const studentCatalog = new CatalogLayout({
     'small'],
   headerRow: [
     {label: 'Materii'},
-    {label: ''},
     {label: 'Medii'},
     {label: ''},
     {label: ''},
     {label: 'Absente'},
     {label: ''},
+    {label: ''}
   ],
   subheaderRow: [
     {label: ''},
@@ -345,7 +346,7 @@ export const studentCatalog = new CatalogLayout({
   dataRow: [
     {type: 'subject-name-cell', identifier: 'name', dataKey: 'subject'},
     {
-      type: 'grades-list', identifier: 'grades_sem_1', dataKey: 'grades_sem1', pivotPoint: 4,
+      type: 'grades-list', identifier: 'grades_sem_1', dataKey: 'grades_sem1', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.first_semester;
         if (semesterIsInFuture(yearStructure.first_semester)) {
@@ -358,7 +359,7 @@ export const studentCatalog = new CatalogLayout({
       }
     },
     {
-      type: 'grades-list', identifier: 'grades_sem_2', dataKey: 'grades_sem2', pivotPoint: 4,
+      type: 'grades-list', identifier: 'grades_sem_2', dataKey: 'grades_sem2', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.second_semester;
         if (semesterIsInFuture(semester)) {
@@ -370,9 +371,9 @@ export const studentCatalog = new CatalogLayout({
         return true;
       }
     },
-    {type: 'sem-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 4},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit'},
     {
-      type: 'absences-list', identifier: 'abs_sem_1', dataKey: 'abs_sem1', pivotPoint: 11,
+      type: 'absences-list', identifier: 'abs_sem_1', dataKey: 'abs_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.first_semester;
         if (semesterIsInFuture(semester)) {
@@ -386,7 +387,7 @@ export const studentCatalog = new CatalogLayout({
       editableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => semesterIsNow(yearStructure.first_semester)
     },
     {
-      type: 'absences-list', identifier: 'abs_sem_2', dataKey: 'abs_sem2', pivotPoint: 11,
+      type: 'absences-list', identifier: 'abs_sem_2', dataKey: 'abs_sem2', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem2',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.second_semester;
         if (semesterIsInFuture(semester)) {
@@ -400,7 +401,7 @@ export const studentCatalog = new CatalogLayout({
       editableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => semesterIsNow(yearStructure.second_semester)
     },
     {
-      type: 'absences-count', identifier: 'abs_annual', dataKey: 'abs_count_annual', pivotPoint: 11,
+      type: 'absences-count', identifier: 'abs_annual', dataKey: 'abs_count_annual', pivotPoint: 22, exceptionRuleKey: 'third_of_hours_count_annual',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         if (!rowData || !rowData.abs_count_annual) {
           return false;
@@ -441,7 +442,7 @@ export const studentOwnSituation = new CatalogLayout({
   dataRow: [
     {type: 'subject-name-cell', identifier: 'name', dataKey: 'subject'},
     {
-      type: 'grades-list', identifier: 'grades_sem_1', dataKey: 'grades_sem1',
+      type: 'grades-list', identifier: 'grades_sem_1', dataKey: 'grades_sem1', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.first_semester;
         if (semesterIsInFuture(yearStructure.first_semester)) {
@@ -454,7 +455,7 @@ export const studentOwnSituation = new CatalogLayout({
       }
     },
     {
-      type: 'grades-list', identifier: 'grades_sem_2', dataKey: 'grades_sem2',
+      type: 'grades-list', identifier: 'grades_sem_2', dataKey: 'grades_sem2', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.second_semester;
         if (semesterIsInFuture(semester)) {
@@ -466,9 +467,9 @@ export const studentOwnSituation = new CatalogLayout({
         return true;
       }
     },
-    {type: 'simple-number', identifier: 'grade_annual', dataKey: 'avg_annual'},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit'},
     {
-      type: 'absences-list', identifier: 'abs_sem_1', dataKey: 'abs_sem1',
+      type: 'absences-list', identifier: 'abs_sem_1', dataKey: 'abs_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.first_semester;
         if (semesterIsInFuture(semester)) {
@@ -481,7 +482,7 @@ export const studentOwnSituation = new CatalogLayout({
       }
     },
     {
-      type: 'absences-list', identifier: 'abs_sem_2', dataKey: 'abs_sem2',
+      type: 'absences-list', identifier: 'abs_sem_2', dataKey: 'abs_sem2', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem2',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         const semester = yearStructure.second_semester;
         if (semesterIsInFuture(semester)) {
@@ -494,7 +495,7 @@ export const studentOwnSituation = new CatalogLayout({
       }
     },
     {
-      type: 'absences-count', identifier: 'abs_annual', dataKey: 'abs_count_annual',
+      type: 'absences-count', identifier: 'abs_annual', dataKey: 'abs_count_annual', pivotPoint: 22, exceptionRuleKey: 'third_of_hours_count_annual',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => {
         if (!rowData || !rowData.abs_count_annual) {
           return false;
@@ -527,16 +528,16 @@ export const studentsSituationOrs = new CatalogLayout({
   ],
   dataRow: [
     {type: 'plain-text', identifier: 'name', dataKey: 'student_name'},
-    {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1', pivotPoint: 4},
-    {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 4},
+    {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1', pivotPoint: 5},
+    {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 5},
     {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_final', pivotPoint: 5},
-    {type: 'plain-text', identifier: 'second_examinations_count', dataKey: 'second_examinations_count', pivotPoint: 5},
+    {type: 'second-examinations-count', identifier: 'second_examinations_count', dataKey: 'second_examinations_count', pivotPoint: 5},
     {type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'unfounded_abs_count_sem1', pivotPoint: 11},
     {type: 'absences-count', identifier: 'abs_sem_2', dataKey: 'unfounded_abs_count_sem2', pivotPoint: 11},
     {type: 'absences-count', identifier: 'abs_sem_annual', dataKey: 'unfounded_abs_count_annual', pivotPoint: 22},
-    {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'behavior_grade_sem1', pivotPoint: 6},
-    {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'behavior_grade_sem2', pivotPoint: 6},
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'behavior_grade_annual', pivotPoint: 6},
+    {type: 'behavior-sem-avg', identifier: 'grades_sem_1', dataKey: 'behavior_grade_sem1', pivotPoint: 'behavior_grade_limit'},
+    {type: 'behavior-sem-avg', identifier: 'grades_sem_2', dataKey: 'behavior_grade_sem2', pivotPoint: 'behavior_grade_limit'},
+    {type: 'behavior-annual-avg', identifier: 'grade_annual', dataKey: 'behavior_grade_annual', pivotPoint: 'behavior_grade_limit'},
     {type: 'labels', identifier: 'labels', dataKey: 'labels'},
     {type: 'plain-text', identifier: 'school_unit', dataKey: 'school'},
     {type: 'plain-text', identifier: 'class_name', dataKey: 'class'},
@@ -567,16 +568,16 @@ export const studentsSituationTeacherPrincipal = new CatalogLayout({
   ],
   dataRow: [
     {type: 'plain-text', identifier: 'name', dataKey: 'student_name'},
-    {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1'},
-    {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2'},
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_final'},
-    {type: 'plain-text', identifier: 'second_examinations_count', dataKey: 'second_examinations_count'},
-    {type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'unfounded_abs_count_sem1'},
-    {type: 'absences-count', identifier: 'abs_sem_2', dataKey: 'unfounded_abs_count_sem2'},
-    {type: 'absences-count', identifier: 'abs_sem_annual', dataKey: 'unfounded_abs_count_annual'},
-    {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'behavior_grade_sem1'},
-    {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'behavior_grade_sem2'},
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'behavior_grade_annual'},
+    {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1', pivotPoint: 5},
+    {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 5},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_final', pivotPoint: 5},
+    {type: 'second-examinations-count', identifier: 'second_examinations_count', dataKey: 'second_examinations_count', pivotPoint: 3},
+    {type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'unfounded_abs_count_sem1', pivotPoint: 11},
+    {type: 'absences-count', identifier: 'abs_sem_2', dataKey: 'unfounded_abs_count_sem2', pivotPoint: 11},
+    {type: 'absences-count', identifier: 'abs_sem_annual', dataKey: 'unfounded_abs_count_annual', pivotPoint: 22},
+    {type: 'behavior-sem-avg', identifier: 'grades_sem_1', dataKey: 'behavior_grade_sem1', pivotPoint: 'behavior_grade_limit'},
+    {type: 'behavior-sem-avg', identifier: 'grades_sem_2', dataKey: 'behavior_grade_sem2', pivotPoint: 'behavior_grade_limit'},
+    {type: 'behavior-annual-avg', identifier: 'grade_annual', dataKey: 'behavior_grade_annual', pivotPoint: 'behavior_grade_limit'},
     {type: 'labels', identifier: 'labels', dataKey: 'labels'},
     {type: 'plain-text', identifier: 'class_name', dataKey: 'class'},
     {type: 'plain-text', identifier: 'academic_program', dataKey: 'academic_program_name'},
@@ -587,20 +588,20 @@ export const studentsSituationTeacherPrincipal = new CatalogLayout({
 
 
 function semesterIsInFuture(semester: Semester) {
-  const now = moment().valueOf();
+  const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
   const semesterStart = moment(semester.starts_at, 'DD-MM-YYYY').valueOf();
   return now < semesterStart;
 }
 
 function semesterIsNow(semester: Semester) {
-  const now = moment().valueOf();
+  const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
   const semesterStart = moment(semester.starts_at, 'DD-MM-YYYY').valueOf();
   const semesterEnd = moment(semester.ends_at, 'DD-MM-YYYY').valueOf();
   return now >= semesterStart && now <= semesterEnd;
 }
 
 function semesterIsInPast(semester: Semester) {
-  const now = moment().valueOf();
+  const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
   const semesterEnd = moment(semester.ends_at, 'DD-MM-YYYY').valueOf();
   return now > semesterEnd;
 }

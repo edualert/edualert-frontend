@@ -10,14 +10,25 @@ import {NetworkingListResponse} from '../../models/networking-list-response';
 })
 export class InactiveTeachersService extends OneTimeDataGetter {
 
+  private totalCount: number;
+
   constructor(injector: Injector) {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<InactiveTeacher[]> {
-    return super.getData(forceRequest, 'inactive-teachers/')
+  getData(forceRequest: boolean, requestPath?: string, page_size?: number, page?: number): Observable<InactiveTeacher[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `inactive-teachers/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `inactive-teachers/?page_size=${page_size}`;
+    } else {
+      path = `inactive-teachers/`;
+    }
+    return super.getData(forceRequest, path)
       .pipe(map((response: NetworkingListResponse) => {
         const inactiveTeachersList = [];
+        this.totalCount = response.count;
         if (response.count > 0) {
           response.results.forEach(teacher => {
             inactiveTeachersList.push(new InactiveTeacher(teacher));
@@ -26,5 +37,10 @@ export class InactiveTeachersService extends OneTimeDataGetter {
         return inactiveTeachersList;
       }));
   }
+
+  getTotalCount(): number {
+    return this.totalCount;
+  }
+
 
 }

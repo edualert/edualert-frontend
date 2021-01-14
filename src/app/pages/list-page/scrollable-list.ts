@@ -5,6 +5,7 @@ export class ScrollableList {
   elementCount;
   totalCount;
   initialRequestInProgress;
+  requestInProgress;
   requestedPageCount;
   requestDataFunc;
   activeUrlParams;
@@ -14,7 +15,8 @@ export class ScrollableList {
   listEnded: boolean = false;
   activeTab: string;
   scrollPositions;
-
+  infiniteScrollTabIds: string[] = [];
+  tabTopActive: string;
 
   constructor() {
     this.keepOldList = this.hasOwnProperty('keepOldList') ? this['keepOldList'] : null;
@@ -22,6 +24,7 @@ export class ScrollableList {
     this.elementCount = this.hasOwnProperty('elementCount') ? this['elementCount'] : null;
     this.totalCount = this.hasOwnProperty('totalCount') ? this['totalCount'] : null;
     this.initialRequestInProgress = this.hasOwnProperty('initialRequestInProgress') ? this['initialRequestInProgress'] : null;
+    this.requestInProgress = this.hasOwnProperty('requestInProgress') ? this['requestInProgress'] : null;
     this.requestedPageCount = this.hasOwnProperty('requestedPageCount') ? this['requestedPageCount'] : null;
     this.requestDataFunc = this.hasOwnProperty('requestDataFunc') ? this['requestDataFunc'] : null;
     this.activeUrlParams = this.hasOwnProperty('activeUrlParams') ? this['activeUrlParams'] : null;
@@ -60,13 +63,35 @@ export class ScrollableList {
 
     if (scrollHeight - scrollTop < initialHeight + 100
       && this.elementCount < this.totalCount
-      && !this.initialRequestInProgress) {
+      && !this.initialRequestInProgress && !this.requestInProgress) {
       if (this.isOnReportsPage) {
         this.page += 1;
         this.requestDataFunc(this.activeTab);
-      } else if (this.activeTab === 'students_at_risk') {
+      } else if (this.infiniteScrollTabIds.includes(this.activeTab)) {
+        let topTab;
+        switch (this.activeTab) {
+          case 'study_classes_at_risk':
+            if (this.tabTopActive === 'my_classes') {
+              topTab = this.tabTopActive;
+            } else {
+              topTab = 'classes';
+            }
+            break;
+          case 'students_at_risk':
+            topTab = 'students';
+            break;
+          case 'academic_programs_at_risk':
+            topTab = 'profiles';
+            break;
+          case 'inactive_teachers':
+            topTab = 'teachers';
+            break;
+          case 'inactive_parents':
+            topTab = 'class_mastery';
+            break;
+        }
         this.page += 1;
-        this.requestDataFunc('students', this.activeTab);
+        this.requestDataFunc(topTab, this.activeTab);
       } else {
         this.requestedPageCount += 1;
         this.requestDataFunc({...this.activeUrlParams, page: this.requestedPageCount});

@@ -61,7 +61,11 @@
             [maxLength]="128"
             #currentPass
           ></app-input-new>
-          <div class="show-password-button" [class.is-showing]="currentPass.inputType === 'text'" (click)="showHidePassword(currentPass)"></div>
+          <div class="show-password-button"
+               [class.is-showing]="currentPass.inputType === 'text'"
+               [class.adjusted-position]="currentPass.error"
+               (click)="showHidePassword(currentPass)">
+          </div>
         </div>
       </div>
       <div class="detail-element-container margin-top-small">
@@ -75,7 +79,11 @@
             [maxLength]="128"
             #newPass
           ></app-input-new>
-          <div class="show-password-button" [class.is-showing]="newPass.inputType === 'text'" (click)="showHidePassword(newPass)"></div>
+          <div class="show-password-button"
+               [class.is-showing]="newPass.inputType === 'text'"
+               [class.adjusted-position]="newPass.error"
+               (click)="showHidePassword(newPass)">
+          </div>
         </div>
       </div>
       <div class="detail-element-container margin-top-small">
@@ -89,7 +97,11 @@
             [maxLength]="128"
             #repeatPass
           ></app-input-new>
-          <div class="show-password-button" [class.is-showing]="repeatPass.inputType === 'text'" (click)="showHidePassword(repeatPass)"></div>
+          <div class="show-password-button"
+               [class.is-showing]="repeatPass.inputType === 'text'"
+               [class.adjusted-position]="repeatPass.error"
+               (click)="showHidePassword(repeatPass)">
+          </div>
         </div>
       </div>
     </div>
@@ -167,7 +179,7 @@
           <app-datepicker
             color="#0077DB"
             #datepicker
-            [dateValue]="account?.birth_date"
+            [dateValue]="convertStringToDate(account?.birth_date)"
             [maxDateValue]="yesterday"
             (dateChanged)="changeDate($event)"
           >

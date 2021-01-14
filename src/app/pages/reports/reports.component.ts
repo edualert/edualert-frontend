@@ -1,9 +1,9 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {AccountService} from '../../services/account.service';
-import {UserDetails} from '../../models/user-details';
-import {ActivatedRoute, Router} from '@angular/router';
-import {orsTabs} from './reports-tabs';
-import {ViewUserModalComponent} from '../manage-users/view-user-modal/view-user-modal.component';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AccountService } from '../../services/account.service';
+import { UserDetails } from '../../models/user-details';
+import { ActivatedRoute, Router } from '@angular/router';
+import { orsTabs } from './reports-tabs';
+import { ViewUserModalComponent } from '../manage-users/view-user-modal/view-user-modal.component';
 
 @Component({
   selector: 'app-reports',
@@ -45,15 +45,11 @@ export class ReportsComponent implements OnInit {
       if (this.initialQueryParams) {
         return;
       }
+      // The initial query params for SCHOOL_PRINCIPAL / TEACHER will be configured inside
+      // the reports-principal / reports-teacher component, after building the tabs.
       switch (this.accountRole) {
         case 'ADMINISTRATOR':
           this.initialQueryParams = selectedTab;
-          break;
-        case 'SCHOOL_PRINCIPAL':
-          this.initialQueryParams = 'profiles-academic_programs_at_risk';
-          break;
-        case 'TEACHER':
-          this.initialQueryParams = 'my_classes-study_classes_at_risk';
           break;
         case 'PARENT':
           this.initialQueryParams = 'student_school_activity';

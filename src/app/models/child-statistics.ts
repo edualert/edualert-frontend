@@ -53,6 +53,7 @@ export class ChildSchoolActivity {
   is_coordination_subject: boolean;
   behavior_grade_limit: number;
   grade_limit: number;
+  grade_value: number;
 
   constructor(object?: any) {
     this.date = object?.date;
@@ -62,6 +63,7 @@ export class ChildSchoolActivity {
     this.is_coordination_subject = object?.is_coordination_subject;
     this.behavior_grade_limit = object?.behavior_grade_limit;
     this.grade_limit = object?.grade_limit;
+    this.grade_value = object?.grade_value;
   }
 
 }

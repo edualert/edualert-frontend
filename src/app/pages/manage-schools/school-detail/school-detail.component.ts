@@ -1,9 +1,9 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {SchoolDetail} from '../../../models/school-details';
-import {HttpClient} from '@angular/common/http';
-import {ActivatedRoute, Params} from '@angular/router';
-import {ConfirmationModalComponent} from '../../../shared/confirmation-modal/confirmation-modal.component';
-import {ViewUserModalComponent} from '../../manage-users/view-user-modal/view-user-modal.component';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { SchoolDetail } from '../../../models/school-details';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ConfirmationModalComponent } from '../../../shared/confirmation-modal/confirmation-modal.component';
+import { ViewUserModalComponent } from '../../manage-users/view-user-modal/view-user-modal.component';
 
 @Component({
   selector: 'app-school-detail',
@@ -19,20 +19,25 @@ export class SchoolDetailComponent implements OnInit {
   schoolId: Params;
 
   constructor(private httpClient: HttpClient,
+              private router: Router,
               private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit(): void {
     this.schoolId = this.activatedRoute.snapshot.params['id'];
-    this.httpClient.get<SchoolDetail>(this.path + this.schoolId + '/').subscribe( response => {
+    this.httpClient.get<SchoolDetail>(this.path + this.schoolId + '/').subscribe(response => {
       this.school = response;
+    }, error => {
+      if (error.status === 404) {
+        this.router.navigateByUrl('').then();
+      }
     });
   }
 
   openDeActivateSchoolModalSchoolModal(school: SchoolDetail) {
     const modalData = {
       title: `Doriți să ${school.is_active ? 'dezactivați' : 'reactivați'} contul școlii ${school.name}?`,
-      description: `Pentru această școală ${ school.is_active ? 'nu se vor mai putea' :  'se vor putea'} introduce date în sistem și utilizatorii care aparțin școlii ${ school.is_active ? 'nu se vor mai putea' :  'se vor putea'} autentifica în contul EduAlert.`,
+      description: `Pentru această școală ${school.is_active ? 'nu se vor mai putea' : 'se vor putea'} introduce date în sistem și utilizatorii care aparțin școlii ${school.is_active ? 'nu se vor mai putea' : 'se vor putea'} autentifica în contul EduAlert.`,
       cancelButtonText: 'NU',
       confirmButtonText: 'DA',
       confirmButtonCallback: () => {

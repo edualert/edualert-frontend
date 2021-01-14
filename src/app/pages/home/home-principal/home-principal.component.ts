@@ -1,17 +1,17 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
-import {UserDetails} from '../../../models/user-details';
-import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
-import {StudyClassesAtRiskService} from '../../../services/statistics-services/school-statistics.service';
-import {StudyClassAtRisk} from '../../../models/study-class-name';
-import {AcademicProfileAtRisk} from '../../../models/academic-program-details';
-import {InactiveTeacher} from '../../../models/teacher';
-import {StudentAtRisk} from '../../../models/student-data-list';
-import {AcademicProgramsAtRiskService} from '../../../services/statistics-services/academic-programs-statistics.service';
-import {SchoolStudentsAtRiskService, StudentsRiskEvolutionService} from '../../../services/statistics-services/students-statistics.service';
-import {InactiveTeachersService} from '../../../services/statistics-services/inactive-teachers.service';
-import {Column} from '../../../shared/reports-table/reports-table.component';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { UserDetails } from '../../../models/user-details';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { StudyClassesAtRiskService } from '../../../services/statistics-services/school-statistics.service';
+import { StudyClassAtRisk } from '../../../models/study-class-name';
+import { AcademicProfileAtRisk } from '../../../models/academic-program-details';
+import { InactiveTeacher } from '../../../models/teacher';
+import { StudentAtRisk } from '../../../models/student-data-list';
+import { AcademicProgramsAtRiskService } from '../../../services/statistics-services/academic-programs-statistics.service';
+import { SchoolStudentsAtRiskService, StudentsRiskEvolutionService } from '../../../services/statistics-services/students-statistics.service';
+import { InactiveTeachersService } from '../../../services/statistics-services/inactive-teachers.service';
+import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
-import {findIndex} from 'lodash';
+import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 
 @Component({
   selector: 'app-home-principal',
@@ -19,9 +19,7 @@ import {findIndex} from 'lodash';
   styleUrls: ['./home-principal.component.scss', '../home.component.scss']
 })
 export class HomePrincipalComponent implements OnInit {
-
   @Input() userDetails: UserDetails;
-  getDayOfTheWeek = getDayOfTheWeek;
   graphSubtitle: string;
 
   academicProgramsAtRiskList: AcademicProfileAtRisk[];
@@ -47,17 +45,33 @@ export class HomePrincipalComponent implements OnInit {
   yAxis: boolean = true;
   displayChart: boolean;
 
+  isFirstSemesterEnded: boolean = false;
+  isSecondSemesterEnded: boolean = false;
+
   constructor(private studyClassesAtRiskService: StudyClassesAtRiskService,
               private studentsAtRiskService: SchoolStudentsAtRiskService,
               private studentsEvolutionService: StudentsRiskEvolutionService,
               private academicProgramsAtRiskService: AcademicProgramsAtRiskService,
-              private inactiveTeachersService: InactiveTeachersService) {
+              private inactiveTeachersService: InactiveTeachersService,
+              private currentAcademicYearService: CurrentAcademicYearService) {
     this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
   }
 
   ngOnInit(): void {
     this.fetchPageData();
     this.studentsChartView = handleChartWidthHeight();
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
+      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
+
+      if (now > firstSemEnd) {
+        this.isFirstSemesterEnded = true;
+      }
+      if (now > secondSemEnd) {
+        this.isSecondSemesterEnded = true;
+      }
+    });
     this.forceRequest = false;
   }
 
@@ -85,7 +99,7 @@ export class HomePrincipalComponent implements OnInit {
     this.studentsEvolutionService.getData(true)
       .subscribe(response => {
         this.displayChart = shouldDisplayChart(response);
-        this.studentsEvolutionList = formatChartData(response, 'Elevi', moment().month());
+        this.studentsEvolutionList = formatChartData(response, 'Elevi');
       });
   }
 
@@ -147,7 +161,7 @@ export class HomePrincipalComponent implements OnInit {
       backgroundColor: '#FFFFFF',
       name: 'Nume elev',
       dataKey: 'student_full_name',
-      columnType: 'link-button',
+      columnType: 'link-button-fixed-max-width',
       link: (value: StudentAtRisk) => {
         return `manage-users/${value.student.id}/view`;
       },
@@ -161,26 +175,30 @@ export class HomePrincipalComponent implements OnInit {
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Medie anuală',
-      dataKey: this.schoolStudentsAtRiskList[0].avg_final ? 'avg_final' : 'avg_sem1',
-      columnType: 'graded-cell',
+      dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 5,
       minWidth: '100px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Număr corigențe',
       dataKey: 'second_examinations_count',
-      columnType: 'numbered-cell',
+      columnType: 'numbered-cell-dynamic-limit',
+      pivotPoint: 3,
       minWidth: '110px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Număr total absențe nemotivate / an',
-      dataKey: this.schoolStudentsAtRiskList[0].unfounded_abs_count_annual ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
-      columnType: 'numbered-cell',
+      dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
+      columnType: 'numbered-cell-dynamic-limit',
+      pivotPoint: this.isSecondSemesterEnded ? 22 : 11,
       minWidth: '240px'
     }));
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Notă purtare',
-      dataKey: this.schoolStudentsAtRiskList[0].behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
-      columnType: 'numbered-cell',
+      dataKey: this.isSecondSemesterEnded ? 'behavior_grade_annual' : 'behavior_grade_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 'behavior_grade_limit',
       minWidth: '100px'
     }));
   }

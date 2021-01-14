@@ -1,16 +1,16 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
-import {UserDetails} from '../../../models/user-details';
-import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
-import {IsTeacherClassMasterService} from '../../../services/study-class.service';
-import {StudyClassAtRisk} from '../../../models/study-class-name';
-import {StudentAtRisk} from '../../../models/student-data-list';
-import {StudyClassesAtRiskService} from '../../../services/statistics-services/school-statistics.service';
-import {OwnStudentsAtRiskService, OwnStudentsRiskEvolutionService} from '../../../services/statistics-services/students-statistics.service';
-import {Column} from '../../../shared/reports-table/reports-table.component';
-import {InactiveParentsService} from '../../../services/statistics-services/inactive-parents.service';
-import {InactiveParent} from '../../../models/parent';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { UserDetails } from '../../../models/user-details';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { IsTeacherClassMasterService } from '../../../services/study-class.service';
+import { StudyClassAtRisk } from '../../../models/study-class-name';
+import { StudentAtRisk } from '../../../models/student-data-list';
+import { StudyClassesAtRiskService } from '../../../services/statistics-services/school-statistics.service';
+import { OwnStudentsAtRiskService, StudentsRiskEvolutionService } from '../../../services/statistics-services/students-statistics.service';
+import { Column } from '../../../shared/reports-table/reports-table.component';
+import { InactiveParentsService } from '../../../services/statistics-services/inactive-parents.service';
+import { InactiveParent } from '../../../models/parent';
 import * as moment from 'moment';
-import {findIndex} from 'lodash';
+import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 
 @Component({
   selector: 'app-home-teacher',
@@ -18,10 +18,11 @@ import {findIndex} from 'lodash';
   styleUrls: ['./home-teacher.component.scss', '../home.component.scss']
 })
 export class HomeTeacherComponent implements OnInit {
-
   @Input() userDetails: UserDetails;
-  getDayOfTheWeek = getDayOfTheWeek;
   isTeacherClassMaster: boolean = false;
+
+  isFirstSemesterEnded: boolean = false;
+  isSecondSemesterEnded: boolean = false;
 
   studyClassesAtRiskList: StudyClassAtRisk[];
   studyClassesAtRiskTable: Column[] = [];
@@ -47,18 +48,33 @@ export class HomeTeacherComponent implements OnInit {
 
   tabs: any[] = [];
   activeTab: string;
+  noDataMessage: string = 'Nu există rapoarte disponibile.';
+  shouldDisplayNoDataMessage: boolean = false;
 
   constructor(private isTeacherClassMasterService: IsTeacherClassMasterService,
               private studyClassesAtRiskService: StudyClassesAtRiskService,
-              private ownStudentsEvolutionService: OwnStudentsRiskEvolutionService,
+              private ownStudentsEvolutionService: StudentsRiskEvolutionService,
               private ownStudentsAtRiskService: OwnStudentsAtRiskService,
-              private inactiveParentsService: InactiveParentsService) {
+              private inactiveParentsService: InactiveParentsService,
+              private currentAcademicYearService: CurrentAcademicYearService) {
     this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
   }
 
   ngOnInit(): void {
     this.fetchTeacherInfo();
     this.ownStudentsChartView = handleChartWidthHeight();
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
+      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
+
+      if (now > firstSemEnd) {
+        this.isFirstSemesterEnded = true;
+      }
+      if (now > secondSemEnd) {
+        this.isSecondSemesterEnded = true;
+      }
+    });
   }
 
   fetchTeacherInfo(): void {
@@ -73,11 +89,19 @@ export class HomeTeacherComponent implements OnInit {
 
   setTabs(): void {
     if (this.isTeacherClassMaster) {
-      this.tabs = [
-        {id: 'my_own_classes', name: 'Clasele mele'},
-        {id: 'class_master_data', name: 'Dirigentie'}
-      ];
+      if (!this.isFirstSemesterEnded) {
+        this.tabs = [
+          {id: 'class_master_data', name: 'Dirigenție'}
+        ];
+      } else {
+        this.tabs = [
+          {id: 'my_own_classes', name: 'Clasele mele'},
+          {id: 'class_master_data', name: 'Dirigenție'}
+        ];
+      }
       this.activeTab = this.tabs[0].id;
+    } else if (!this.isFirstSemesterEnded) {
+      this.shouldDisplayNoDataMessage = true;
     }
   }
 
@@ -89,8 +113,6 @@ export class HomeTeacherComponent implements OnInit {
       });
 
     if (this.isTeacherClassMaster) {
-      const classId = this.isTeacherClassMasterService.getOwnClassId();
-
       this.inactiveParentsService.getData(this.forceRequest)
         .subscribe(response => {
           this.inactiveParentsList = response;
@@ -101,10 +123,10 @@ export class HomeTeacherComponent implements OnInit {
           this.ownStudentsAtRiskList = response;
           this.generateOwnStudentsAtRiskTable();
         });
-      this.ownStudentsEvolutionService.getData(true, classId.toString())
+      this.ownStudentsEvolutionService.getData(true)
         .subscribe(response => {
           this.displayChart = shouldDisplayChart(response);
-          this.ownStudentsEvolutionList = formatChartData(response, 'Elevi', moment().month());
+          this.ownStudentsEvolutionList = formatChartData(response, 'Elevi');
         });
     }
   }
@@ -134,35 +156,38 @@ export class HomeTeacherComponent implements OnInit {
       backgroundColor: '#FFFFFF',
       name: 'Nume elev',
       dataKey: 'student_full_name',
-      columnType: 'link-button',
+      columnType: 'link-button-fixed-max-width',
       link: (value: StudentAtRisk) => {
         return `manage-users/${value.id}/view`;
       },
-      minWidth: '150px'
+      minWidth: '200px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Medie anuală',
-      dataKey: this.ownStudentsAtRiskList[0]?.avg_final ? 'avg_final' : 'avg_sem1',
-      columnType: 'simple-cell',
+      dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 5,
       minWidth: '120px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Număr corigențe',
       dataKey: 'second_examinations_count',
-      columnType: 'numbered-cell',
+      columnType: 'numbered-cell-dynamic-limit',
+      pivotPoint: 3,
       minWidth: '150px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Număr total absențe nemotivate / an',
-      dataKey: this.ownStudentsAtRiskList[0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual'
-        : 'unfounded_abs_count_sem1',
-      columnType: 'numbered-cell',
+      dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
+      columnType: 'numbered-cell-dynamic-limit',
+      pivotPoint: this.isSecondSemesterEnded ? 22 : 11,
       minWidth: '240px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Notă purtare',
-      dataKey: this.ownStudentsAtRiskList[0]?.behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
-      columnType: 'numbered-cell',
+      dataKey: this.isSecondSemesterEnded ? 'behavior_grade_annual' : 'behavior_grade_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 'behavior_grade_limit',
       minWidth: '100px'
     }));
   }
@@ -171,16 +196,16 @@ export class HomeTeacherComponent implements OnInit {
     this.inactiveParentsTable.push(new Column({
       name: 'Nume părinte',
       dataKey: 'full_name',
-      columnType: 'link-button',
+      columnType: 'link-button-fixed-max-width',
       link: (value: InactiveParent) => {
         return `manage-users/${value.id}/view`;
       },
-      minWidth: '150px'
+      minWidth: '200px'
     }));
     this.inactiveParentsTable.push(new Column({
       name: 'Nume elev',
       dataKey: 'student_full_name',
-      columnType: 'link-button',
+      columnType: 'link-button-fixed-max-width',
       link: (value: InactiveParent) => {
         return `manage-users/${value.student_id}/view`;
       },
@@ -198,6 +223,6 @@ export class HomeTeacherComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   resizeChart(event) {
-   this.ownStudentsChartView = handleChartWidthHeight();
+    this.ownStudentsChartView = handleChartWidthHeight();
   }
 }
