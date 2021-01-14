@@ -109,13 +109,7 @@ export class ListPage extends ScrollableList {
       userRoles: userRolesArray,
       userStatuses: userStatuses,
       studyClassGrades: this.studyClassAvailableGradesService.getData(true).pipe(map(response => {
-        response.forEach((element, index) => {
-          const tempArray = response.slice(index, response.length - 1);
-          if (tempArray.includes(element)) {
-            response.splice(index, 1);
-          }
-        });
-        return response;
+        return [...new Set(response)];
       }), catchError(() => of(null))),
       genericAcademicPrograms: this.genericAcademicProgramsService.getData(true).pipe(catchError(() => of(null))),
       sortCriteria: this.activatedRoute.snapshot.url[2]?.path === 'class-detail' ? classListDetailSortCriteria : studentsSituationSortCriteria

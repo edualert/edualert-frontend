@@ -110,9 +110,7 @@ export const convertDateToString = function(date: Date): string {
 
 export const convertStringToDate = function(date: string): Date | string {
   if (date) {
-    const formattedDate = date.split('-');
-    const newDate = formattedDate[1] + '-' + formattedDate[0] + '-' + formattedDate[2];
-    return new Date(newDate);
+    return moment(date, 'DD-MM-YYYY').toDate();
   }
   return '';
 };

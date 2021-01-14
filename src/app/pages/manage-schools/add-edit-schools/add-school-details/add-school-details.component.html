@@ -83,7 +83,6 @@
         <div class="dropdown-parent value">
           <app-dropdown
             [isDisabled]="!schoolDetails.categories[0]"
-            [errorMessage]="schoolDetailsError?.academic_profile"
             [error]="schoolDetailsError?.academic_profile"
             [list]="data.academic_profiles"
             [displayedProperty]="'name'"
@@ -140,6 +139,7 @@
             [displayedProperty]="'full_name'"
             (elementHasBeenSelected)="handleInputChange($event, 'school_principal')"
             [appliedElement]="schoolDetails?.school_principal"
+            [selectedObject]="schoolDetails?.school_principal"
             [withSearch]="true"
             [required]="true"
           ></app-dropdown>

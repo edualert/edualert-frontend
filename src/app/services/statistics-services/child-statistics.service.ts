@@ -73,8 +73,8 @@ export class ChildAbsencesEvolutionService extends OneTimeDataGetter {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string, childId?: string, month?: number, byCategory?: boolean): Observable<AbsencesStatistics[]> {
-    const path = byCategory ? `own-child-absences-evolution/${childId}/?month=${month}&by_category=${byCategory}/` : `own-child-absences-evolution/${childId}/?month=${month}/`;
+  getData(forceRequest: boolean, requestPath?: string, childId?: string, month?: number, byCategory?: boolean): Observable<any> {
+    const path = byCategory ? `own-child-absences-evolution/${childId}/?month=${month}&by_category=${byCategory}` : `own-child-absences-evolution/${childId}/?month=${month}`;
     return super.getData(forceRequest, path)
       .pipe(map((response: AbsencesStatistics[]) => response.map(absence => new AbsencesStatistics(absence))));
   }

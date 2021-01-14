@@ -21,10 +21,20 @@
                  class="text-item link-content blue-text bold">
                 {{ data[column?.dataKey] }}
               </a>
+              <a *ngIf="column.columnType === 'link-button-fixed-max-width'"
+                 routerLink='{{ column.link(data) }}'
+                 class="text-item link-content blue-text bold fixed-max-width">
+                {{ data[column?.dataKey] }}
+              </a>
 
               <a *ngIf="column.columnType === 'user-details-modal'"
                  (click)="triggerUserModalEvent(column.link(data))"
                  class="text-item link-content blue-text bold">
+                {{ data[column?.dataKey] }}
+              </a>
+              <a *ngIf="column.columnType === 'user-details-modal-fixed-max-width'"
+                 (click)="triggerUserModalEvent(column.link(data))"
+                 class="text-item link-content blue-text bold fixed-max-width">
                 {{ data[column?.dataKey] }}
               </a>
 
@@ -32,12 +42,23 @@
                    class="medium red-text">
                 {{ data[column?.dataKey] }}
               </div>
+              <div *ngIf="column.columnType === 'numbered-cell-dynamic-limit'"
+                   class="medium {{ data[column?.dataKey] >= column?.pivotPoint ? 'red-text' : '' }}">
+                {{ data[column?.dataKey] }}
+              </div>
+              <div *ngIf="column.columnType === 'numbered-cell-dynamic-limit-with-third-of-hours'"
+                   class="{{ data[column?.dataKey] >= data[column?.thirdOfHoursPivotPoint] || data[column?.dataKey] >= column?.pivotPoint ? 'red-text' : '' }}">
+                {{ data[column?.dataKey] }}
+              </div>
 
               <div *ngIf="column.columnType === 'graded-cell'"
                    class="{{ data[column?.dataKey] < 5 ? 'red-text' : '' }}">
                 {{ data[column?.dataKey] }}
               </div>
-
+              <div *ngIf="column.columnType === 'graded-cell-dynamic-limit'"
+                   class="{{ data[column?.dataKey] < (data[column?.pivotPoint] ? data[column?.pivotPoint] : column?.pivotPoint) ? 'red-text' : '' }}">
+                {{ data[column?.dataKey] }}
+              </div>
               <div *ngIf="column.columnType === 'simple-cell'">
                 {{ data[column?.dataKey] }}
               </div>
@@ -47,7 +68,7 @@
               </div>
 
               <div *ngIf="column.columnType === 'custom-text'"
-                   class="{{ getColorByEventType(data?.event_type) }}">
+                   class="{{ getColorByEventType(data) }}">
                 {{ data[column?.dataKey] }}
               </div>
             </ng-template>

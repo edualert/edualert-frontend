@@ -97,6 +97,10 @@ input[type="date"], input.date {
   &.is-showing {
     background-image: url(./assets/img/password-hide.svg);
   }
+
+  &.adjusted-position {
+    top: 32%;
+  }
 }
 
 // With error

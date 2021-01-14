@@ -53,3 +53,7 @@
 .row .value-container {
   align-self: flex-end;
 }
+
+.fixed-width {
+  min-width: $fixed-width-column;
+}

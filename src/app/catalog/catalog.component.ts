@@ -71,37 +71,10 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
     });
 
     this.bringExpandedCellToScreen = this.bringExpandedCellToScreen.bind(this);
-    this.stickTableHeadBelowPageHeader = this.stickTableHeadBelowPageHeader.bind(this);
   }
 
   ngAfterViewInit() {
     this.scrollContainer.nativeElement.addEventListener('scroll', this.bringExpandedCellToScreen);
-    this.scrollContainer.nativeElement.addEventListener('scroll', this.stickTableHeadBelowPageHeader);
-  }
-
-  private stickTableHeadBelowPageHeader() {
-    const pageHeader = window.innerWidth > 1024
-      ? document.getElementById('page-header')
-      : document.getElementById('nav-bar');
-    const tableHeader = this.tableHeader.nativeElement;
-    const tableSubheader = this.tableSubheader.nativeElement;
-    const dataRows = document.getElementsByClassName('data-rows')[0];
-    const pointToStickTo = pageHeader.getBoundingClientRect().top + pageHeader.getBoundingClientRect().height
-      + tableHeader.getBoundingClientRect().height + tableSubheader.getBoundingClientRect().height + 20; // 20 -> page-content padding
-
-    this.headerService.refreshHeaderHeight();
-
-    if (dataRows.getBoundingClientRect().top < pointToStickTo) {
-      tableHeader.style.transform = `translateY(${pointToStickTo - dataRows.getBoundingClientRect().top}px)`;
-    } else {
-      tableHeader.style.transform = 'none';
-    }
-
-    if (dataRows.getBoundingClientRect().top < pointToStickTo) {
-      tableSubheader.style.transform = `translateY(${pointToStickTo - dataRows.getBoundingClientRect().top}px)`;
-    } else {
-      tableSubheader.style.transform = 'none';
-    }
   }
 
   private bringExpandedCellToScreen() {
@@ -115,6 +88,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.internalData = this.formatTableData(changes.data.currentValue);
       this.refreshExpandedCellData();
       this.headerService.refreshHeaderHeight();
+      this.internalLayout = this.getLayout(this.tableLayout);
     }
 
     if (changes.tableLayout && this.academicCalendar) {
@@ -228,9 +202,11 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   private getDataForExpandedCell(identifier: CellIdentifier, dataRow): any {
     switch (identifier) {
       case 'grades_sem_1': {
+        dataRow.grades_sem1.wants_thesis = dataRow.wants_thesis;
         return dataRow.grades_sem1;
       }
       case 'grades_sem_2': {
+        dataRow.grades_sem2.wants_thesis = dataRow.wants_thesis;
         return dataRow.grades_sem2;
       }
       case 'grade_annual': {
@@ -276,7 +252,6 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.scrollContainer.nativeElement.removeEventListener('scroll', this.bringExpandedCellToScreen);
-    this.scrollContainer.nativeElement.removeEventListener('scroll', this.stickTableHeadBelowPageHeader);
   }
 
 }

@@ -1,9 +1,113 @@
 @import "../../../../assets/styles/base";
 
+.statistics-container {
+  margin-top: 45px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 520px;
+
+  .statistics {
+    min-width: 290px;
+    max-width: 442px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .margin-bottom-small {
+    margin-bottom: $margin-tiny;
+  }
+}
+
+.text-card {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: $margin-tiny;
+
+  .medium {
+    height: 20px;
+    width: 75%;
+    font-size: $font-size-bigish;
+    padding-right: $margin-xsmall;
+  }
+
+  .simple-text {
+    height: 20px;
+    width: 75%;
+    margin-top: $margin-small;
+    padding-right: $margin-xsmall;
+  }
+
+  .text-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .margin-top {
+    font-weight: $font-weight-medium;
+    margin-top: $margin-small;
+  }
+}
+
+.absences-split-view {
+  margin: $margin-small 0 $margin-xsmall 0;
+
+  .text-row {
+    margin-bottom: $margin-tiny;
+  }
+}
+
+.border-right {
+  border-right: 1px solid $color-separator;
+}
+
+.card {
+  color: $color-text-normal;
+  background-color: #FFFFFF;
+  max-width: 382px;
+  padding: $margin-small $margin-big;
+}
+
 .export_button {
   padding-right: $margin-default;
   background-image: url(../../../../assets/img/export.svg);
   background-repeat: no-repeat;
   background-position: right center;
   max-width: 120px;
+}
+
+@media screen and (max-width: $mobile-screen-width-normal) {
+  .statistics-container {
+    margin-top: unset;
+  }
+}
+
+@media screen and (max-width: $mobile-screen-width-small) {
+  .statistics-container {
+    .statistics {
+      min-width: 270px;
+    }
+  }
+
+  .text-card {
+    .simple-text {
+      font-size: $font-size-small;
+      width: 85%;
+    }
+
+    .big-text {
+      font-size: $font-size-bigish;
+    }
+
+    .medium {
+      font-size: $font-size-normal;
+      width: 85%;
+    }
+
+    h1 {
+      font-size: $font-size-big;
+    }
+  }
+
 }

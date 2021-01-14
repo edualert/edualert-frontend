@@ -37,7 +37,7 @@
 }
 
 #tabs-container {
-  width: calc(100% - 305px);
+  width: calc(100% - #{$nav-bar-width} - #{$margin-xsmall});
 }
 
 #header-sort {

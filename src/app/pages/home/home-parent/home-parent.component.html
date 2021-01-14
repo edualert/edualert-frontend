@@ -115,6 +115,7 @@
         <div class="card-table-header">
           <div class="big-text bold card-title-text">Istoric activitate școlară</div>
           <div class="text-item link-content blue-text bold web more-button arrow-right"
+               *ngIf="childSchoolActivity?.length > 0"
                [routerLink]="['/reports']" [queryParams]="{top_tab: 'student_school_activity'}"
           >Mai multe rapoarte
           </div>
@@ -125,6 +126,7 @@
           </app-reports-table>
         </div>
         <div class="text-item link-content blue-text bold mobile more-button arrow-right"
+             *ngIf="childSchoolActivity?.length > 0"
              [routerLink]="['/reports']" [queryParams]="{top_tab: 'student_school_activity'}"
         >Mai multe rapoarte
         </div>
@@ -182,7 +184,7 @@
                 </div>
                 <div class="bottom-tooltip">
                   <div class="padded">{{ model[0].name }}</div>
-                  <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                  <div>{{ model[0].weekday }}</div>
                 </div>
               </div>
             </div>

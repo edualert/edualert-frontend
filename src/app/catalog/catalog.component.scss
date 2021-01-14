@@ -66,8 +66,11 @@ $cell-height: 66px;
   min-width: 250px;
 }
 
+$headerHeight: 37px;
+
 .row.header, .row.subheader {
-  position: relative;
+  position: sticky;
+  top: 0;
 
   .cell {
     height: 27px;
@@ -93,7 +96,7 @@ $cell-height: 66px;
   z-index: 1;
 
   .cell {
-    height: 37px;
+    height: $headerHeight;
     padding-top: $margin-tiny;
     font-weight: $font-weight-medium;
     border-right: 0;
@@ -103,6 +106,7 @@ $cell-height: 66px;
 
 .row.subheader {
   z-index: 1;
+  top: $headerHeight;
 
   .cell {
     line-height: 27px;

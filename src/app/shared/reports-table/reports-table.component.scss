@@ -49,6 +49,7 @@
   width: auto;
   border-bottom: 1px solid $color-separator;
   justify-content: space-between;
+  align-items: center;
 }
 
 .row-data {
@@ -97,7 +98,12 @@
   &::after {
     content: url("src/assets/img/long-arrow.svg");
     padding-left: $margin-xsmall;
+    margin-bottom: 2px;
   }
+}
+
+.fixed-max-width {
+  max-width: 195px;
 }
 
 .arrow {

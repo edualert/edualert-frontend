@@ -232,6 +232,7 @@
 .name-cell, .subject-name-cell {
   white-space: nowrap;
   overflow: hidden;
+  width: 100%;
 
   .name {
     font-size: $font-size-bigish;
@@ -239,16 +240,16 @@
     text-overflow: ellipsis;
     overflow: hidden;
     padding-right: 5px;
-  }
 
-  .name.dark-text {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    filter: brightness(1.3);
+    &.dark-text {
+      filter: brightness(1.3);
+    }
   }
 
   .arrow {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 2px;
     filter: grayscale(100%) contrast(2.5);
   }
 
@@ -374,6 +375,7 @@
 
     .tag {
       margin-right: 5px;
+      margin-top: 5px;
     }
 
     .tag + .tag {

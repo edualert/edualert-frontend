@@ -1,8 +1,8 @@
 import { Component, Injector } from '@angular/core';
 import {OwnStudyClass} from '../../models/study-class';
 import {ListPage} from '../list-page/list-page';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Params, Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
+import {Params} from '@angular/router';
 import {getCurrentAcademicYear} from '../../shared/utils';
 import {AccountService} from '../../services/account.service';
 import {IdText} from '../../models/id-text';

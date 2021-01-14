@@ -5,7 +5,8 @@
     <h2 id="header-subtitle">Bine ai revenit, <span class="bold">{{ userDetails?.full_name }}</span>!</h2>
   </app-header>
   <div class="page-content">
-    <div class="card-table-container card">
+    <div class="card-table-container card"
+         *ngIf="isFirstSemesterEnded">
       <div class="card-table-header">
         <div class="big-text bold card-title-text">Top profile cu risc</div>
         <div class="text-item link-content blue-text bold more-button arrow-right web"
@@ -22,7 +23,8 @@
       >Mai multe rapoarte</div>
     </div>
 
-    <div class="card-table-container card">
+    <div class="card-table-container card"
+         *ngIf="isFirstSemesterEnded">
       <div class="card-table-header">
         <div class="big-text bold card-title-text">Top clase cu risc</div>
         <div class="text-item link-content blue-text bold more-button arrow-right web"
@@ -39,7 +41,8 @@
       >Mai multe rapoarte</div>
     </div>
 
-    <div class="card-table-container card">
+    <div class="card-table-container card"
+         *ngIf="!isSecondSemesterEnded">
       <div class="card-table-header">
         <div class="big-text bold card-title-text">Top profesori inactivi</div>
         <div class="text-item link-content blue-text bold more-button arrow-right web"
@@ -102,7 +105,7 @@
                 </div>
                 <div class="bottom-tooltip">
                   <div class="padded">{{ model[0].name }}</div>
-                  <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                  <div>{{ model[0].weekday }}</div>
                 </div>
               </div>
             </div>

@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
   }
 
   handleSubmit(event): void {
-    this.errorLogin = '';
+    this.hideErrorToast();
     this.submitButton.nativeElement.blur();
     switch (this.page) {
       case 'login':
@@ -214,6 +214,7 @@ export class LoginComponent implements OnInit {
     this.forgotPasswordSuccess = null;
     this.forgotPasswordError = null;
     this.resetPasswordError = null;
+    this.errorRepeatPassword = null;
     event.preventDefault();
     this.router.navigateByUrl(getLoginPageRoute());
   }

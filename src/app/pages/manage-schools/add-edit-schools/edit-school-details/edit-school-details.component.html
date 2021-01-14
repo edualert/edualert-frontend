@@ -115,6 +115,7 @@
           [displayedProperty]="'full_name'"
           (elementHasBeenSelected)="handleInputChange($event, 'school_principal')"
           [appliedElement]="schoolDetails?.school_principal"
+          [selectedObject]="schoolDetails?.school_principal"
           [withSearch]="true"
           [required]="true"
         ></app-dropdown>

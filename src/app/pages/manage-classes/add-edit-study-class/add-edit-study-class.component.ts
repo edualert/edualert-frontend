@@ -260,7 +260,7 @@ export class AddEditStudyClassComponent implements OnInit {
         if (this.studyClassErrors.students?.length > 0) {
           this.studyClassErrors.students.forEach(studentError => {
             if (studentError.full_name) {
-              this.studyClassRequestErrors = 'Aveti o eroare in lista de elevi!';
+              this.studyClassRequestErrors = 'Aveți o eroare în lista de elevi!';
             }
           });
         }
@@ -268,7 +268,7 @@ export class AddEditStudyClassComponent implements OnInit {
       case 'students':
         this.studyClassErrors.teachers_class_through.forEach(teacherError => {
           if (teacherError.teacher) {
-            this.studyClassRequestErrors = 'Aveti o eroare in lista de profesori!';
+            this.studyClassRequestErrors = 'Aveți o eroare în lista de profesori!';
           }
         });
         break;

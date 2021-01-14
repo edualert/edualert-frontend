@@ -7,3 +7,21 @@
   background-position: right center;
   max-width: 120px;
 }
+
+.info-card {
+  border: unset;
+}
+
+.page-content {
+  animation: contentAppear 1.2s linear 1 backwards;
+}
+
+#tabs-container {
+  width: calc(100% - #{$nav-bar-width} - #{$margin-xsmall});
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  #tabs-container {
+    width: initial;
+  }
+}

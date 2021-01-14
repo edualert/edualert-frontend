@@ -2,11 +2,11 @@ import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {AccountService} from '../../../services/account.service';
 import {Account} from '../../../models/account';
 import {userRoles} from '../../../models/user-roles';
-import {get} from 'lodash';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {InputValidator} from '../../../services/field-validation';
 import {DatepickerComponent} from '../../../shared/datepicker/datepicker.component';
+import { convertStringToDate } from '../../../shared/calendar/calendar-utils';
 import * as moment from 'moment';
 
 @Component({
@@ -15,8 +15,10 @@ import * as moment from 'moment';
   styleUrls: ['./edit-my-account.component.scss', '../../../shared/label-styles.scss']
 })
 export class EditMyAccountComponent implements OnInit {
-
   @ViewChild('datepicker', {'static': false}) datepicker: DatepickerComponent;
+
+  convertStringToDate = convertStringToDate;
+
   account: Account;
   availableFields: {
     class?: string;

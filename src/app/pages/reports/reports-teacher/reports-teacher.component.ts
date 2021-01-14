@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   StudyClassesAtRiskService
 } from '../../../services/statistics-services/school-statistics.service';
@@ -6,22 +6,25 @@ import {
   InactiveParentsService,
   OwnStudentsAbsencesService,
   OwnStudentsAtRiskService, OwnStudentsAverageService, OwnStudentsBehaviourGradesService,
-  OwnStudentsRiskEvolutionService
+  StudentsRiskEvolutionService
 } from '../../../services/statistics-services/students-statistics.service';
-import {IsTeacherClassMasterService} from '../../../services/study-class.service';
-import {Column} from '../../../shared/reports-table/reports-table.component';
-import {StudentAtRisk} from '../../../models/student-data-list';
-import {InactiveParent} from '../../../models/parent';
+import { IsTeacherClassMasterService } from '../../../services/study-class.service';
+import { Column } from '../../../shared/reports-table/reports-table.component';
+import { StudentAtRisk } from '../../../models/student-data-list';
+import { InactiveParent } from '../../../models/parent';
 import * as moment from 'moment';
-import {classMasterTabsMappingTypes, teacherTabs, notClassMasterTabsMappingTypes} from '../reports-tabs';
-import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
+import { classMasterTabsMappingTypes, notClassMasterTabsMappingTypes } from '../reports-tabs';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
+import { findIndex } from 'lodash';
+import {ScrollableList} from '../../list-page/scrollable-list';
 
 @Component({
   selector: 'app-reports-teacher',
   templateUrl: './reports-teacher.component.html',
   styleUrls: ['./reports-teacher.component.scss', '../reports.component.scss']
 })
-export class ReportsTeacherComponent implements OnInit, OnChanges {
+export class ReportsTeacherComponent extends ScrollableList implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Output() changeUrlParamsEvent = new EventEmitter<object>();
   @Output() changeUserIdForModal = new EventEmitter<string | number>();
   @Input() initialQueryParams: string;
@@ -33,24 +36,16 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   ownStudentsBehaviourGradeTable: Column[] = [];
   inactiveParentsTable: Column[] = [];
 
-  tabs_top: { name: string, id: teacherTabs }[] = [
-    {name: 'Clasele mele', id: 'my_classes'},
-    {name: 'Dirigenție', id: 'class_mastery'},
-  ];
-  tabs_bottom_my_classes: { name: string, id: teacherTabs }[] = [
-    {name: 'Top clase cu risc', id: 'study_classes_at_risk'}
-  ];
-  tabs_bottom_class_mastery: { name: string, id: teacherTabs }[] = [
-    {name: 'Top elevi cu risc', id: 'students_at_risk'},
-    {name: 'Top elevi după medii', id: 'own_students_average'},
-    {name: 'Top elevi după absențe', id: 'own_students_absences'},
-    {name: 'Top elevi după notă purtare', id: 'own_students_behaviour_grade'},
-    {name: 'Evoluție nr. elevi cu risc', id: 'own_students_risk_evolution'},
-    {name: 'Top părinți inactivi', id: 'inactive_parents'},
-  ];
-  tabs_bottom: { name: string, id: string }[] = this.tabs_bottom_my_classes;
-  activeTabTop: string = 'my_classes';
-  activeTabBottom: string = 'study_classes_at_risk';
+  tabs_top: any[] = [];
+  tabs_bottom_my_classes: any[] = [];
+  tabs_bottom_class_mastery: any[] = [];
+  tabs_bottom: any[] = [];
+
+  activeTabTop: string;
+  activeTabBottom: string;
+  noDataMessage: string = 'Nu există rapoarte disponibile.';
+  shouldDisplayNoDataMessage: boolean = false;
+
   month: number = moment().month();
   loading: boolean = false;
 
@@ -72,7 +67,31 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   };
   isTeacherClassMaster: boolean;
 
-  getDayOfTheWeek = getDayOfTheWeek;
+  currentPages = {
+    my_classes: {
+      study_classes_at_risk: {
+        currentPage: 1,
+        lastRequestedPage: 0,
+        totalCount: 0,
+        elementCount: 0
+      }
+    },
+    class_mastery: {
+      inactive_parents: {
+        currentPage: 1,
+        lastRequestedPage: 0,
+        totalCount: 0,
+        elementCount: 0
+      }
+    }
+  };
+
+  pageSize: number = 30;
+  tableIsGenerated: boolean = false;
+
+  isFirstSemesterEnded: boolean = false;
+  isSecondSemesterEnded: boolean = false;
+
   graphSubtitle: string;
   colorSchemeRed = {
     domain: ['#CC0033']
@@ -81,36 +100,53 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   displayChart: boolean;
 
   changeTab(event: any, type: string): void {
-    if (type === 'top') {
-      this.activeTabTop = event;
-      switch (this.activeTabTop) {
-        case 'my_classes':
-          this.tabs_bottom = this.tabs_bottom_my_classes;
-          this.activeTabBottom = this.tabs_bottom_my_classes[0].id;
-          break;
-        case 'class_mastery':
-          this.tabs_bottom = this.tabs_bottom_class_mastery;
-          this.activeTabBottom = this.tabs_bottom_class_mastery[0].id;
-          break;
-        default:
-          this.tabs_bottom = this.tabs_bottom_my_classes;
-          this.activeTabBottom = this.tabs_bottom_my_classes[0].id;
-          break;
+    document.body.scrollTop = 0;
+    setTimeout(() => {
+      if (type === 'top') {
+        this.activeTabTop = event;
+        switch (this.activeTabTop) {
+          case 'my_classes':
+            this.tabs_bottom = this.tabs_bottom_my_classes;
+            this.activeTabBottom = this.tabs_bottom_my_classes[0].id;
+            break;
+          case 'class_mastery':
+            this.tabs_bottom = this.tabs_bottom_class_mastery;
+            this.activeTabBottom = this.tabs_bottom_class_mastery[0].id;
+            break;
+          default:
+            this.tabs_bottom = this.tabs_bottom_my_classes;
+            this.activeTabBottom = this.tabs_bottom_my_classes[0].id;
+            break;
+        }
       }
-    }
-    if (type === 'bottom') {
-      this.activeTabBottom = event;
-    }
-    this.changeUrlParamsEvent.next({
-      top_tab: this.activeTabTop,
-      bottom_tab: this.activeTabBottom
-    });
-    this.month = moment().month();
+      if (type === 'bottom') {
+        this.activeTabBottom = event;
+      }
+      this.changeUrlParamsEvent.next({
+        top_tab: this.activeTabTop,
+        bottom_tab: this.activeTabBottom
+      });
+      this.month = moment().month();
+
+      if (this.infiniteScrollTabIds.includes(this.activeTabBottom)) {
+        this.totalCount = this.currentPages[this.activeTabTop][this.activeTabBottom].totalCount;
+        this.elementCount = this.currentPages[this.activeTabTop][this.activeTabBottom].elementCount;
+        if (this.data[this.activeTabTop][this.activeTabBottom] === null) {
+          this.currentPages[this.activeTabTop][this.activeTabBottom].currentPage = 1;
+        }
+        this.page = this.currentPages[this.activeTabTop][this.activeTabBottom].currentPage;
+
+        this.activeTab = this.activeTabBottom;
+        this.tabTopActive = this.activeTabTop;
+      }
+    }, 10);
   }
 
   changeMonth(event: string): void {
     this.month = new Date(event).getMonth();
-    this.fetchData(this.activeTabTop, this.activeTabBottom);
+    if (this.isTeacherClassMaster !== undefined) {
+      this.fetchData(this.activeTabTop, this.activeTabBottom);
+    }
   }
 
   getPreviousCurrentAndNextMonth(month: number) {
@@ -123,32 +159,51 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   }
 
   fetchData(id_top: string, id_bottom: string) {
-    // If we already have data for that id don't make a request
-    if (this.data[id_top] !== undefined && this.data[id_top][id_bottom] !== null && id_bottom !== 'own_students_risk_evolution') {
+    if (this.shouldDisplayNoDataMessage || this.loading) {
       return;
     }
-    if (id_bottom === 'own_students_risk_evolution' && this.data[id_top][id_bottom][this.month - 1] && this.data[id_top][id_bottom][this.month]) {
+    this.tableIsGenerated = !(this.data[id_top][id_bottom] === null || this.data[id_top][id_bottom] === undefined);
+    if (this.data[id_top][id_bottom] === null) {
+      this.tableIsGenerated = false;
+      document.body.removeEventListener('scroll', this.scrollHandle);
+      document.body.addEventListener('scroll', this.scrollHandle);
+    }
+    // If we already have data for that id don't make a request
+    if (this.data[id_top] !== undefined && this.data[id_top][id_bottom] !== null) {
+      if (this.infiniteScrollTabIds.includes(id_bottom) && this.page === this.currentPages[this.activeTabTop][this.activeTabBottom].lastRequestedPage) {
+        return;
+      }
+      if (!['own_students_risk_evolution', ...this.infiniteScrollTabIds].includes(id_bottom)) {
+        return;
+      }
+    }
+
+    const previousMonth = this.month === 0 ? 11 : this.month - 1;
+    if (id_bottom === 'own_students_risk_evolution' && this.data[id_top][id_bottom][previousMonth] && this.data[id_top][id_bottom][this.month]) {
       this.displayChart = shouldDisplayChart(this.data[id_top][id_bottom][this.month]['chartData'][0]['series']);
       return;
     }
-    this.loading = true;
+
+    if (this.infiniteScrollTabIds.includes(id_bottom)) {
+      this.currentPages[id_top][id_bottom].currentPage = this.page;
+    }
 
     const month = this.getPreviousCurrentAndNextMonth(this.month);
 
     const notClassMasterRequests = {
       'my_classes-study_classes_at_risk': {
-        request: this.studyClassesAtRiskService.getData(false),
+        request: this.studyClassesAtRiskService.getData(true, null, this.pageSize, this.page),
         generate: this.generateStudyClassesAtRiskTable
       }
     };
 
     const classMasterRequests = {
       'my_classes-study_classes_at_risk': {
-        request: this.studyClassesAtRiskService.getData(false),
+        request: this.studyClassesAtRiskService.getData(true, null, this.pageSize, this.page),
         generate: this.generateStudyClassesAtRiskTable
       },
       'class_mastery-students_at_risk': {
-        request: this.ownStudentsAtRiskService.getData(false),
+        request: this.ownStudentsAtRiskService.getData(true, null, 50),
         generate: this.generateOwnStudentsAtRiskTable
       },
       'class_mastery-own_students_average': {
@@ -164,14 +219,15 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
         generate: this.generateOwnStudentsBehaviourGradeTable
       },
       'class_mastery-own_students_risk_evolution': {
-        request: this.ownStudentsEvolutionService.getData(true, '', '', month.current),
-        requestPrevious: this.ownStudentsEvolutionService.getData(true, '', month.prev)
+        request: this.studentsEvolutionService.getData(true, '', month.current),
+        requestPrevious: this.studentsEvolutionService.getData(true, '', month.prev)
       },
       'class_mastery-inactive_parents': {
-        request: this.inactiveParentsService.getData(false),
+        request: this.inactiveParentsService.getData(true, null, this.pageSize, this.page),
         generate: this.generateInactiveParentsTable
       },
     };
+
     let requests: { [tab in classMasterTabsMappingTypes]: any } | { [tab in notClassMasterTabsMappingTypes]: any };
 
     if (this.isTeacherClassMaster) {
@@ -182,33 +238,62 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
 
     const req = requests[`${id_top}-${id_bottom}`];
     if (id_bottom === 'own_students_risk_evolution') {
-      if (this.month === -10) {
-        return;
+      if (!this.data[id_top][id_bottom][this.month]) {
+        req.request.subscribe((response) => {
+          this.data[id_top][id_bottom][this.month] = formatChartData(response, 'Elevi');
+          this.displayChart = shouldDisplayChart(response);
+          this.loading = false;
+        }, error => {
+          this.data[id_top][id_bottom][this.month] = error.detail;
+          this.loading = false;
+        });
+      } else {
+        this.displayChart = shouldDisplayChart(this.data[id_top][id_bottom][this.month]['chartData'][0]['series']);
       }
-      req.request.subscribe((response) => {
-        this.data[id_top][id_bottom][this.month] = formatChartData(response, 'Elevi', this.month);
-        this.displayChart = shouldDisplayChart(response);
-        this.loading = false;
-      }, error => {
-        this.data[id_top][id_bottom][this.month] = error.detail;
-        this.loading = false;
-      });
-      req.requestPrevious.subscribe((response) => {
-        this.data[id_top][id_bottom][this.month - 1] = formatChartData(response, 'Elevi', this.month);
-        this.displayChart = shouldDisplayChart(response);
-        this.loading = false;
-      }, error => {
-        this.data[id_top][id_bottom][this.month - 1] = error.detail;
-        this.loading = false;
-      });
+
+      if (previousMonth !== 7 && !this.data[id_top][id_bottom][previousMonth]) {
+        req.requestPrevious.subscribe((response) => {
+          this.data[id_top][id_bottom][previousMonth] = formatChartData(response, 'Elevi');
+          this.loading = false;
+        }, error => {
+          this.data[id_top][id_bottom][previousMonth] = error.detail;
+          this.loading = false;
+        });
+      }
       return;
     }
 
+    this.loading = this.initialRequestInProgress = true;
     req.request.subscribe((response) => {
-      this.data[id_top][id_bottom] = response;
-      this.loading = false;
-      if (req.generate) {
+      if (this.infiniteScrollTabIds.includes(id_bottom)) {
+        if (this.data[id_top][id_bottom] !== null) {
+          response.forEach(item => {
+            this.data[id_top][id_bottom].push(item);
+          });
+        } else {
+          this.data[id_top][id_bottom] = response;
+        }
+        switch (id_bottom) {
+          case 'study_classes_at_risk':
+            this.currentPages[id_top][id_bottom].totalCount = this.studyClassesAtRiskService.getTotalCount();
+            break;
+          case 'inactive_parents':
+            this.currentPages[id_top][id_bottom].totalCount = this.inactiveParentsService.totalCount;
+            break;
+        }
+        this.totalCount = this.currentPages[id_top][id_bottom].totalCount;
+        this.currentPages[id_top][id_bottom].elementCount = this.data[id_top][id_bottom]?.length;
+        this.elementCount = this.currentPages[id_top][id_bottom].elementCount;
+        this.currentPages[id_top][id_bottom].lastRequestedPage = this.page;
+        this.tabTopActive = this.activeTabTop;
+        this.activeTab = this.activeTabBottom;
+      } else {
+        this.data[id_top][id_bottom] = response;
+      }
+      this.loading = this.initialRequestInProgress = false;
+      if (req.generate && !this.tableIsGenerated) {
         req.generate();
+        this.tableIsGenerated = true;
       }
     });
 
@@ -216,13 +301,23 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
 
   constructor(private isTeacherClassMasterService: IsTeacherClassMasterService,
               private studyClassesAtRiskService: StudyClassesAtRiskService,
-              private ownStudentsEvolutionService: OwnStudentsRiskEvolutionService,
+              private studentsEvolutionService: StudentsRiskEvolutionService,
               private ownStudentsAverageService: OwnStudentsAverageService,
               private ownStudentsAbsencesService: OwnStudentsAbsencesService,
               private ownStudentsBehaviourGradeService: OwnStudentsBehaviourGradesService,
               private ownStudentsAtRiskService: OwnStudentsAtRiskService,
               private inactiveParentsService: InactiveParentsService,
+              private currentAcademicYearService: CurrentAcademicYearService
   ) {
+    super();
+    this.scrollHandle = this.scrollHandle.bind(this);
+    this.initialBodyHeight = document.body.getBoundingClientRect().height;
+    this.infiniteScrollTabIds = [
+      'study_classes_at_risk',
+      'inactive_parents'
+    ];
+    this.requestDataFunc = this.fetchData;
+
     this.generateStudyClassesAtRiskTable = this.generateStudyClassesAtRiskTable.bind(this);
     this.generateOwnStudentsAtRiskTable = this.generateOwnStudentsAtRiskTable.bind(this);
     this.generateOwnStudentsAverageTable = this.generateOwnStudentsAverageTable.bind(this);
@@ -232,7 +327,7 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   }
 
 
-  fetchTeacherInfo() {
+  fetchTeacherInfo(setTabs?: boolean) {
     this.isTeacherClassMasterService.verifyIfClassMaster()
       .subscribe((response: boolean) => {
         this.isTeacherClassMaster = response;
@@ -241,11 +336,15 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
             {name: 'Clasele mele', id: 'my_classes'},
           ];
         }
+        if (setTabs) {
+          this.buildTabs();
+        }
         this.fetchData(this.activeTabTop, this.activeTabBottom);
       });
   }
 
   generateStudyClassesAtRiskTable() {
+    this.studyClassesAtRiskTable = [];
     this.studyClassesAtRiskTable.push(new Column({
       backgroundColor: '#EDF0F5',
       name: 'Nume clasă',
@@ -262,11 +361,12 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   }
 
   generateOwnStudentsAtRiskTable() {
+    this.ownStudentsAtRiskTable = [];
     this.ownStudentsAtRiskTable.push(new Column({
       backgroundColor: '#EDF0F5',
       name: 'Nume elev',
       dataKey: 'student_full_name',
-      columnType: 'user-details-modal',
+      columnType: 'user-details-modal-fixed-max-width',
       link: (value: StudentAtRisk) => {
         return value.student.id;
       },
@@ -274,32 +374,36 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Medie generală anuală',
-      dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.avg_final ? 'avg_final' : 'avg_sem1',
-      columnType: 'graded-cell',
+      dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 5,
       minWidth: '130px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Număr corigențe pe an',
       dataKey: 'second_examinations_count',
-      columnType: 'numbered-cell',
+      columnType: 'numbered-cell-dynamic-limit',
+      pivotPoint: 3,
       minWidth: '150px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Număr total absențe nemotivate pe an',
-      dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual'
-        : 'unfounded_abs_count_sem1',
-      columnType: 'numbered-cell',
+      dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
+      columnType: 'numbered-cell-dynamic-limit',
+      pivotPoint: this.isSecondSemesterEnded ? 22 : 11,
       minWidth: '240px'
     }));
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Notă anuală purtare',
-      dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
-      columnType: 'graded-cell',
+      dataKey: this.isSecondSemesterEnded ? 'behavior_grade_annual' : 'behavior_grade_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 'behavior_grade_limit',
       minWidth: '115px'
     }));
   }
 
   generateOwnStudentsAverageTable() {
+    this.ownStudentsAverageTable = [];
     this.ownStudentsAverageTable.push(new Column({
       backgroundColor: '#EDF0F5',
       name: 'Nume elev',
@@ -312,13 +416,14 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
     }));
     this.ownStudentsAverageTable.push(new Column({
       name: 'Medie generală anuală',
-      dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.avg_final ? 'avg_final' : 'avg_sem1',
+      dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell',
       minWidth: '120px'
     }));
   }
 
   generateOwnStudentsAbsencesTable() {
+    this.ownStudentsAbsencesTable = [];
     this.ownStudentsAbsencesTable.push(new Column({
       backgroundColor: '#EDF0F5',
       name: 'Nume elev',
@@ -331,14 +436,14 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
     }));
     this.ownStudentsAbsencesTable.push(new Column({
       name: 'Număr total absențe nemotivate pe an',
-      dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual'
-        : 'unfounded_abs_count_sem1',
+      dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
       columnType: 'numbered-cell',
       minWidth: '240px'
     }));
   }
 
   generateOwnStudentsBehaviourGradeTable() {
+    this.ownStudentsBehaviourGradeTable = [];
     this.ownStudentsBehaviourGradeTable.push(new Column({
       backgroundColor: '#EDF0F5',
       name: 'Nume elev',
@@ -351,18 +456,20 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
     }));
     this.ownStudentsBehaviourGradeTable.push(new Column({
       name: 'Notă anuală purtare',
-      dataKey: this.data[this.activeTabTop][this.activeTabBottom][0]?.behavior_grade_annual ? 'behavior_grade_annual' : 'behavior_grade_sem1',
-      columnType: 'graded-cell',
+      dataKey: this.isSecondSemesterEnded ? 'behavior_grade_annual' : 'behavior_grade_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 'behavior_grade_limit',
       minWidth: '115px'
     }));
   }
 
   generateInactiveParentsTable() {
+    this.inactiveParentsTable = [];
     this.inactiveParentsTable.push(new Column({
       backgroundColor: '#EDF0F5',
       name: 'Nume părinte',
       dataKey: 'full_name',
-      columnType: 'user-details-modal',
+      columnType: 'user-details-modal-fixed-max-width',
       link: (value: InactiveParent) => {
         return value.id;
       },
@@ -371,7 +478,7 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
     this.inactiveParentsTable.push(new Column({
       name: 'Nume elev',
       dataKey: 'student_full_name',
-      columnType: 'user-details-modal',
+      columnType: 'user-details-modal-fixed-max-width',
       link: (value: InactiveParent) => {
         return value.children[0].id;
       },
@@ -388,25 +495,114 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.changeUrlParamsEvent.next({
-      top_tab: this.activeTabTop,
-      bottom_tab: this.activeTabBottom
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
+      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
+
+      if (now > firstSemEnd) {
+        this.isFirstSemesterEnded = true;
+      }
+      if (now > secondSemEnd) {
+        this.isSecondSemesterEnded = true;
+      }
+
+      this.fetchTeacherInfo(true);
+
+      this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
+      window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
     });
-    this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
-    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
+  }
+
+  ngAfterViewInit(): void {
+    document.body.addEventListener('scroll', this.scrollHandle);
+  }
+
+  ngOnDestroy(): void {
+    document.body.removeEventListener('scroll', this.scrollHandle);
+  }
+
+  private buildTabs(): void {
+    if (this.isFirstSemesterEnded) {
+
+      if (this.isTeacherClassMaster) {
+        this.tabs_top = [
+          {id: 'my_classes', name: 'Clasele mele'},
+          {id: 'class_mastery', name: 'Dirigenție'}
+        ];
+
+        this.tabs_bottom_my_classes = [
+          {name: 'Top clase cu risc', id: 'study_classes_at_risk'}
+        ];
+
+        this.tabs_bottom_class_mastery = [
+          {name: 'Top elevi cu risc', id: 'students_at_risk'},
+          {name: 'Top elevi după medii', id: 'own_students_average'},
+          {name: 'Top elevi după absențe', id: 'own_students_absences'},
+          {name: 'Top elevi după notă purtare', id: 'own_students_behaviour_grade'},
+          {name: 'Evoluție nr. elevi cu risc', id: 'own_students_risk_evolution'}
+        ];
+        if (!this.isSecondSemesterEnded) {
+          this.tabs_bottom_class_mastery.push({name: 'Top părinți inactivi', id: 'inactive_parents'});
+        }
+
+      } else {
+        this.tabs_top = [
+          {id: 'my_classes', name: 'Clasele mele'}
+        ];
+        this.tabs_bottom_my_classes = [
+          {name: 'Top clase cu risc', id: 'study_classes_at_risk'}
+        ];
+      }
+
+    } else {
+      if (this.isTeacherClassMaster) {
+        this.tabs_top = [
+          {id: 'class_mastery', name: 'Dirigenție'}
+        ];
+
+        this.tabs_bottom_class_mastery = [
+          {name: 'Top elevi cu risc', id: 'students_at_risk'},
+          {name: 'Evoluție nr. elevi cu risc', id: 'own_students_risk_evolution'},
+          {name: 'Top părinți inactivi', id: 'inactive_parents'},
+        ];
+
+      } else {
+        this.shouldDisplayNoDataMessage = true;
+      }
+    }
+
+    if (!this.shouldDisplayNoDataMessage) {
+      if (findIndex(this.tabs_top, {id: this.activeTabTop}) < 0) {
+        this.activeTabTop = this.tabs_top[0].id;
+      }
+      this.setBottomTabs();
+      if (findIndex(this.tabs_bottom, {id: this.activeTabBottom}) < 0) {
+        this.activeTabBottom = this.tabs_bottom[0].id;
+      }
+      this.changeUrlParamsEvent.next({
+        top_tab: this.activeTabTop,
+        bottom_tab: this.activeTabBottom
+      });
+    }
+
+  }
+
+  private setBottomTabs(): void {
+    if (this.activeTabTop === 'my_classes') {
+      this.tabs_bottom = this.tabs_bottom_my_classes;
+    } else if (this.activeTabTop === 'class_mastery') {
+      this.tabs_bottom = this.tabs_bottom_class_mastery;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
+    if (changes.initialQueryParams && changes.initialQueryParams.currentValue &&
+      changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
       const tab_ids = changes.initialQueryParams.currentValue.split('-');
       this.activeTabTop = tab_ids[0];
       this.activeTabBottom = tab_ids[1];
-      if (this.activeTabTop === 'my_classes') {
-        this.tabs_bottom = this.tabs_bottom_my_classes;
-      }
-      if (this.activeTabTop === 'class_mastery') {
-        this.tabs_bottom = this.tabs_bottom_class_mastery;
-      }
+      this.setBottomTabs();
 
       if (this.isTeacherClassMaster === undefined) {
         this.fetchTeacherInfo();
@@ -424,5 +620,4 @@ export class ReportsTeacherComponent implements OnInit, OnChanges {
   resizeChart(event) {
     this.generalChartView = handleChartWidthHeight(window.innerHeight);
   }
-
 }

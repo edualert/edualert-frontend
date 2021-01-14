@@ -4,21 +4,32 @@ import {Observable} from 'rxjs';
 import {AcademicProfileAtRisk} from '../../models/academic-program-details';
 import {map} from 'rxjs/operators';
 import {NetworkingListResponse} from '../../models/networking-list-response';
-import {Absences, Averages} from "../../models/institution-statistics";
+import {Absences, Averages} from '../../models/institution-statistics';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AcademicProgramsAtRiskService extends OneTimeDataGetter {
 
+  private totalCount: number;
+
   constructor(injector: Injector) {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<AcademicProfileAtRisk[]> {
-    return super.getData(forceRequest, 'programs-at-risk/')
+  getData(forceRequest: boolean, requestPath?: string, page_size?: number, page?: number): Observable<AcademicProfileAtRisk[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `programs-at-risk/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `programs-at-risk/?page_size=${page_size}`;
+    } else {
+      path = `programs-at-risk/`;
+    }
+    return super.getData(forceRequest, path)
       .pipe(map((response: NetworkingListResponse) => {
         const academicProgramsAtRiskList = [];
+        this.totalCount = response.count;
         if (response.count > 0) {
           response.results.forEach(academicProgram => {
             academicProgramsAtRiskList.push(new AcademicProfileAtRisk(academicProgram));
@@ -26,6 +37,10 @@ export class AcademicProgramsAtRiskService extends OneTimeDataGetter {
         }
         return academicProgramsAtRiskList;
       }));
+  }
+
+  getTotalCount(): number {
+    return this.totalCount;
   }
 
 }

@@ -73,6 +73,10 @@ export class UserDetailsComponent implements OnInit {
         if (response.last_online === null && response.is_active) {
           this.isUserInactive = true;
         }
+      }, error => {
+        if (error.status === 404) {
+          this.router.navigateByUrl('').then();
+        }
       });
     });
   }

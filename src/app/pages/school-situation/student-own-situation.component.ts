@@ -10,6 +10,7 @@ import {Params} from '@angular/router';
 import {IdFullname} from '../../models/id-fullname';
 import {ViewUserModalComponent} from '../manage-users/view-user-modal/view-user-modal.component';
 import {Subscription} from 'rxjs';
+import {HeaderService} from '../../header/header.service';
 
 @Component({
   selector: 'app-school-situation',
@@ -36,7 +37,8 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
   constructor(injector: Injector,
               private accountService: AccountService,
               private httpClient: HttpClient,
-              private elementRef: ElementRef) {
+              private elementRef: ElementRef,
+              private headerService: HeaderService) {
     super(injector);
 
     this.account = accountService.account.getValue();
@@ -72,6 +74,7 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
 
   ngOnDestroy(): void {
     this.constructorSub.unsubscribe();
+    document.body.removeAttribute('style');
   }
 
   private getData(urlParams: Params): void {
@@ -107,7 +110,11 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
       document.body.style.overflow = 'unset';
       setTimeout(() => {
         const scrollableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
-        scrollableContainer.style.height = scrollableContainer.clientHeight - 15 + 'px';
+        const headerHeight = document.getElementById('page-header').clientHeight;
+        const bodyHeight = document.body.clientHeight;
+        this.headerService.refreshHeaderHeight();
+        scrollableContainer.style.height = bodyHeight - headerHeight - 35 + 'px';
+        scrollableContainer.scrollTop = 0;
       }, 400);
     });
   }

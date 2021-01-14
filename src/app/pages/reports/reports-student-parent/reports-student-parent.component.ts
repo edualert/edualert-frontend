@@ -1,29 +1,30 @@
-import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
   MyOwnAbsencesEvolutionService,
   MyOwnSchoolActivityService,
   MyOwnStatisticsService, MyOwnSubjectsAtRiskService
 } from '../../../services/statistics-services/my-own-statistics.service';
-import {AccountService} from '../../../services/account.service';
-import {UserDetails} from '../../../models/user-details';
+import { AccountService } from '../../../services/account.service';
+import { UserDetails } from '../../../models/user-details';
 import {
   ChildAbsencesEvolutionService, ChildSchoolActivityService,
   ChildStatisticsService, ChildSubjectsAtRiskService
 } from '../../../services/statistics-services/child-statistics.service';
-import {Column} from '../../../shared/reports-table/reports-table.component';
+import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
-import {parentStudentTabs} from '../reports-tabs';
-import {formatChartData, getCurrentMonthAsString, getCurrentYear, getDayOfTheWeek, handleChartWidthHeight, shouldDisplayChart} from '../../../shared/utils';
-import {IdFullname} from '../../../models/id-fullname';
-import {ActivatedRoute} from '@angular/router';
-import {CurrentAcademicYearService} from '../../../services/current-academic-year.service';
+import { parentStudentTabs } from '../reports-tabs';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { IdFullname } from '../../../models/id-fullname';
+import { ActivatedRoute } from '@angular/router';
+import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
+import { ChildStatistics } from '../../../models/child-statistics';
 
 @Component({
   selector: 'app-reports-student-parent',
   templateUrl: './reports-student-parent.component.html',
   styleUrls: ['./reports-student-parent.component.scss', '../reports.component.scss']
 })
-export class ReportsStudentParentComponent implements OnInit, OnChanges {
+export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() changeUrlParamsEvent = new EventEmitter<object>();
   @Input() initialQueryParams: string;
 
@@ -48,6 +49,7 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
   accountRole: string;
   selectedChild: IdFullname;
   initialSelectedChild: IdFullname;
+  childStatistics: ChildStatistics;
   forceRequestOnTables: {}[] = [
     {student_school_activity: true},
     {student_subjects_at_risk: true},
@@ -58,13 +60,17 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
   activeTab: string;
   month: number = moment().month();
 
-  getDayOfTheWeek = getDayOfTheWeek;
+  isFirstSemesterEnded: boolean = false;
+  isSecondSemesterEnded: boolean = false;
+
   graphSubtitle: string;
   colorSchemeRedBlue = {
     domain: ['#CC0033', '#0077DB']
   };
   generalChartView: any[];
   displayChart: boolean;
+  reqSubscription: any;
+  childSubscription: any;
 
   myOwnSchoolActivityTable: Column[] = [];
   myOwnSubjectsAtRiskTable: Column[] = [];
@@ -90,10 +96,68 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
     });
 
     this.selectedChild = this.accountService.selectedChild.getValue();
-    this.accountService.selectedChild.subscribe((child: IdFullname) => {
+    this.childSubscription = this.accountService.selectedChild.subscribe((child: IdFullname) => {
       this.selectedChild = child;
-      this.fetchData(this.activeTab);
+      if (this.activeTab) {
+        this.fetchData(this.activeTab);
+      }
     });
+  }
+
+  ngOnInit(): void {
+    this.changeUrlParamsEvent.next({top_tab: this.activeTab});
+    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
+    this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
+    this.initialSelectedChild = this.selectedChild;
+
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
+      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
+
+      if (now > firstSemEnd) {
+        this.isFirstSemesterEnded = true;
+      }
+      if (now > secondSemEnd) {
+        this.isSecondSemesterEnded = true;
+      }
+
+      if (now <= firstSemEnd) {
+        this.tabs.splice(this.tabs.findIndex(x => x.id === 'student_subjects_at_risk'), 1);
+      }
+    });
+
+    this.fetchData(this.activeTab);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.month = moment().month();
+
+    if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
+      this.activeTab = changes.initialQueryParams.currentValue;
+      if (!this.loading) {
+        if (this.activeTab === 'student_absences_evolution') {
+          if (this.data[this.activeTab][this.month]) {
+            this.setDisplayChart(this.activeTab);
+          } else {
+            this.fetchData(this.activeTab);
+          }
+        } else {
+          if (!this.data[this.activeTab]) {
+            this.fetchData(this.activeTab);
+          }
+        }
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    ReportsStudentParentComponent.unsubscribe(this.childSubscription);
+  }
+
+  private setDisplayChart(activeTab: string) {
+    this.displayChart = shouldDisplayChart(this.data[activeTab][this.month][1]['chartData'][0]['series'], 'unfounded_count') ||
+      shouldDisplayChart(this.data[activeTab][this.month][0]['chartData'][0]['series'], 'founded_count');
   }
 
   changeTab(event: any) {
@@ -133,23 +197,28 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
       // clear the data regarding previous student
       this.data['student_school_activity'] = null;
       this.data['student_subjects_at_risk'] = null;
-      this.data['student_absences_evolution'] = null;
+      this.data['student_absences_evolution'] = {
+        0: null, 1: null, 2: null, 3: null, 4: null,
+        5: null, 6: null, 7: null, 8: null, 9: null, 10: null, 11: null,
+      };
       this.data['student_statistics'] = null;
       this.forceRequestOnTables['student_school_activity'] = true;
       this.forceRequestOnTables['student_subjects_at_risk'] = true;
       this.forceRequestOnTables['student_statistics'] = true;
     }
+
     // If we already have data for that id don't make a request
-    if (this.data[id] !== null && id !== 'student_absences_evolution') {
+    if (this.loading || (id !== 'student_absences_evolution' && this.data[id] !== null)) {
       return;
     }
-    if (id === 'student_absences_evolution' && this.data.student_absences_evolution[this.month - 1] && this.data.student_absences_evolution[this.month]) {
-      this.displayChart = shouldDisplayChart(this.data.student_absences_evolution[this.month]['chartData'][0]['series']);
+
+    const previousMonth = this.month === 0 ? 11 : this.month - 1;
+    if (id === 'student_absences_evolution' && this.data.student_absences_evolution[previousMonth] && this.data.student_absences_evolution[this.month]) {
+      this.setDisplayChart(id);
       return;
     }
 
     // Else we are going to get the data from api
-    this.loading = true;
     const childId = this.selectedChild ? (this.selectedChild.id as string) : this.userDetails.children[0].id.toString();
     const months_students = this.getPreviousCurrentAndNextMonth(this.month);
 
@@ -173,51 +242,66 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
 
     const req = requests[`${id}`];
     if (id === 'student_absences_evolution') {
-      req.request.subscribe((response) => {
-        const chartGraphs = [];
-        chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
-        chartGraphs.push(formatChartData(response, 'Nemotivate', moment().month(), 'unfounded_count'));
-        this.data[id][this.month] = chartGraphs;
-        this.loading = false;
-      }, error => {
-        this.data[id][this.month] = error.detail;
-        this.loading = false;
-      });
-      req.requestPrevious.subscribe((response) => {
-        const chartGraphs = [];
-        chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
-        chartGraphs.push(formatChartData(response, 'Nemotivate', moment().month(), 'unfounded_count'));
-        this.data[id][this.month - 1] = chartGraphs;
-        this.loading = false;
-      }, error => {
-        this.data[id][this.month - 1] = error.detail;
-        this.loading = false;
-      });
+      if (!this.data[id][this.month]) {
+        this.loading = true;
+        req.request.subscribe((response) => {
+          const chartGraphs = [];
+          chartGraphs.push(formatChartData(response, 'Nemotivate', 'unfounded_count'));
+          chartGraphs.push(formatChartData(response, 'Motivate', 'founded_count'));
+          this.data[id][this.month] = chartGraphs;
+          this.loading = false;
+          this.setDisplayChart(id);
+        }, error => {
+          this.data[id][this.month] = error.detail;
+          this.loading = false;
+        });
+      } else {
+        this.setDisplayChart(id);
+      }
+
+      if (previousMonth !== 7 && !this.data[id][previousMonth]) {
+        this.loading = true;
+        req.requestPrevious.subscribe((response) => {
+          const chartGraphs = [];
+          chartGraphs.push(formatChartData(response, 'Nemotivate', 'unfounded_count'));
+          chartGraphs.push(formatChartData(response, 'Motivate', 'founded_count'));
+          this.data[id][previousMonth] = chartGraphs;
+          this.loading = false;
+        }, error => {
+          this.data[id][previousMonth] = error.detail;
+          this.loading = false;
+        });
+      }
       return;
-    } else {
-      const sub = req.request.subscribe((response) => {
-        this.data[id] = response;
-        this.loading = false;
-        this.forceRequestOnTables[id] = false;
-        if (req.generate) {
-          req.generate();
-        }
-        sub.unsubscribe();
-      });
     }
+
+    this.loading = true;
+    this.reqSubscription = req.request.subscribe((response) => {
+      this.data[id] = response;
+      if (id === 'student_statistics') {
+        this.childStatistics = response;
+      }
+      this.loading = false;
+      this.forceRequestOnTables[id] = false;
+      if (req.generate) {
+        req.generate();
+      }
+      ReportsStudentParentComponent.unsubscribe(this.reqSubscription);
+    });
   }
 
   fetchDataChild(id: string) {
     // If we already have data for that id don't make a request
-    if (this.data[id] !== null && id !== 'student_absences_evolution' || this.loading) {
+    if (this.loading || (id !== 'student_absences_evolution' && this.data[id] !== null)) {
       return;
     }
-    if (id === 'student_absences_evolution' && this.data.student_absences_evolution[this.month - 1] && this.data.student_absences_evolution[this.month + 1]) {
-      this.displayChart = shouldDisplayChart(this.data.student_absences_evolution[this.month]['chartData'][0]['series']);
+
+    const previousMonth = this.month === 0 ? 11 : this.month - 1;
+    if (id === 'student_absences_evolution' && this.data.student_absences_evolution[previousMonth] && this.data.student_absences_evolution[this.month]) {
+      this.setDisplayChart(id);
       return;
     }
     // Else we are going to get the data from api
-    this.loading = true;
     const months_students = this.getPreviousCurrentAndNextMonth(this.month);
 
     const requests: { [tab in parentStudentTabs]: any } = {
@@ -230,8 +314,8 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
         generate: this.generateStudentSubjectsAtRiskTable
       },
       student_absences_evolution: {
-        request: this.myOwnAbsencesEvolutionService.getData(false, '', months_students.current, true),
-        requestPrevious: this.myOwnAbsencesEvolutionService.getData(false, '', months_students.prev, true)
+        request: this.myOwnAbsencesEvolutionService.getData(true, '', months_students.current, true),
+        requestPrevious: this.myOwnAbsencesEvolutionService.getData(true, '', months_students.prev, true)
       },
       student_statistics: {
         request: this.myOwnStatisticsService.getData(false)
@@ -240,36 +324,50 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
 
     const req = requests[`${id}`];
     if (id === 'student_absences_evolution') {
-      req.request.subscribe((response) => {
-        const chartGraphs = [];
-        chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
-        chartGraphs.push(formatChartData(response, 'Nemotivate', moment().month(), 'unfounded_count'));
-        this.data[id][this.month] = chartGraphs;
-        this.loading = false;
-      }, error => {
-        this.data[id][this.month] = error.detail;
-        this.loading = false;
-      });
-      req.requestPrevious.subscribe((response) => {
-        const chartGraphs = [];
-        chartGraphs.push(formatChartData(response, 'Motivate', moment().month(), 'founded_count'));
-        chartGraphs.push(formatChartData(response, 'Nemotivate', moment().month(), 'unfounded_count'));
-        this.data[id][this.month - 1] = chartGraphs;
-        this.loading = false;
-      }, error => {
-        this.data[id][this.month - 1] = error.detail;
-        this.loading = false;
-      });
+      if (!this.data[id][this.month]) {
+        this.loading = true;
+        req.request.subscribe((response) => {
+          const chartGraphs = [];
+          chartGraphs.push(formatChartData(response, 'Nemotivate', 'unfounded_count'));
+          chartGraphs.push(formatChartData(response, 'Motivate', 'founded_count'));
+          this.data[id][this.month] = chartGraphs;
+          this.loading = false;
+          this.setDisplayChart(id);
+        }, error => {
+          this.data[id][this.month] = error.detail;
+          this.loading = false;
+        });
+      } else {
+        this.setDisplayChart(id);
+      }
+
+      if (previousMonth !== 7 && !this.data[id][previousMonth]) {
+        this.loading = true;
+        req.requestPrevious.subscribe((response) => {
+          const chartGraphs = [];
+          chartGraphs.push(formatChartData(response, 'Nemotivate', 'unfounded_count'));
+          chartGraphs.push(formatChartData(response, 'Motivate', 'founded_count'));
+          this.data[id][previousMonth] = chartGraphs;
+          this.loading = false;
+        }, error => {
+          this.data[id][previousMonth] = error.detail;
+          this.loading = false;
+        });
+      }
       return;
-    } else {
-      req.request.subscribe((response) => {
-        this.data[id] = response;
-        this.loading = false;
-        if (req.generate) {
-          req.generate();
-        }
-      });
     }
+
+    this.loading = true;
+    req.request.subscribe((response) => {
+      this.data[id] = response;
+      if (id === 'student_statistics') {
+        this.childStatistics = response;
+      }
+      this.loading = false;
+      if (req.generate) {
+        req.generate();
+      }
+    });
   }
 
   generateStudentActivityTable() {
@@ -306,37 +404,19 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
-      data: this.data[this.activeTab][0]?.avg_final ? 'avg_final' : 'avg_sem1',
-      columnType: 'graded-cell',
+      data: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
+      columnType: 'graded-cell-dynamic-limit',
+      pivotPoint: 'avg_limit',
       minWidth: '120px'
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Număr absențe nemotivate / an',
-      dataKey: this.data[this.activeTab][0]?.unfounded_abs_count_annual ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
-      columnType: 'numbered-cell',
+      dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
+      columnType: 'numbered-cell-dynamic-limit-with-third-of-hours',
+      thirdOfHoursPivotPoint: this.isSecondSemesterEnded ? 'third_of_hours_count_annual' : 'third_of_hours_count_sem1',
+      pivotPoint: this.isSecondSemesterEnded ? 22 : 11,
       minWidth: '240px'
     }));
-  }
-
-  ngOnInit(): void {
-    this.changeUrlParamsEvent.next({top_tab: this.activeTab});
-    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
-    this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
-    this.initialSelectedChild = this.selectedChild;
-    this.currentAcademicYearService.getData().subscribe(response => {
-      if (moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf() <= moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
-        this.tabs.splice(this.tabs.findIndex(x => x.id === 'student_subjects_at_risk'), 1);
-      }
-    });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
-      this.activeTab = changes.initialQueryParams.currentValue;
-      if (!this.data[this.activeTab] && !this.loading) {
-        this.fetchData(this.activeTab);
-      }
-    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -344,4 +424,9 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges {
     this.generalChartView = handleChartWidthHeight(window.innerHeight);
   }
 
+  private static unsubscribe(subscription: any) {
+    if (subscription) {
+      subscription.unsubscribe();
+    }
+  }
 }

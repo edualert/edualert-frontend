@@ -1,9 +1,10 @@
 import * as moment from 'moment';
-import {LocalStorageService} from '../services/local-storage.service';
-import {monthDatesAndNames, weekdays} from './constants';
-import {findIndex} from 'lodash';
-import {saveAs} from 'file-saver';
+import { LocalStorageService } from '../services/local-storage.service';
+import { monthDatesAndNames } from './constants';
+import { findIndex } from 'lodash';
+import { saveAs } from 'file-saver';
 
+// TODO change this hardcoded date!
 export const academicYearStart = moment(`07.09.${moment().year()}`, 'DD.MM.YYYY');
 export const initialAcademicYear = 2019;
 
@@ -70,17 +71,6 @@ export function dateForInput(date) {
   return [day, month, d.getFullYear()].join('.');
 }
 
-export function isTodayVacation(): boolean {
-  const today = new Date();
-  const vacationStart = new Date(today.getFullYear(), 5, 15);
-  const vacationEnd = new Date(today.getFullYear(), 8, 15);
-  if (today < vacationStart || today > vacationEnd) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
 export function getLoginPageRoute(): string {
   if (!LocalStorageService.getIsFaculty()) {
     return '/login-admin';
@@ -97,22 +87,19 @@ export function getCurrentYear(): number {
   return moment().year();
 }
 
-export function formatChartData(dataArray: any[], tooltipTitle: string, monthOfTheYear: number, countKey?: string): any {
+export function formatChartData(dataArray: any[], tooltipTitle: string, countKey?: string): any {
   const chartFormattedData = [{
     'name': tooltipTitle,
     'series': []
   }];
   const xAxisTicks = [];
 
-  const daysInMonth = moment(`${moment().year()}-${monthOfTheYear + 1}`).daysInMonth();
-  for (let i = 1; i <= daysInMonth; i++) {
-    xAxisTicks.push(i);
-  }
-
   chartFormattedData[0]['series'] = dataArray.map(day => {
+    xAxisTicks.push(day['day']);
     return {
       'name': day['day'],
-      'value': countKey && day[countKey] ? day[countKey] : day['count']
+      'value': countKey && countKey in day ? day[countKey] : day['count'],
+      'weekday': day['weekday'],
     };
   });
 
@@ -122,13 +109,17 @@ export function formatChartData(dataArray: any[], tooltipTitle: string, monthOfT
   };
 }
 
-export function getDayOfTheWeek(day: number): string {
-  const weekday = moment(`${moment().year()}-${moment().month()}-${day}`).day();
-  return weekdays[findIndex(weekdays, {day: weekday})].name.substring(0, 2);
-}
+export function shouldDisplayChart(data: any[], countKey?: string): boolean {
+  if (data.length === 0) {
+    return false;
+  }
 
-export function shouldDisplayChart(data: any[]): boolean {
-  const key = data[0] && (data[0]['count'] !== null && data[0]['count'] !== undefined) ? 'count' : (data[0] && (data[0]['value'] !== null && data[0]['value'] !== undefined) ? 'value' : null);
+  if (countKey === null || countKey === undefined) {
+    countKey = 'count';
+  }
+
+  const key = data[0] && (data[0][countKey] !== null && data[0][countKey] !== undefined) ? countKey :
+    (data[0] && (data[0]['value'] !== null && data[0]['value'] !== undefined) ? 'value' : null);
   const totalCount = data.reduce((acc, obj) => {
     return obj[key] ? acc + obj[key] : acc;
   }, 0);

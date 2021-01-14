@@ -36,32 +36,33 @@
               [xAxis]="true"
               [yAxis]="true"
               [scheme]="colorSchemeRedBlue"
-              [results]="[data[activeTab][0]['chartData'][0], data[activeTab][1]['chartData'][0]]"
-              [xAxisTicks]="data[activeTab][0].xAxisTicks"
+              [results]="data[activeTab][month] ? [data[activeTab][month][0]['chartData'][0],
+              data[activeTab][month][1]['chartData'][0]] : []"
+              [xAxisTicks]="data[activeTab][month] ? data[activeTab][month][0].xAxisTicks : []"
             >
 
               <ng-template #seriesTooltipTemplate let-model="model">
                 <div class="tooltip-content">
                   <div class="tooltip-container double">
-                    <div class="blue-tooltip">
+                    <div class="red-tooltip">
                       <div class="value">
                         {{model[0].value}}
                       </div>
                       <div class="label">
-                        {{ data[activeTab][0]['chartData'][0]["name"] }}
+                        {{ data[activeTab][month][0]['chartData'][0]["name"] }}
                       </div>
                     </div>
-                    <div class="red-tooltip">
+                    <div class="blue-tooltip">
                       <div class="value">
                         {{model[1].value}}
                       </div>
                       <div class="label">
-                        {{ data[activeTab][1]['chartData'][0]["name"] }}
+                        {{ data[activeTab][month][1]['chartData'][0]["name"] }}
                       </div>
                     </div>
                     <div class="bottom-tooltip parent-student">
                       <div class="padded">{{ model[0].name }}</div>
-                      <div>{{ getDayOfTheWeek(model[0].name) }}</div>
+                      <div>{{ model[0].weekday }}</div>
                     </div>
                   </div>
                 </div>
@@ -75,7 +76,128 @@
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'student_statistics'">
-
+        <div class="statistics-container">
+          <div class="statistics">
+            <div class="card grey-background text-card">
+              <div class="text-row">
+                <div class="medium border-right">Notă purtare</div>
+                <h1 class="{{
+              isFirstSemesterEnded
+                ? (
+                    (!isSecondSemesterEnded
+                      ? childStatistics?.behavior_grade_sem1
+                      : childStatistics?.behavior_grade_annual
+                    ) > childStatistics?.behavior_grade_limit
+                        ? 'blue-text' : 'red-text'
+                  ) : ''}}"
+                >
+                  {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                  ? childStatistics?.behavior_grade_sem1
+                  : isSecondSemesterEnded
+                    ? childStatistics?.behavior_grade_annual : '-' }}
+                </h1>
+              </div>
+            </div>
+            <div class="card grey-background text-card">
+              <div class="text-row margin-bottom-small">
+                <div class="medium border-right">Medie anuală</div>
+                <h1 class="{{
+              isFirstSemesterEnded
+                ? (
+                    (!isSecondSemesterEnded
+                      ? childStatistics?.avg_sem1
+                      : childStatistics?.avg_annual
+                    ) > 4
+                      ? 'blue-text' : 'red-text'
+                  ) : ''}}"
+                >
+                  {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                  ? childStatistics?.avg_sem1
+                  : isSecondSemesterEnded
+                    ? childStatistics?.avg_annual : '-' }}
+                </h1>
+              </div>
+              <hr>
+              <div class="text-row">
+                <div class="border-right simple-text">Loc clasă în funcție de medie</div>
+                <div class="big-text margin-top">
+                  {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                  ? childStatistics?.class_place_by_avg_sem1
+                  : isSecondSemesterEnded
+                    ? childStatistics?.class_place_by_avg_annual : '-' }}
+                </div>
+              </div>
+              <div class="text-row">
+                <div class="border-right simple-text">Loc școala în funcție de medie</div>
+                <div class="big-text margin-top">
+                  {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                  ? childStatistics?.school_place_by_avg_sem1
+                  : isSecondSemesterEnded
+                    ? childStatistics?.school_place_by_avg_annual : '-' }}
+                </div>
+              </div>
+            </div>
+            <div class="card grey-background text-card">
+              <div class="text-row margin-bottom-small">
+                <div class="medium border-right">Număr total absențe pe an</div>
+                <h1 class="{{
+              isFirstSemesterEnded
+                ? (
+                    !isSecondSemesterEnded
+                      ? childStatistics?.abs_count_sem1
+                        < 11
+                          ? 'blue-text' : 'red-text'
+                      : childStatistics?.abs_count_annual < 22
+                        ? 'blue-text' : 'red-text'
+                  )
+                : ''}}"
+                >
+                  {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                  ? childStatistics?.abs_count_sem1 : isSecondSemesterEnded
+                    ? childStatistics?.abs_count_annual : '-' }}
+                </h1>
+              </div>
+              <hr>
+              <div class="absences-split-view">
+                <div class="text-row margin-bottom-small">
+                  <div class="medium border-right">Număr absențe nemotivate pe an</div>
+                  <h1 class="{{ isFirstSemesterEnded || isSecondSemesterEnded ? 'red-text' : '' }}">
+                    {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                    ? childStatistics?.unfounded_abs_count_sem1 : isSecondSemesterEnded
+                      ? childStatistics?.unfounded_abs_count_annual : '-' }}
+                  </h1>
+                </div>
+                <div class="text-row margin-bottom-small">
+                  <div class="medium border-right">Număr absențe motivate pe an</div>
+                  <h1 class="{{ isFirstSemesterEnded || isSecondSemesterEnded ? 'blue-text' : '' }}">
+                    {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                    ? childStatistics?.founded_abs_count_sem1 : isSecondSemesterEnded
+                      ? childStatistics?.founded_abs_count_annual : '-' }}
+                  </h1>
+                </div>
+              </div>
+              <hr>
+              <div class="text-row">
+                <div class="border-right simple-text">Loc clasă în funcție de absențe</div>
+                <div class="big-text margin-top">
+                  {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                  ? childStatistics?.class_place_by_abs_sem1
+                  : isSecondSemesterEnded
+                    ? childStatistics?.class_place_by_abs_annual : '-' }}
+                </div>
+              </div>
+              <div class="text-row">
+                <div class="border-right simple-text">Loc școală în funcție de absențe</div>
+                <div class="big-text margin-top">
+                  {{ isFirstSemesterEnded && !isSecondSemesterEnded
+                  ? childStatistics?.school_place_by_abs_sem1
+                  : isSecondSemesterEnded
+                    ? childStatistics?.school_place_by_abs_annual : '-' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </ng-container>
     </ng-container>
   </div>

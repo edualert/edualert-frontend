@@ -1,4 +1,4 @@
-import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
+import {Component, ElementRef, Injector, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { Params } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ClassDetails, Subject } from '../../../models/class-details';
@@ -38,7 +38,7 @@ class TableTab extends IdName {
   templateUrl: './class-list-detail.component.html',
   styleUrls: ['./class-list-detail.component.scss']
 })
-export class ClassListDetailComponent extends ListPage implements OnInit {
+export class ClassListDetailComponent extends ListPage implements OnInit, OnDestroy {
   private classId: string;
 
   classDetails: ClassDetails;
@@ -98,6 +98,10 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
     this.fetchClassData(this.urlParams);
   }
 
+  ngOnDestroy(): void {
+    document.body.removeAttribute('style');
+  }
+
   refreshClassData = () => {
     this.fetchCatalogData(this.activeTab.id, this.urlParams);
   }
@@ -142,6 +146,10 @@ export class ClassListDetailComponent extends ListPage implements OnInit {
         this.fetchCatalogData(this.classDetails.taught_subjects[0].id, urlParams);
       }
       this.setScrollableContainerHeight();
+    }, error => {
+      if (error.status === 404) {
+        this.router.navigateByUrl('').then();
+      }
     });
   }
 

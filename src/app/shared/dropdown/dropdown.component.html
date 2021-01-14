@@ -83,11 +83,15 @@
     <ng-container *ngIf="!withMultipleSelection">
       <div *ngIf="!searchString && !required" class="element" (click)="singleElementSelected($event, null)">&nbsp;-
       </div>
-      <div class="element {{appliedElement && element[displayedProperty] === appliedElement ? 'blue-text' : ''}}"
+      <div class="element {{appliedElement && element[displayedProperty]  === appliedElement
+                            && (selectedObject !== null ? selectedObject.id === element.id : true) ? 'blue-text' : ''}}"
            *ngFor="let element of displayedList; index as i"
            (click)="singleElementSelected($event, element, i)"
            [class.highlighted]="i === highlightIndex"
-           [class.checked]="appliedElement ? (element[displayedProperty] ? element[displayedProperty] === appliedElement[displayedProperty] : element === appliedElement) : false">
+           [class.checked]="appliedElement && (selectedObject !== null ? selectedObject.id === element.id : true)
+              ? (element[displayedProperty]
+              ? element[displayedProperty] === appliedElement[displayedProperty]
+              : element === appliedElement) : false">
         {{element[displayedProperty] || element}}
       </div>
       <div *ngIf="searchString && !displayedList.length" class="element disabled">Niciun rezultat</div>

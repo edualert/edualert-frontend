@@ -29,7 +29,6 @@ export class MonthPickerComponent implements OnInit {
   constructor(academicCalendarService: AcademicYearCalendarService) {
     academicCalendarService.getData(false).subscribe(response => {
       const academicCalendar = new AcademicYearCalendar(response);
-      const pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
       const startDate = convertStringToDate(academicCalendar.first_semester.starts_at);
       const endDate = convertStringToDate(`01-09-${academicCalendar.academic_year + 1}`);
       this.academicYearStartDate = typeof startDate === 'object' ? startDate : new Date();

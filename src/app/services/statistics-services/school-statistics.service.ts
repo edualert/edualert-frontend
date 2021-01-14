@@ -4,21 +4,32 @@ import {Observable} from 'rxjs';
 import {NetworkingListResponse} from '../../models/networking-list-response';
 import {map} from 'rxjs/operators';
 import {StudyClassAtRisk} from '../../models/study-class-name';
-import {Absences, Averages} from "../../models/institution-statistics";
+import {Absences, Averages} from '../../models/institution-statistics';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudyClassesAtRiskService extends OneTimeDataGetter {
 
+  private totalCount: number;
+
   constructor(injector: Injector) {
     super(injector);
   }
 
-  getData(forceRequest: boolean, requestPath?: string): Observable<StudyClassAtRisk[]> {
-    return super.getData(forceRequest, 'study-classes-at-risk/')
+  getData(forceRequest: boolean, requestPath?: string, page_size?: number, page?: number): Observable<StudyClassAtRisk[]> {
+    let path: string;
+    if (page_size && page) {
+      path = `study-classes-at-risk/?page_size=${page_size}&page=${page}`;
+    } else if (page_size) {
+      path = `study-classes-at-risk/?page_size=${page_size}`;
+    } else {
+      path = `study-classes-at-risk/`;
+    }
+    return super.getData(forceRequest, path)
       .pipe(map((response: NetworkingListResponse) => {
         const studyClassesAtRisk = [];
+        this.totalCount = response.count;
         if (response.count > 0) {
           response.results.forEach(studyClass => {
             studyClassesAtRisk.push(new StudyClassAtRisk(studyClass));
@@ -26,6 +37,10 @@ export class StudyClassesAtRiskService extends OneTimeDataGetter {
         }
         return studyClassesAtRisk;
       }));
+  }
+
+  getTotalCount(): number {
+    return this.totalCount;
   }
 
 }
