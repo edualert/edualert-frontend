@@ -277,7 +277,8 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
   }
 
   openAddBulkGradesModal() {
-    const baseUrl = `own-study-classes/${this.classDetails?.id.toString()}/subjects/${this.activeTab.id.toString()}`;
+    const subjectId = this.activeTab.id;
+    const baseUrl = `own-study-classes/${this.classDetails?.id.toString()}/subjects/${subjectId.toString()}`;
     const modalData = {
       classGrade: this.classDetails?.class_grade,
       classLetter: this.classDetails?.class_letter,
@@ -287,6 +288,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
           this.httpClient.post(`${baseUrl}/bulk-grades/`, addedGrades).subscribe((response) => {
             if (Object.keys(response).length) {
               this.tableData = response['catalogs'];
+              this.subjectsDataList[subjectId] = {studentListData: response['catalogs'], subjectId};
               this.addGradesBulkModal.close();
             }
           });
@@ -300,7 +302,8 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
   }
 
   openAddBulkAbsencesModal() {
-    const baseUrl = `own-study-classes/${this.classDetails?.id.toString()}/subjects/${this.activeTab.id.toString()}`;
+    const subjectId = this.activeTab.id;
+    const baseUrl = `own-study-classes/${this.classDetails?.id.toString()}/subjects/${subjectId.toString()}`;
     const modalData = {
       classGrade: this.classDetails?.class_grade,
       classLetter: this.classDetails?.class_letter,
@@ -310,6 +313,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
           this.httpClient.post(`${baseUrl}/bulk-absences/`, addedAbsences).subscribe((response) => {
             if (Object.keys(response).length) {
               this.tableData = response['catalogs'];
+              this.subjectsDataList[subjectId] = {studentListData: response['catalogs'], subjectId};
               this.addAbsencesBulkModal.close();
             }
           });

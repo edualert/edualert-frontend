@@ -49,7 +49,7 @@
           </ng-container>
         </div>
       </div>
-      <div class="add-button-container thesis" *ngIf="!data.thesis">
+      <div class="add-button-container thesis" *ngIf="isEditable && !data.thesis">
         <div class="text-button blue-text add-button" (click)="openGradeOverlay($event, true)">Adaugă notă teză</div>
       </div>
     </div>

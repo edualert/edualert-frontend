@@ -57,13 +57,11 @@ export class HomeParentComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentAcademicYearService.getData().subscribe(response => {
       const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
-      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
-      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
 
-      if (now > firstSemEnd) {
+      if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isFirstSemesterEnded = true;
       }
-      if (now > secondSemEnd) {
+      if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isSecondSemesterEnded = true;
       }
     });

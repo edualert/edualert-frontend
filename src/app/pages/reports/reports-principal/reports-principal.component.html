@@ -63,8 +63,7 @@
         <ng-container [ngSwitch]="activeTabBottom">
           <ng-container *ngSwitchCase="'students_at_risk'">
             <app-reports-table [tableColumns]="schoolStudentsAtRiskTable"
-                               [tableData]="data[activeTabTop][activeTabBottom]"
-                               (userHasBeenSelected)="emitUserIdForModal($event)">
+                               [tableData]="data[activeTabTop][activeTabBottom]">
             </app-reports-table>
           </ng-container>
           <ng-container *ngSwitchCase="'students_risk_evolution'">
@@ -108,8 +107,7 @@
       </ng-container>
       <ng-container *ngSwitchCase="'teachers'">
         <app-reports-table [tableColumns]="inactiveTeachersTable"
-                           [tableData]="data[activeTabTop][activeTabBottom]"
-                           (userHasBeenSelected)="emitUserIdForModal($event)">
+                           [tableData]="data[activeTabTop][activeTabBottom]">
         </app-reports-table>
       </ng-container>
     </ng-container>

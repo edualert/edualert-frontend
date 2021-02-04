@@ -11,14 +11,14 @@
       <div class="request-success">
         {{ forgotPasswordSuccess }}
       </div>
-      <div class="close-error" (click)="hideErrorToast()"></div>
+      <div class="close-error" (click)="clearErrors()"></div>
     </div>
     <div class="error-toast"
          *ngIf="resetPasswordError?.length > 0">
       <div class="request-error">
         {{ resetPasswordError }}
       </div>
-      <div class="close-error" (click)="hideErrorToast()"></div>
+      <div class="close-error" (click)="clearErrors()"></div>
     </div>
   </div>
   <div id="title-and-description">

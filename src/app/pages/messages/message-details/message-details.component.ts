@@ -56,12 +56,11 @@ export class MessageDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.accountService.account.subscribe((user: UserDetails) => {
       this.account = user;
-      // School Principal user role and School Teacher user role view sent messages.
       if (['SCHOOL_PRINCIPAL', 'TEACHER'].includes(this.account.user_role)) {
+        // School Principal user role and School Teacher user role view sent messages.
         this.sendOrReceivedTemplate = 'sent';
-      }
-      // Parent user role and Student user role view received messages.
-      else if (['PARENT', 'STUDENT'].includes(this.account.user_role)) {
+      } else if (['PARENT', 'STUDENT'].includes(this.account.user_role)) {
+        // Parent user role and Student user role view received messages.
         this.sendOrReceivedTemplate = 'received';
       }
 

@@ -32,6 +32,10 @@
       background-color: darken($color-background, 5%);
     }
   }
+
+  .secondary-text {
+    margin-top: unset;
+  }
 }
 
 @keyframes expandedOverlay {

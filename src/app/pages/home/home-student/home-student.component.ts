@@ -48,20 +48,18 @@ export class HomeStudentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchPageData();
-    this.myOwnAbsencesView = handleChartWidthHeight();
-
     this.currentAcademicYearService.getData().subscribe(response => {
       const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
-      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
-      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
 
-      if (now > firstSemEnd) {
+      if (now >  moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isFirstSemesterEnded = true;
       }
-      if (now > secondSemEnd) {
+      if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isSecondSemesterEnded = true;
       }
+
+      this.myOwnAbsencesView = handleChartWidthHeight();
+      this.fetchPageData();
     });
 
     this.forceRequest = false;
@@ -88,7 +86,7 @@ export class HomeStudentComponent implements OnInit {
     this.myOwnAbsencesEvolutionService.getData(true, '', this.currentMonth + 1)
       .subscribe(response => {
         this.displayChart = shouldDisplayChart(response, 'total_count');
-        this.myOwnAbsencesList = formatChartData(response, 'Absente', 'total_count');
+        this.myOwnAbsencesList = formatChartData(response, 'Absențe', 'total_count');
       });
   }
 
@@ -126,7 +124,7 @@ export class HomeStudentComponent implements OnInit {
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
-      data: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
+      dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell-dynamic-limit',
       pivotPoint: 'avg_limit',
       minWidth: '120px',

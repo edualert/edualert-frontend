@@ -24,6 +24,7 @@
         <a *ngFor="let menuLink of menuLinks[account.user_role]"
            [routerLink]="menuLink.path"
            routerLinkActive="active-link"
+           (click)="isOpen=false"
            [ngClass]="menuLink.className"
            class="menu-link text-button">
           <div class="icon"></div>

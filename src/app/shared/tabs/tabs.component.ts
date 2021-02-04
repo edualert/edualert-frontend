@@ -26,6 +26,8 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
   @ViewChild('forthArrow') forthArrow;
   @ViewChild('wrapper') wrapper;
 
+  isScrolledToSelectedTab = false;
+
   constructor() {
     this.activateOrDeactivateArrows = this.activateOrDeactivateArrows.bind(this);
   }
@@ -108,6 +110,10 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
 
   ngAfterViewChecked(): void {
     this.activateOrDeactivateArrows();
+    if (this.activeTab && !this.isScrolledToSelectedTab) {
+      this.isScrolledToSelectedTab = true;
+      this.scrollTheContainer(this.activeTab);
+    }
   }
 
   ngAfterViewInit(): void {

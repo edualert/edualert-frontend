@@ -43,6 +43,7 @@ export class LoginComponent implements OnInit {
   }
 
   initialiseLoginPage() {
+    this.clearErrors();
     switch (this.page) {
       case 'login-admin':
         LocalStorageService.setIsFaculty(false);
@@ -79,7 +80,7 @@ export class LoginComponent implements OnInit {
   }
 
   handleSubmit(event): void {
-    this.hideErrorToast();
+    this.clearErrors();
     this.submitButton.nativeElement.blur();
     switch (this.page) {
       case 'login':
@@ -210,11 +211,7 @@ export class LoginComponent implements OnInit {
   switchToLogin(event): void {
     this.username = '';
     this.password = '';
-    this.errorLogin = '';
-    this.forgotPasswordSuccess = null;
-    this.forgotPasswordError = null;
-    this.resetPasswordError = null;
-    this.errorRepeatPassword = null;
+    this.clearErrors();
     event.preventDefault();
     this.router.navigateByUrl(getLoginPageRoute());
   }
@@ -239,7 +236,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  hideErrorToast() {
+  clearErrors() {
     this.forgotPasswordError = '';
     this.forgotPasswordSuccess = '';
     this.resetPasswordError = '';

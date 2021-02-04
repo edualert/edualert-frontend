@@ -5,7 +5,7 @@ import {ChildSchoolActivity} from '../../models/child-statistics';
 const CUSTOM_TEXTS_COLOR_CODES = [
   {
     event: 'ABSENCE_AUTHORIZATION',
-    color: 'red-text'
+    color: 'blue-text'
   },
   {
     event: 'NEW_AUTHORIZED_ABSENCE',

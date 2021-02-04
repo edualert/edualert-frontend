@@ -1,4 +1,4 @@
-export const menuLinks = {     // moved this here to be able to automatically corelate the menu items with the location enforcement of roles
+export const menuLinks = {     // moved this here to be able to automatically correlate the menu items with the location enforcement of roles
   'ADMINISTRATOR': [
     {path: 'home', text: 'Acasă', className: 'home'},
     {path: 'manage-schools', text: 'Gestionare unități de învățământ', className: 'manage-schools'},

@@ -44,7 +44,8 @@
           </div>
           <div class="table-container">
             <app-reports-table [tableColumns]="ownStudentsAtRiskTable"
-                               [tableData]="ownStudentsAtRiskList">
+                               [tableData]="ownStudentsAtRiskList"
+                               (userHasBeenSelected)="openUserModal($event)">
             </app-reports-table>
           </div>
           <div class="text-item link-content blue-text bold more-button arrow-right mobile"
@@ -62,7 +63,8 @@
           </div>
           <div class="table-container">
             <app-reports-table [tableColumns]="inactiveParentsTable"
-                               [tableData]="inactiveParentsList">
+                               [tableData]="inactiveParentsList"
+                               (userHasBeenSelected)="openUserModal($event)">
             </app-reports-table>
           </div>
           <div class="text-item link-content blue-text bold more-button arrow-right mobile"
@@ -143,3 +145,5 @@
 <ng-template #noDataMessageView>
   <div class="big-text bold padded-top info-card">{{ noDataMessage }}</div>
 </ng-template>
+
+<app-view-user-modal #appViewUserModal></app-view-user-modal>

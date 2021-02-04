@@ -100,6 +100,10 @@ $headerHeight: 37px;
     padding-top: $margin-tiny;
     font-weight: $font-weight-medium;
     border-right: 0;
+
+    &.small {
+      display: inherit;
+    }
   }
 }
 

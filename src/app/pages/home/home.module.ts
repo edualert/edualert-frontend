@@ -10,6 +10,7 @@ import {HomeTeacherComponent} from './home-teacher/home-teacher.component';
 import {HeaderModule} from '../../header/header.module';
 import {SharedModule} from '../../shared/shared.module';
 import {NgxChartsModule} from '@swimlane/ngx-charts';
+import {ViewUserModalModule} from '../manage-users/view-user-modal/view-user-modal.module';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import {NgxChartsModule} from '@swimlane/ngx-charts';
     CoreModule,
     HeaderModule,
     SharedModule,
-    NgxChartsModule
+    NgxChartsModule,
+    ViewUserModalModule
   ],
 })
 export class HomeModule {

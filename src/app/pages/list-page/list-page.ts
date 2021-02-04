@@ -169,7 +169,7 @@ export class ListPage extends ScrollableList {
 
   // Methods to change the url params:
   changeSearch(search: string): void {
-    if (search.length === 0) {
+    if (!search || search.length === 0) {
       search = null;
     }
     this.changeUrlParams({search: search});

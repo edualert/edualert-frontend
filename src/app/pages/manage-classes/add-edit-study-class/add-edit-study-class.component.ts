@@ -1,25 +1,25 @@
-import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {SchoolDetailsService} from '../../../services/school-details.service';
-import {TeachersListService} from '../../../services/teachers-list.service';
-import {Teacher} from '../../../models/teacher';
-import {StudyClass, StudyClassErrors, StudyClassRequestBody} from '../../../models/study-class';
-import {StudyClassAvailableGradesList, StudyClassService} from '../../../services/study-class.service';
-import {SubjectsListService} from '../../../services/subjects-list.service';
-import {IdName} from '../../../models/id-name';
-import {IdFullname} from '../../../models/id-fullname';
-import {StudentsService} from '../../../services/students.service';
-import {AcademicProgramsService} from '../../../services/academic-programs.service';
-import {findIndex, cloneDeep} from 'lodash';
-import {TeacherClassThrough} from '../../../models/teacher-class-through';
-import {HttpClient} from '@angular/common/http';
-import {getCurrentAcademicYear} from '../../../shared/utils';
-import {MY_OWN_SCHOOL_CATEGORY_LEVELS_GRADES, SchoolDetail} from '../../../models/school-details';
-import {UserDetailsBase} from '../../../models/user-details-base';
-import {Student} from '../../../models/student';
-import {AddUserModalComponent} from '../../manage-users/add-user-modal/add-user-modal.component';
-import {CloneClassService} from '../../../services/clone-class.service';
-import {AcademicYearCalendarService} from '../../../services/academic-year-calendar.service';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SchoolDetailsService } from '../../../services/school-details.service';
+import { TeachersListService } from '../../../services/teachers-list.service';
+import { Teacher } from '../../../models/teacher';
+import { StudyClass, StudyClassErrors, StudyClassRequestBody } from '../../../models/study-class';
+import { StudyClassAvailableGradesList, StudyClassService } from '../../../services/study-class.service';
+import { SubjectsListService } from '../../../services/subjects-list.service';
+import { IdName } from '../../../models/id-name';
+import { IdFullname } from '../../../models/id-fullname';
+import { StudentsService } from '../../../services/students.service';
+import { AcademicProgramsService } from '../../../services/academic-programs.service';
+import { findIndex, cloneDeep } from 'lodash';
+import { TeacherClassThrough } from '../../../models/teacher-class-through';
+import { HttpClient } from '@angular/common/http';
+import { getCurrentAcademicYear } from '../../../shared/utils';
+import { MY_OWN_SCHOOL_CATEGORY_LEVELS_GRADES, SchoolDetail } from '../../../models/school-details';
+import { UserDetailsBase } from '../../../models/user-details-base';
+import { Student } from '../../../models/student';
+import { AddUserModalComponent } from '../../manage-users/add-user-modal/add-user-modal.component';
+import { CloneClassService } from '../../../services/clone-class.service';
+import { AcademicYearCalendarService } from '../../../services/academic-year-calendar.service';
 import * as moment from 'moment';
 
 
@@ -243,6 +243,10 @@ export class AddEditStudyClassComponent implements OnInit {
   }
 
   onSubmit() {
+    if (!this.studyClass.updated_teachers?.length && !this.studyClass.teachers_class_through?.length) {
+      return;
+    }
+
     this.hasUnfilledFields = false;
     this.checkObject(this.studyClass, this.studyClassErrors);
     if (!this.hasUnfilledFields) {
@@ -517,10 +521,10 @@ export class AddEditStudyClassComponent implements OnInit {
           };
         } else {
           this.studyClass.teachers_class_through.push(new TeacherClassThrough({
-            subject_id: classSubject.subject_id,
-            subject_name: classSubject.subject_name,
-            teacher: new IdFullname({full_name: '-'}),
-            is_mandatory: classSubject.is_mandatory,
+              subject_id: classSubject.subject_id,
+              subject_name: classSubject.subject_name,
+              teacher: new IdFullname({full_name: '-'}),
+              is_mandatory: classSubject.is_mandatory,
             }
           ));
         }

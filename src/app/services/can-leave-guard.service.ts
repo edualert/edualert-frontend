@@ -33,11 +33,7 @@ export class CanLeaveGuardService implements CanDeactivate<any> {
     }
 
     if (component.hasUnsavedData && component.hasModifiedData) {
-      if (confirm('Doriti sa continuati? Datele introduse vor fi pierdute.')) {
-        return true;
-      } else {
-        return false;
-      }
+      return confirm('Doriți să continuați? Datele introduse vor fi pierdute.');
     }
     return true;
   }
