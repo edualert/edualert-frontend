@@ -1,11 +1,11 @@
-import {Component, Input, ViewChild} from '@angular/core';
-import {ModalComponent} from "../../../shared/modal/modal.component";
-import {userRoles} from "../../../models/user-roles";
-import {UserDetails} from "../../../models/user-details";
-import {HttpClient} from "@angular/common/http";
+import { Component, Input, ViewChild } from '@angular/core';
+import { ModalComponent } from '../../../shared/modal/modal.component';
+import { userRoles } from '../../../models/user-roles';
+import { UserDetails } from '../../../models/user-details';
+import { HttpClient } from '@angular/common/http';
 import * as moment from 'moment';
-import {AccountService} from '../../../services/account.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import { AccountService } from '../../../services/account.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-user-modal',
@@ -73,12 +73,14 @@ export class ViewUserModalComponent {
     return response;
   }
 
-  open(userId: string | number) : void{
-    if (!userId) return;
+  open(userId: string | number): void {
+    if (!userId) {
+      return;
+    }
 
     this.httpClient.get<UserDetails>('users/' + userId + '/?include_risk_alerts=true').subscribe(response => {
       this.user = new UserDetails(response);
-      this.availableFields = ViewUserModalComponent.constructAvailableFields(this.user.user_role)
+      this.availableFields = ViewUserModalComponent.constructAvailableFields(this.user.user_role);
     });
     this.modal.open();
     return;
@@ -91,13 +93,13 @@ export class ViewUserModalComponent {
 
   onClassNameClick() {
     if (this.accountRole === 'SCHOOL_PRINCIPAL') {
-      if (this.activatedRoute.snapshot.url[0].path.includes('manage-classes')) {
+      if (this.activatedRoute.snapshot.url.length && this.activatedRoute.snapshot.url[0].path.includes('manage-classes')) {
         this.modal.close();
       } else {
         this.router.navigate(['/manage-classes', this.user.class_id, 'view']);
       }
     } else {
-      if (this.activatedRoute.snapshot.url[0].path.includes('my-classes')) {
+      if (this.activatedRoute.snapshot.url.length && this.activatedRoute.snapshot.url[0].path.includes('my-classes')) {
         this.modal.close();
       } else {
         this.router.navigate(['/my-classes', this.user.class_id, 'class-detail']);

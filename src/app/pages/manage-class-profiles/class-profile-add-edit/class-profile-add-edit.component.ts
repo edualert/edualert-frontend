@@ -435,11 +435,7 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
 
   canDeactivate(): boolean {
     if (this.hasModifiedData && (this.hasUnsavedData || this.hasUnfilledFields)) {
-      if (confirm('Doriti sa continuati? Datele introduse vor fi pierdute.')) {
-        return true;
-      } else {
-        return false;
-      }
+      return confirm('Doriți să continuați? Datele introduse vor fi pierdute.');
     }
     return true;
   }

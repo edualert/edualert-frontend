@@ -58,19 +58,18 @@ export class HomePrincipalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchPageData();
     this.studentsChartView = handleChartWidthHeight();
     this.currentAcademicYearService.getData().subscribe(response => {
       const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
-      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
-      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
 
-      if (now > firstSemEnd) {
+      if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isFirstSemesterEnded = true;
       }
-      if (now > secondSemEnd) {
+      if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isSecondSemesterEnded = true;
       }
+
+      this.fetchPageData();
     });
     this.forceRequest = false;
   }
@@ -142,7 +141,7 @@ export class HomePrincipalComponent implements OnInit {
       dataKey: 'full_name',
       columnType: 'link-button',
       link: (value: InactiveTeacher) => {
-        return `manage-users/${value.id}/view`;
+        return `/manage-users/${value.id}/view`;
       },
       minWidth: '200px',
     }));
@@ -163,7 +162,7 @@ export class HomePrincipalComponent implements OnInit {
       dataKey: 'student_full_name',
       columnType: 'link-button-fixed-max-width',
       link: (value: StudentAtRisk) => {
-        return `manage-users/${value.student.id}/view`;
+        return `/manage-users/${value.student.id}/view`;
       },
       minWidth: '200px'
     }));

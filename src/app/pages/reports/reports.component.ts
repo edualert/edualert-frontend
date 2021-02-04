@@ -39,7 +39,6 @@ export class ReportsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const selectedTab: orsTabs = 'enrolled_institutions';
     this.accountService.account.subscribe((account: UserDetails) => {
       this.accountRole = account.user_role;
       if (this.initialQueryParams) {
@@ -49,7 +48,7 @@ export class ReportsComponent implements OnInit {
       // the reports-principal / reports-teacher component, after building the tabs.
       switch (this.accountRole) {
         case 'ADMINISTRATOR':
-          this.initialQueryParams = selectedTab;
+          this.initialQueryParams = 'enrolled_institutions';
           break;
         case 'PARENT':
           this.initialQueryParams = 'student_school_activity';

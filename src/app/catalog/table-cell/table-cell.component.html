@@ -28,20 +28,6 @@
       </div>
     </div>
 
-    <!-- BEHAVIOR AVERAGE ----------------------------------  -->
-    <div *ngSwitchCase="'behavior-sem-avg'" class="semester-average-cell">
-      <div *ngIf="!data" class="bg-element">-</div>
-      <div *ngIf="data" class="bg-element {{data >= pivotPoint ? 'blue-text' : 'red-text'}}">
-        {{data}}
-      </div>
-    </div>
-    <div *ngSwitchCase="'behavior-annual-avg'" class="annual-average-cell">
-      <div *ngIf="!data" class="list-element">-</div>
-      <div *ngIf="data" class="bg-element annual {{data >= pivotPoint ? 'blue-background' : 'red-background'}}">
-        {{data}}
-      </div>
-    </div>
-
     <!-- ANNUAL AVERAGE ----------------------------------  -->
     <div *ngSwitchCase="'annual-avg'" class="annual-average-cell">
       <div *ngIf="!data" class="list-element">-</div>

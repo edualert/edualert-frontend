@@ -21,7 +21,8 @@
     </h2>
     <div id="header-top-right-container">
       <div class="button-container">
-        <div class="text-button" (click)="onSubmit()">Salvează</div>
+        <div class="text-button" [class.disabled]="!studyClass?.updated_teachers?.length && !studyClass?.teachers_class_through?.length"
+             (click)="onSubmit()">Salvează</div>
         <div class="text-button dark-text" (click)="cancel()">Anulează</div>
       </div>
     </div>

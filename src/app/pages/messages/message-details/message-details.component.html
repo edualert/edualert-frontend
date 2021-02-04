@@ -16,7 +16,7 @@
           <div class="value-container">{{message?.title}}</div>
         </div>
         <div class="info-wrapper">
-          <div class="label">Pentru:</div>
+          <div class="label">Pentru</div>
           <ng-container [ngSwitch]="message?.receiver_type">
             <ng-container *ngSwitchCase="'CLASS_STUDENTS'">
               <div class="cell">
@@ -68,17 +68,18 @@
 									{{message.target_user_through?.user_profile_full_name}}
 								</span>
               </div>
-              <hr class="vertical">
-              <div class="cell">
+              <hr class="vertical" *ngIf="message.target_user_through.children.length">
+              <div class="cell" *ngIf="message.target_user_through.children.length">
                 <span class="title">Părinte elev:</span>
                 <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.target_user_through.children[0].id)">
 									{{message.target_user_through.children[0]?.full_name}}
 								</span>
               </div>
-              <hr class="vertical">
-              <div class="cell">
+              <hr class="vertical" *ngIf="message.target_user_through.children.length">
+              <div class="cell" *ngIf="message.target_user_through.children.length">
                 <span class="title">Clasă:</span>
-                <a class="text-item link-content blue-text bold arrow right"
+                <span *ngIf="!message.target_user_through.children[0]?.study_class"> - </span>
+                <a class="text-item link-content blue-text bold arrow right" *ngIf="message.target_user_through.children[0]?.study_class"
                    [routerLink]="account.user_role === 'SCHOOL_PRINCIPAL' ?
                           ['/manage-classes', message.target_user_through.children[0]?.study_class.id, 'view'] :
                           ['/my-classes', message.target_user_through.children[0]?.study_class.id, 'class-detail']">
@@ -108,7 +109,7 @@
         <hr class="margin-list">
         <div class="detail-element-container">
           <div class="label-container fixed-width">Conținut mesaj</div>
-          <div class="value-container bold">{{message?.body}}</div>
+          <div class="value-container full-width bold message-body">{{message?.body}}</div>
         </div>
       </ng-container>
 
@@ -118,7 +119,7 @@
           <div class="value-container">{{message?.title}}</div>
         </div>
         <div class="info-wrapper">
-          <div class="label">De la:</div>
+          <div class="label">De la</div>
           <ng-container [ngSwitch]="message?.from_user_role">
             <ng-container *ngSwitchCase="'SCHOOL_PRINCIPAL'">
               <div class="cell">
@@ -154,7 +155,7 @@
         <hr class="margin-list">
         <div class="detail-element-container">
           <div class="label-container fixed-width">Conținut mesaj</div>
-          <div class="value-container bold">{{message?.body}}</div>
+          <div class="value-container full-width bold message-body">{{message?.body}}</div>
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'loading'"></ng-container>

@@ -36,6 +36,7 @@
       <div class="value-container profile-name" *ngIf="page === 'add'">
         <app-dropdown
           [list]="unregisteredAcademicPrograms"
+          [required]="true"
           [identifierProperty]="'id'"
           [displayedProperty]="'name'"
           [appliedElement]="academicProgram.id ? academicProgram : null"

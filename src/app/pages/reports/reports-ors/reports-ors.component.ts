@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   InactiveInstitutionsService, InstitutionsAbsencesService,
   InstitutionsAtRiskService, InstitutionsAverageService,
@@ -9,7 +10,6 @@ import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
 import { orsTabs } from '../reports-tabs';
 import { formatChartData, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
-import { findIndex } from 'lodash';
 import { ScrollableList } from '../../list-page/scrollable-list';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 
@@ -22,8 +22,6 @@ import { CurrentAcademicYearService } from '../../../services/current-academic-y
 export class ReportsOrsComponent extends ScrollableList implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Output() changeUrlParamsEvent = new EventEmitter<object>();
   @Input() initialQueryParams: string;
-  graphSubtitle: string;
-  findIndex = findIndex;
 
   institutionsAtRiskTable: Column[] = [];
   inactiveInstitutionsTable: Column[] = [];
@@ -40,14 +38,8 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   institutionsDisplayChart: boolean;
   studentsDisplayChart: boolean;
 
-  tabs: { name: string, id: orsTabs }[] = [
-    {name: 'Instituții înrolate', id: 'enrolled_institutions'},
-    {name: 'Instituții cu risc', id: 'institutions_at_risk'},
-    {name: 'Instituții inactive', id: 'inactive_institutions'},
-    {name: 'Instituții după medii', id: 'institutions_average'},
-    {name: 'Instituții după absențe', id: 'institutions_absences'},
-    {name: 'Elevi cu risc', id: 'students_risk_evolution'}
-  ];
+  tabs: { name: string, id: orsTabs }[] = [];
+  activeTab: orsTabs;
 
   data = {
     enrolled_institutions: {
@@ -79,7 +71,6 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   page_size: number = 50;
   small_page_size: number = 10;
 
-  activeTab: orsTabs = 'enrolled_institutions';
   month_enrolled_institutions: number = moment().month();
   month_students_risk_evolution: number = moment().month();
   loading: boolean = false;
@@ -117,7 +108,8 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
               private inactiveInstitutionsService: InactiveInstitutionsService,
               private institutionsAverageService: InstitutionsAverageService,
               private institutionsAbsencesService: InstitutionsAbsencesService,
-              private currentAcademicYearService: CurrentAcademicYearService) {
+              private currentAcademicYearService: CurrentAcademicYearService,
+              private router: Router) {
     super();
     this.generateInstitutionsAtRiskTable = this.generateInstitutionsAtRiskTable.bind(this);
     this.generateInactiveInstitutionsTable = this.generateInactiveInstitutionsTable.bind(this);
@@ -332,39 +324,70 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
 
   ngOnInit(): void {
     this.isOnReportsPage = true;
-    this.changeUrlParamsEvent.next({top_tab: this.activeTab});
+
     window.setTimeout(() =>
         this.generalChartView = handleChartWidthHeight(window.innerHeight - this.chartTitleHeight),
       500);
     this.month_students_risk_evolution = moment().month();
     this.month_enrolled_institutions = moment().month();
-
-    this.currentAcademicYearService.getData().subscribe(response => {
-      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
-
-      if (now <= moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
-        ['institutions_at_risk', 'institutions_average', 'institutions_absences'].forEach(reportId => {
-          this.tabs.splice(this.tabs.findIndex(item => item.id === reportId), 1);
-        });
-      } else if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
-        this.tabs.splice(this.tabs.findIndex(item => item.id === 'inactive_institutions'), 1);
-        this.isSecondSemesterEnded = true;
-      }
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
-      this.activeTab = changes.initialQueryParams.currentValue;
-      document.body.scrollTo(0, this.scrollPositions[this.activeTab]);
-      if (!['students_risk_evolution', 'enrolled_institutions'].includes(this.activeTab)) {
-        this.elementCount = this.data[this.activeTab]?.length;
-        if (this.currentPages[this.activeTab] === 1 && this.data[this.activeTab] === null) {
-          this.fetchData(this.activeTab);
-        }
+      if (!this.tabs.length) {
+        this.initializePage(changes.initialQueryParams.currentValue);
       } else {
+        this.onInitialQueryParamsChanges(changes.initialQueryParams.currentValue);
+      }
+    }
+  }
+
+  private initializePage(tabId: any) {
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+
+      if (now <= moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.tabs = [
+          {name: 'Instituții înrolate', id: 'enrolled_institutions'},
+          {name: 'Instituții inactive', id: 'inactive_institutions'},
+          {name: 'Elevi cu risc', id: 'students_risk_evolution'}
+        ];
+      } else {
+        this.tabs = [
+          {name: 'Instituții înrolate', id: 'enrolled_institutions'},
+          {name: 'Instituții cu risc', id: 'institutions_at_risk'},
+          {name: 'Instituții inactive', id: 'inactive_institutions'},
+          {name: 'Instituții după medii', id: 'institutions_average'},
+          {name: 'Instituții după absențe', id: 'institutions_absences'},
+          {name: 'Elevi cu risc', id: 'students_risk_evolution'}
+        ];
+        if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+          this.tabs.splice(this.tabs.findIndex(item => item.id === 'inactive_institutions'), 1);
+          this.isSecondSemesterEnded = true;
+        }
+      }
+
+      this.onInitialQueryParamsChanges(tabId);
+    });
+  }
+
+  private onInitialQueryParamsChanges(tabId: any) {
+    if (this.tabs.findIndex(item => item.id === tabId) < 0) {
+      this.router.navigateByUrl('').then();
+      return;
+    }
+
+    this.activeTab = tabId;
+    this.changeUrlParamsEvent.next({top_tab: this.activeTab});
+    document.body.scrollTo(0, this.scrollPositions[this.activeTab]);
+
+    if (!['students_risk_evolution', 'enrolled_institutions'].includes(this.activeTab)) {
+      this.elementCount = this.data[this.activeTab]?.length;
+      if (this.currentPages[this.activeTab] === 1 && this.data[this.activeTab] === null) {
         this.fetchData(this.activeTab);
       }
+    } else {
+      this.fetchData(this.activeTab);
     }
   }
 

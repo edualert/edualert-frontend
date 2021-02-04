@@ -1,4 +1,5 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   MyOwnAbsencesEvolutionService,
   MyOwnSchoolActivityService,
@@ -15,7 +16,6 @@ import * as moment from 'moment';
 import { parentStudentTabs } from '../reports-tabs';
 import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
 import { IdFullname } from '../../../models/id-fullname';
-import { ActivatedRoute } from '@angular/router';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 import { ChildStatistics } from '../../../models/child-statistics';
 
@@ -28,12 +28,7 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
   @Output() changeUrlParamsEvent = new EventEmitter<object>();
   @Input() initialQueryParams: string;
 
-  tabs: { name: string, id: string }[] = [
-    {name: 'Istoric activitate școlară', id: 'student_school_activity'},
-    {name: 'Top materii cu risc', id: 'student_subjects_at_risk'},
-    {name: 'Evoluție număr absențe', id: 'student_absences_evolution'},
-    {name: 'Statistici', id: 'student_statistics'},
-  ];
+  tabs: { name: string, id: string }[] = [];
 
   data = {
     student_school_activity: null,
@@ -84,18 +79,18 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
               private childSchoolActivityService: ChildSchoolActivityService,
               private childSubjectsAtRiskService: ChildSubjectsAtRiskService,
               private accountService: AccountService,
-              private activatedRoute: ActivatedRoute,
+              private router: Router,
               private currentAcademicYearService: CurrentAcademicYearService) {
     this.generateStudentActivityTable = this.generateStudentActivityTable.bind(this);
     this.generateStudentSubjectsAtRiskTable = this.generateStudentSubjectsAtRiskTable.bind(this);
 
-    this.activeTab = this.activatedRoute.snapshot.params['top_tab'];
     accountService.account.subscribe((account: UserDetails) => {
       this.userDetails = account;
       this.accountRole = account.user_role;
     });
 
     this.selectedChild = this.accountService.selectedChild.getValue();
+    this.initialSelectedChild = this.selectedChild;
     this.childSubscription = this.accountService.selectedChild.subscribe((child: IdFullname) => {
       this.selectedChild = child;
       if (this.activeTab) {
@@ -105,47 +100,68 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
   }
 
   ngOnInit(): void {
-    this.changeUrlParamsEvent.next({top_tab: this.activeTab});
     window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
     this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
-    this.initialSelectedChild = this.selectedChild;
-
-    this.currentAcademicYearService.getData().subscribe(response => {
-      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
-      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
-      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
-
-      if (now > firstSemEnd) {
-        this.isFirstSemesterEnded = true;
-      }
-      if (now > secondSemEnd) {
-        this.isSecondSemesterEnded = true;
-      }
-
-      if (now <= firstSemEnd) {
-        this.tabs.splice(this.tabs.findIndex(x => x.id === 'student_subjects_at_risk'), 1);
-      }
-    });
-
-    this.fetchData(this.activeTab);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.month = moment().month();
 
     if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
-      this.activeTab = changes.initialQueryParams.currentValue;
-      if (!this.loading) {
-        if (this.activeTab === 'student_absences_evolution') {
-          if (this.data[this.activeTab][this.month]) {
-            this.setDisplayChart(this.activeTab);
-          } else {
-            this.fetchData(this.activeTab);
-          }
+      if (!this.tabs.length) {
+        this.initializePage(changes.initialQueryParams.currentValue);
+      } else {
+        this.onInitialQueryParamsChanges(changes.initialQueryParams.currentValue);
+      }
+    }
+  }
+
+  private initializePage(tabId: any) {
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+
+      if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.isFirstSemesterEnded = true;
+        this.tabs = [
+          {name: 'Istoric activitate școlară', id: 'student_school_activity'},
+          {name: 'Top materii cu risc', id: 'student_subjects_at_risk'},
+          {name: 'Evoluție număr absențe', id: 'student_absences_evolution'},
+          {name: 'Statistici', id: 'student_statistics'},
+        ];
+      } else {
+        this.tabs = [
+          {name: 'Istoric activitate școlară', id: 'student_school_activity'},
+          {name: 'Evoluție număr absențe', id: 'student_absences_evolution'},
+          {name: 'Statistici', id: 'student_statistics'},
+        ];
+      }
+      if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.isSecondSemesterEnded = true;
+      }
+
+      this.onInitialQueryParamsChanges(tabId);
+    });
+  }
+
+  private onInitialQueryParamsChanges(tabId: any) {
+    if (this.tabs.findIndex(item => item.id === tabId) < 0) {
+      this.router.navigateByUrl('').then();
+      return;
+    }
+
+    this.activeTab = tabId;
+    this.changeUrlParamsEvent.next({top_tab: this.activeTab});
+
+    if (!this.loading) {
+      if (this.activeTab === 'student_absences_evolution') {
+        if (this.data[this.activeTab][this.month]) {
+          this.setDisplayChart(this.activeTab);
         } else {
-          if (!this.data[this.activeTab]) {
-            this.fetchData(this.activeTab);
-          }
+          this.fetchData(this.activeTab);
+        }
+      } else {
+        if (!this.data[this.activeTab]) {
+          this.fetchData(this.activeTab);
         }
       }
     }
@@ -182,8 +198,7 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
   fetchData(id: string) {
     if (this.accountRole === 'STUDENT') {
       this.fetchDataChild(id);
-    }
-    if (this.accountRole === 'PARENT') {
+    } else if (this.accountRole === 'PARENT') {
       this.fetchDataParent(id);
     }
   }
@@ -404,7 +419,7 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
     }));
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
-      data: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
+      dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell-dynamic-limit',
       pivotPoint: 'avg_limit',
       minWidth: '120px'

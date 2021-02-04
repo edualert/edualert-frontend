@@ -1,4 +1,5 @@
-import {AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   StudyClassesAtRiskService
 } from '../../../services/statistics-services/school-statistics.service';
@@ -14,10 +15,10 @@ import { StudentAtRisk } from '../../../models/student-data-list';
 import { InactiveParent } from '../../../models/parent';
 import * as moment from 'moment';
 import { classMasterTabsMappingTypes, notClassMasterTabsMappingTypes } from '../reports-tabs';
-import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 import { findIndex } from 'lodash';
-import {ScrollableList} from '../../list-page/scrollable-list';
+import { ScrollableList } from '../../list-page/scrollable-list';
 
 @Component({
   selector: 'app-reports-teacher',
@@ -92,7 +93,6 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
   isFirstSemesterEnded: boolean = false;
   isSecondSemesterEnded: boolean = false;
 
-  graphSubtitle: string;
   colorSchemeRed = {
     domain: ['#CC0033']
   };
@@ -296,7 +296,6 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
         this.tableIsGenerated = true;
       }
     });
-
   }
 
   constructor(private isTeacherClassMasterService: IsTeacherClassMasterService,
@@ -307,8 +306,8 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
               private ownStudentsBehaviourGradeService: OwnStudentsBehaviourGradesService,
               private ownStudentsAtRiskService: OwnStudentsAtRiskService,
               private inactiveParentsService: InactiveParentsService,
-              private currentAcademicYearService: CurrentAcademicYearService
-  ) {
+              private currentAcademicYearService: CurrentAcademicYearService,
+              private router: Router) {
     super();
     this.scrollHandle = this.scrollHandle.bind(this);
     this.initialBodyHeight = document.body.getBoundingClientRect().height;
@@ -326,20 +325,29 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
     this.generateInactiveParentsTable = this.generateInactiveParentsTable.bind(this);
   }
 
-
-  fetchTeacherInfo(setTabs?: boolean) {
+  fetchTeacherInfo(initialQueryParams: string) {
     this.isTeacherClassMasterService.verifyIfClassMaster()
       .subscribe((response: boolean) => {
         this.isTeacherClassMaster = response;
-        if (!response) {
-          this.tabs_top = [
-            {name: 'Clasele mele', id: 'my_classes'},
-          ];
+
+        this.buildTabs();
+
+        if (initialQueryParams) {
+          this.onInitialQueryParamsChanges(initialQueryParams);
+        } else {
+          if (this.shouldDisplayNoDataMessage) {
+            return;
+          }
+
+          this.activeTabTop = this.tabs_top[0].id;
+          this.setBottomTabs();
+          this.activeTabBottom = this.tabs_bottom[0].id;
+
+          this.changeUrlParamsEvent.next({
+            top_tab: this.activeTabTop,
+            bottom_tab: this.activeTabBottom
+          });
         }
-        if (setTabs) {
-          this.buildTabs();
-        }
-        this.fetchData(this.activeTabTop, this.activeTabBottom);
       });
   }
 
@@ -495,23 +503,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
   }
 
   ngOnInit(): void {
-    this.currentAcademicYearService.getData().subscribe(response => {
-      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
-      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
-      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
-
-      if (now > firstSemEnd) {
-        this.isFirstSemesterEnded = true;
-      }
-      if (now > secondSemEnd) {
-        this.isSecondSemesterEnded = true;
-      }
-
-      this.fetchTeacherInfo(true);
-
-      this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
-      window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
-    });
+    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
   }
 
   ngAfterViewInit(): void {
@@ -571,21 +563,6 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
         this.shouldDisplayNoDataMessage = true;
       }
     }
-
-    if (!this.shouldDisplayNoDataMessage) {
-      if (findIndex(this.tabs_top, {id: this.activeTabTop}) < 0) {
-        this.activeTabTop = this.tabs_top[0].id;
-      }
-      this.setBottomTabs();
-      if (findIndex(this.tabs_bottom, {id: this.activeTabBottom}) < 0) {
-        this.activeTabBottom = this.tabs_bottom[0].id;
-      }
-      this.changeUrlParamsEvent.next({
-        top_tab: this.activeTabTop,
-        bottom_tab: this.activeTabBottom
-      });
-    }
-
   }
 
   private setBottomTabs(): void {
@@ -597,19 +574,55 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.initialQueryParams && changes.initialQueryParams.currentValue &&
-      changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
-      const tab_ids = changes.initialQueryParams.currentValue.split('-');
-      this.activeTabTop = tab_ids[0];
-      this.activeTabBottom = tab_ids[1];
-      this.setBottomTabs();
-
+    if (changes.initialQueryParams && changes.initialQueryParams.currentValue !== changes.initialQueryParams.previousValue) {
       if (this.isTeacherClassMaster === undefined) {
-        this.fetchTeacherInfo();
+        // First time on the page (either from the navigation menu, or from a report link from the home page
+        // Can have or not query params
+        this.initializePage(changes.initialQueryParams.currentValue);
       } else {
-        this.fetchData(this.activeTabTop, this.activeTabBottom);
+        // From tab change
+        this.onInitialQueryParamsChanges(changes.initialQueryParams.currentValue);
       }
     }
+  }
+
+  private initializePage(initialQueryParams: string) {
+    this.currentAcademicYearService.getData().subscribe(response => {
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+
+      if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.isFirstSemesterEnded = true;
+      }
+      if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.isSecondSemesterEnded = true;
+      }
+
+      this.fetchTeacherInfo(initialQueryParams);
+    });
+  }
+
+  private onInitialQueryParamsChanges(initialQueryParams: any) {
+    if (this.shouldDisplayNoDataMessage) {
+      this.router.navigateByUrl('').then();
+      return;
+    }
+
+    const tab_ids = initialQueryParams.split('-');
+
+    this.activeTabTop = tab_ids[0];
+    if (findIndex(this.tabs_top, {id: this.activeTabTop}) < 0) {
+      this.router.navigateByUrl('').then();
+      return;
+    }
+
+    this.setBottomTabs();
+    this.activeTabBottom = tab_ids[1];
+    if (findIndex(this.tabs_bottom, {id: this.activeTabBottom}) < 0) {
+      this.router.navigateByUrl('').then();
+      return;
+    }
+
+    this.fetchData(this.activeTabTop, this.activeTabBottom);
   }
 
   emitUserIdForModal(event) {

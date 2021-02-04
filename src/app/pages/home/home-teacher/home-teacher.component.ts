@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { UserDetails } from '../../../models/user-details';
 import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
 import { IsTeacherClassMasterService } from '../../../services/study-class.service';
@@ -11,6 +11,7 @@ import { InactiveParentsService } from '../../../services/statistics-services/in
 import { InactiveParent } from '../../../models/parent';
 import * as moment from 'moment';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
+import { ViewUserModalComponent } from '../../manage-users/view-user-modal/view-user-modal.component';
 
 @Component({
   selector: 'app-home-teacher',
@@ -19,6 +20,8 @@ import { CurrentAcademicYearService } from '../../../services/current-academic-y
 })
 export class HomeTeacherComponent implements OnInit {
   @Input() userDetails: UserDetails;
+  @ViewChild('appViewUserModal', {'static': false}) appViewUserModal: ViewUserModalComponent;
+
   isTeacherClassMaster: boolean = false;
 
   isFirstSemesterEnded: boolean = false;
@@ -61,19 +64,18 @@ export class HomeTeacherComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchTeacherInfo();
     this.ownStudentsChartView = handleChartWidthHeight();
     this.currentAcademicYearService.getData().subscribe(response => {
       const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
-      const firstSemEnd = moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf();
-      const secondSemEnd = moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
 
-      if (now > firstSemEnd) {
+      if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isFirstSemesterEnded = true;
       }
-      if (now > secondSemEnd) {
+      if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isSecondSemesterEnded = true;
       }
+
+      this.fetchTeacherInfo();
     });
   }
 
@@ -106,6 +108,10 @@ export class HomeTeacherComponent implements OnInit {
   }
 
   fetchPageData(): void {
+    if (this.shouldDisplayNoDataMessage) {
+      return;
+    }
+
     this.studyClassesAtRiskService.getData(this.forceRequest)
       .subscribe(response => {
         this.studyClassesAtRiskList = response;
@@ -156,9 +162,9 @@ export class HomeTeacherComponent implements OnInit {
       backgroundColor: '#FFFFFF',
       name: 'Nume elev',
       dataKey: 'student_full_name',
-      columnType: 'link-button-fixed-max-width',
+      columnType: 'user-details-modal-fixed-max-width',
       link: (value: StudentAtRisk) => {
-        return `manage-users/${value.id}/view`;
+        return value.student.id;
       },
       minWidth: '200px'
     }));
@@ -196,18 +202,18 @@ export class HomeTeacherComponent implements OnInit {
     this.inactiveParentsTable.push(new Column({
       name: 'Nume părinte',
       dataKey: 'full_name',
-      columnType: 'link-button-fixed-max-width',
+      columnType: 'user-details-modal-fixed-max-width',
       link: (value: InactiveParent) => {
-        return `manage-users/${value.id}/view`;
+        return value.id;
       },
       minWidth: '200px'
     }));
     this.inactiveParentsTable.push(new Column({
       name: 'Nume elev',
       dataKey: 'student_full_name',
-      columnType: 'link-button-fixed-max-width',
+      columnType: 'user-details-modal-fixed-max-width',
       link: (value: InactiveParent) => {
-        return `manage-users/${value.student_id}/view`;
+        return value.children[0].id;
       },
       minWidth: '200px'
     }));
@@ -224,5 +230,9 @@ export class HomeTeacherComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   resizeChart(event) {
     this.ownStudentsChartView = handleChartWidthHeight();
+  }
+
+  openUserModal(event) {
+    this.appViewUserModal.open(event);
   }
 }
