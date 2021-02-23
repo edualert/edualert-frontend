@@ -7,7 +7,7 @@
   }
 }
 
-.page-content {
+.catalog-wrapper {
   @keyframes contentAppear {
     0% {
       opacity: 0;
@@ -21,9 +21,12 @@
       opacity: 1;
       background-color: opacity($color-background);
     }
-
   }
-  animation: contentAppear 2.9s linear 1 backwards;
+  animation: .3s contentAppear linear 1 backwards;
+}
+
+.list-count {
+  animation: .2s contentAppear linear 1 backwards;
 }
 
 .tabs-container {

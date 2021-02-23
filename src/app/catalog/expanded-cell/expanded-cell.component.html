@@ -4,6 +4,8 @@
   <div *ngSwitchCase="identifier === 'grades_sem_1' || identifier === 'grades_sem_2' ? identifier : null"
        class="expanded-container grades-list">
     <app-single-grade-overlay *ngIf="isEditable"
+                              [currentSemesterStartDate]="currentSemesterStartDate"
+                              [tableLayoutAsIdentifier]="tableLayoutAsIdentifier"
                               (save)="gradeSubmitted($event)"
                               #singleGradeModal
     ></app-single-grade-overlay>
@@ -27,7 +29,7 @@
       </div>
 
       <div class="add-button-container" *ngIf="isEditable && !(tableLayoutAsIdentifier === 'class_master')">
-        <div class="text-button blue-text add-button" (click)="openGradeOverlay($event, false)">Adaugă notă</div>
+        <div class="text-button blue-text add-button" *ngIf="!data.is_exempted" (click)="openGradeOverlay($event, false)">Adaugă notă</div>
       </div>
 
     </div>
@@ -58,7 +60,7 @@
       <div class="label">Medie</div>
       <div class="elements">
         <div class="element-cell grade-cell">
-          <div class="grade {{data.avg > 4 ? 'blue-text': 'red-text'}}">{{data.avg}}</div>
+          <div class="grade {{data.avg >= data.avg_limit ? 'blue-text': 'red-text'}}">{{data.avg}}</div>
         </div>
       </div>
     </div>
@@ -73,6 +75,7 @@
   <div *ngSwitchCase="identifier === 'abs_sem_1' || identifier === 'abs_sem_2' ? identifier : null"
        class="expanded-container absences-list">
     <app-single-absence-overlay *ngIf="isEditable"
+                                [currentSemesterStartDate]="currentSemesterStartDate"
                                 (save)="absenceSubmitted($event)"
                                 #singleAbsenceModal
     ></app-single-absence-overlay>
@@ -114,7 +117,7 @@
           <div class="elements">
             <div class="absences-count">
               <div class="label relative">Nr. de absențe</div>
-              <div class="element-cell single-number" [class.red-text]="data.length >= 10">{{data.length || 0}}</div>
+              <div class="element-cell single-number red-text">{{data.length || 0}}</div>
             </div>
           </div>
           <div class="elements">
@@ -137,7 +140,7 @@
     <ng-container *ngIf="data">
       <div class="elements desktop-only">
         <div class="label relative">Nr. total de absențe</div>
-        <div class="element-cell single-number" [class.red-text]="data.abs_count_annual >= 10">
+        <div class="element-cell single-number red-text">
           {{data.abs_count_annual || 0}}
         </div>
         <div class="label relative">Motivate</div>
@@ -151,7 +154,7 @@
         <div class="elements">
           <div class="absences-count">
             <div class="label relative">Nr. de absențe</div>
-            <div class="element-cell single-number" [class.red-text]="data.abs_count_annual >= 10">
+            <div class="element-cell single-number red-text">
               {{data.abs_count_annual || 0}}
             </div>
           </div>

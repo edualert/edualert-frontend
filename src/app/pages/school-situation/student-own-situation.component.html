@@ -1,13 +1,18 @@
 <div class="animated-page">
   <app-header>
     <h1 id="header-title">Situație școlară</h1>
+    <div id="show-details-button" [class.open]="isDetailsSectionOpen" (click)="isDetailsSectionOpen = !isDetailsSectionOpen;">
+      <div class="bold">Detalii</div>
+    </div>
     <h2 id="header-subtitle">
       <ng-container *ngIf="!rip">{{student?.full_name}}</ng-container>
       <ng-container *ngIf="rip">Se încarcă datele...</ng-container>
     </h2>
     <div id="header-subsubtitle">
-      <ng-container *ngIf="!rip">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</ng-container>
-      <ng-container *ngIf="rip">...</ng-container>
+      <span class="subtitle-wrapper">
+        <ng-container *ngIf="!rip"><span class="bold">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</span></ng-container>
+        <ng-container *ngIf="rip">...</ng-container>
+      </span>
     </div>
     <div id="header-top-right-container">
       <div class="catalog-top-right">
@@ -21,6 +26,31 @@
                (click)="openUserModal($event, studyClass?.class_master.id)">
             {{studyClass?.class_master.full_name}}</div>
           <div class="value bold blue-text link-content" *ngIf="rip">...</div>
+        </div>
+      </div>
+      <div class="details-container-mobile" *ngIf="isDetailsSectionOpen">
+        <div class="bold">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</div>
+        <hr class="mobile-horizontal">
+        <div class="column">
+          <div class="gray-text label">{{academicYearToDisplay}} - {{academicYearToDisplay + 1}}</div>
+          <div class="value bold">{{rip ? "..." : studyClass?.academic_program_name}}</div>
+        </div>
+        <div class="column">
+          <div class="gray-text label">Diriginte</div>
+          <div class="value link-content" *ngIf="!rip"
+               (click)="openUserModal($event, studyClass?.class_master.id)">
+            <div class="bold blue-text link-content">
+              {{studyClass?.class_master.full_name}}
+            </div>
+            <div class="arrow right"></div>
+          </div>
+          <div class="value bold blue-text link-content" *ngIf="rip">...</div>
+        </div>
+        <hr class="mobile-horizontal">
+        <div class="tags">
+          <div class="label">Etichete</div>
+          <div class="tag" *ngFor="let tag of student?.labels">{{tag.text}}</div>
+          <span class="no-tags" *ngIf="!student?.labels || !student?.labels.length">-</span>
         </div>
       </div>
     </div>

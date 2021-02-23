@@ -135,7 +135,6 @@ header#page-header {
     top: 50px;
     will-change: unset;
     padding: 10px $margin-default 0;
-    //position: fixed;
     margin-top: 50px;
     position: unset;
 
@@ -171,9 +170,9 @@ header#page-header {
     }
 
     #header-subsubtitle {
-      display: inline-block;
-      margin-top: 0;
-      margin-left: $margin-tiny;
+      display: block;
+      margin-left: unset;
+      margin-top: $margin-xsmall;
     }
 
     #tabs-container {
@@ -201,6 +200,39 @@ header#page-header {
     #error-alert {
       z-index: 10000;
       left: 0%;
+    }
+
+    #show-details-button {
+      display: flex;
+      align-items: center;
+      float: right;
+      background-color: #E2E8EF;
+      font-size: $font-size-small;
+      width: 90px;
+      height: 30px;
+      border-radius: $border-radius-tiny 0 0 $border-radius-tiny;
+      padding: 7px $margin-default 7px $margin-tiny;
+      margin-right: -$margin-default;
+      pointer-events: all;
+      cursor: pointer;
+
+      &:before {
+        transition: transform .2s $ease-in-out;
+        height: 6px;
+        width: 10px;
+        transform: translateX(-100%) rotate(180deg);
+        content: '';
+        background: url(/../../assets/img/expand.svg) center center no-repeat;
+        margin-left: $margin-small;
+        margin-bottom: 1px;
+        filter: invert(35%) sepia(8%) saturate(1461%) hue-rotate(173deg) brightness(50%) contrast(84%);
+      }
+
+      &.open {
+        &:before {
+          transform: translateX(-100%) rotate(0deg);
+        }
+      }
     }
   }
 }

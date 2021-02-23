@@ -9,7 +9,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {IdName} from '../../models/id-name';
+import { IdName } from '../../models/id-name';
 
 @Component({
   selector: 'app-tabs',
@@ -20,6 +20,7 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
 
   @Input() tabsList: IdName[];
   @Input() activeTab: string;
+  @Input() shouldScrollToActiveTab = false;
   @Output() tabHasBeenSelected: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild('tabContainer') tabContainer;
   @ViewChild('backArrow') backArrow;
@@ -37,7 +38,9 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
     this.activateOrDeactivateArrows();
     const positionInArray = this.tabsList.map(el => el.id.toString()).indexOf(tabClicked.toString());
     const clickedTab = this.tabsList[positionInArray].id.toString();
-    this.scrollTheContainer(clickedTab);
+    if (this.shouldScrollToActiveTab) {
+      this.scrollTheContainer(clickedTab);
+    }
   }
 
   scrollTheContainer(tabClicked: string | number): void {
@@ -45,8 +48,6 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
     const element = this.tabContainer.nativeElement.children[positionInArray];
     if (element) {
       element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
         inline: 'center'
       });
     }
@@ -54,13 +55,13 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
 
   arrowClicked(type: string) {
     const positionInArray = this.tabsList.map(el => el.id).indexOf(this.activeTab);
-    if (type === 'back') {
+    if (type === 'back' && positionInArray - 1 >= 0) {
       const clickedTab = this.tabsList[positionInArray - 1].id.toString();
       this.tabHasBeenSelected.emit(clickedTab);
       this.activateOrDeactivateArrows();
       this.scrollTheContainer(clickedTab);
     }
-    if (type === 'forth') {
+    if (type === 'forth' && positionInArray + 1 < this.tabsList.length) {
       const clickedTab = this.tabsList[positionInArray + 1].id.toString();
       this.tabHasBeenSelected.emit(clickedTab);
       this.activateOrDeactivateArrows();
@@ -76,11 +77,12 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
     ) {
       return;
     }
+
     const boundingFirstChild = this.tabContainer.nativeElement.children[0].getBoundingClientRect();
     const boundingLastChild = this.tabContainer.nativeElement.children[this.tabContainer.nativeElement.children.length - 1].getBoundingClientRect();
     const boundingContainer = this.tabContainer.nativeElement.getBoundingClientRect();
-    if (boundingFirstChild.left === boundingContainer.left && boundingContainer.right === boundingLastChild.right || this.tabsList.length < 3) {
 
+    if (boundingFirstChild.left === boundingContainer.left && boundingContainer.right === boundingLastChild.right || this.tabsList.length < 3) {
       this.backArrow.nativeElement.style.display = 'none';
       this.forthArrow.nativeElement.style.display = 'none';
     } else {
@@ -110,7 +112,7 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
 
   ngAfterViewChecked(): void {
     this.activateOrDeactivateArrows();
-    if (this.activeTab && !this.isScrolledToSelectedTab) {
+    if (this.shouldScrollToActiveTab && this.activeTab && !this.isScrolledToSelectedTab) {
       this.isScrolledToSelectedTab = true;
       this.scrollTheContainer(this.activeTab);
     }

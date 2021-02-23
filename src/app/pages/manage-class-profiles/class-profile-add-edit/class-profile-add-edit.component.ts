@@ -155,6 +155,10 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
         this.listAllMandatorySubjects(this.academicProgram);
       }
       this.requestInProgress = false;
+    }, error => {
+      if (error.status === 404) {
+        this.router.navigateByUrl('').then();
+      }
     });
   }
 

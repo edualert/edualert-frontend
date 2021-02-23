@@ -90,6 +90,9 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
       if (!this.internalLayout) {
         this.internalLayout = this.getLayout(this.tableLayout);
+        if (this.internalData) {
+          this.initialiseExpandableEditableCells(this.internalData, this.internalLayout);
+        }
       }
     });
 
@@ -199,8 +202,8 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   // Modifies parameter
   private formatGradesList(tableRow): void {
     const gradesKeys = {
-      sem1: {grades: 'grades_sem1', avg: 'avg_sem1'},
-      sem2: {grades: 'grades_sem2', avg: 'avg_sem2'}
+      sem1: {grades: 'grades_sem1', avg: 'avg_sem1', avg_limit: 'avg_limit'},
+      sem2: {grades: 'grades_sem2', avg: 'avg_sem2', avg_limit: 'avg_limit'}
     };
 
     Object.keys(gradesKeys).forEach((semKey: string) => {
@@ -211,7 +214,8 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
       tableRow[sem.grades] = {
         grades: tableRow[sem.grades].filter(grade => grade.grade_type === 'REGULAR'),
         thesis: tableRow[sem.grades].filter(grade => grade.grade_type === 'THESIS')[0],
-        avg: tableRow[sem.avg]
+        avg: tableRow[sem.avg],
+        avg_limit: tableRow[sem.avg_limit]
       };
     });
   }
@@ -241,6 +245,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
     const identifier = this.internalLayout.dataRow[colIndex].identifier;
     const data = this.getDataForExpandedCell(identifier, this.internalData[rowIndex]);
     data['wants_thesis'] = this.internalData[rowIndex]?.hasOwnProperty('wants_thesis') ? this.internalData[rowIndex].wants_thesis : null;
+    data['is_exempted'] = this.internalData[rowIndex]?.hasOwnProperty('is_exempted') ? this.internalData[rowIndex].is_exempted : null;
     this.expandedCell = new ExpandedCell({rowIndex, colIndex, identifier, data});
     window.requestAnimationFrame(() => {
       this.bringExpandedCellToScreen();
@@ -259,10 +264,12 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
     switch (identifier) {
       case 'grades_sem_1': {
         dataRow.grades_sem1.wants_thesis = dataRow.wants_thesis;
+        dataRow.grades_sem2.is_exempted = dataRow.is_exempted;
         return dataRow.grades_sem1;
       }
       case 'grades_sem_2': {
         dataRow.grades_sem2.wants_thesis = dataRow.wants_thesis;
+        dataRow.grades_sem2.is_exempted = dataRow.is_exempted;
         return dataRow.grades_sem2;
       }
       case 'grade_annual': {

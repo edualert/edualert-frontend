@@ -105,6 +105,10 @@ export class AddEditStudyClassComponent implements OnInit {
         this.initialStudentNumber = this.studyClass.students.length;
         this.initPageData();
         this.academicYearInProgress = false;
+      }, error => {
+        if (error.status === 404) {
+          this.router.navigateByUrl('').then();
+        }
       });
     } else {
       this.studyClass = new StudyClass(null);

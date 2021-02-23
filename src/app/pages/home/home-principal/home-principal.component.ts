@@ -175,7 +175,7 @@ export class HomePrincipalComponent implements OnInit {
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Medie anuală',
       dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
-      columnType: 'graded-cell-dynamic-limit',
+      columnType: 'graded-cell',
       pivotPoint: 5,
       minWidth: '100px'
     }));
@@ -196,7 +196,7 @@ export class HomePrincipalComponent implements OnInit {
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Notă purtare',
       dataKey: this.isSecondSemesterEnded ? 'behavior_grade_annual' : 'behavior_grade_sem1',
-      columnType: 'graded-cell-dynamic-limit',
+      columnType: 'graded-cell',
       pivotPoint: 'behavior_grade_limit',
       minWidth: '100px'
     }));

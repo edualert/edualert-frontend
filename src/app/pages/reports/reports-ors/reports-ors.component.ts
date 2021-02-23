@@ -259,13 +259,13 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   generateInstitutionsAtRiskTable() {
     this.institutionsAtRiskTable.push(new Column({
       backgroundColor: '#EDF0F5',
-      name: 'Nume institutie',
+      name: 'Nume instituție',
       dataKey: 'name',
       columnType: 'simple-cell',
       minWidth: '220px'
     }));
     this.institutionsAtRiskTable.push(new Column({
-      name: 'Numar elevi cu risc',
+      name: 'Număr elevi cu risc',
       dataKey: 'students_at_risk_count',
       columnType: 'numbered-cell',
       minWidth: '120px'
@@ -275,13 +275,13 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   generateInactiveInstitutionsTable() {
     this.inactiveInstitutionsTable.push(new Column({
       backgroundColor: '#EDF0F5',
-      name: 'Nume institutie',
+      name: 'Nume instituție',
       dataKey: 'name',
       columnType: 'simple-cell',
       minWidth: '230px',
     }));
     this.inactiveInstitutionsTable.push(new Column({
-      name: 'Data ultimei modificari',
+      name: 'Data ultimei modificări',
       dataKey: 'last_change_in_catalog',
       minWidth: '130px',
       displayFormatter: (value: string) => {
@@ -293,7 +293,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   generateInstitutionsAveragesTable() {
     this.institutionsAveragesTable.push(new Column({
       backgroundColor: '#EDF0F5',
-      name: 'Nume institutie',
+      name: 'Nume instituție',
       dataKey: 'school_unit_name',
       columnType: 'simple-cell',
       minWidth: '230px',
@@ -303,13 +303,14 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
       dataKey: this.isSecondSemesterEnded ? 'avg_annual' : 'avg_sem1',
       columnType: 'graded-cell',
       minWidth: '217px',
+      pivotPoint: 5
     }));
   }
 
   generateInstitutionsAbsencesTable() {
     this.institutionsAbsencesTable.push(new Column({
       backgroundColor: '#EDF0F5',
-      name: 'Nume institutie',
+      name: 'Nume instituție',
       dataKey: 'school_unit_name',
       columnType: 'simple-cell',
       minWidth: '230px',

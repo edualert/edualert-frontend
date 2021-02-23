@@ -1,8 +1,10 @@
-import {Component, ViewChild, HostListener, OnDestroy} from '@angular/core';
+import {Component, ViewChild, HostListener, OnDestroy, Input} from '@angular/core';
 import {ModalComponent} from '../../../shared/modal/modal.component';
 import {DatepickerComponent} from '../../../shared/datepicker/datepicker.component';
 import {CanComponentDeactivate} from '../../../services/can-leave-guard.service';
 import * as moment from 'moment';
+import {AcademicYearCalendar} from '../../../models/academic-year-calendar';
+import {getCurrentSemesterStartDate} from '../../../shared/utils';
 
 @Component({
   selector: 'app-add-grades-bulk-modal',
@@ -10,6 +12,7 @@ import * as moment from 'moment';
   styleUrls: ['./add-grades-bulk-modal.component.scss', '../../../shared/label-styles.scss']
 })
 export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDestroy {
+  @Input() academicYearCalendar: AcademicYearCalendar;
   @ViewChild('modal', {static: false}) modal: ModalComponent;
   @ViewChild('datepicker', {'static': true}) datepicker: DatepickerComponent;
   students: any[];
@@ -19,6 +22,8 @@ export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDe
   today: Date;
   availableGrades: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   hasModifiedData: boolean = false;
+  currentSemesterStartDate: Date;
+  gradesAddedCount: number = 0;
 
   constructor() {
     this.today = new Date();
@@ -28,6 +33,7 @@ export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDe
   }
 
   open(modalData: BulkAddGradesModalData): void {
+    this.gradesAddedCount = 0;
     this.selectedDate = this.today;
     window.addEventListener('click', this.handleClick.bind(this));
     this.students = modalData.students.map(element => {
@@ -53,6 +59,7 @@ export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDe
       });
       this.hasModifiedData = false;
     };
+    this.currentSemesterStartDate = getCurrentSemesterStartDate(this.academicYearCalendar);
     this.modal.open();
     return;
   }
@@ -90,12 +97,15 @@ export class AddGradesBulkModalComponent implements CanComponentDeactivate, OnDe
 
     this.hasModifiedData = true;
     this.students[studentIndex].addedGrades.push(10);
+    this.gradesAddedCount++;
   }
 
   removeGradeForStudent(event: any, studentIndex: number, gradeIndex: number): void {
     event.stopPropagation();
 
     this.students[studentIndex].addedGrades.splice(gradeIndex, 1);
+    this.gradesAddedCount--;
+    this.hasModifiedData = this.gradesAddedCount !== 0;
   }
 
   @HostListener('window:beforeunload')

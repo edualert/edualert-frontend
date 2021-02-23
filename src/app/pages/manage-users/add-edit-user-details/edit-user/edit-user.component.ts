@@ -1,14 +1,13 @@
-import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
-import {UserDetails} from '../../../../models/user-details';
-import {ActivatedRoute, Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {get} from 'lodash';
-import {AccountService} from '../../../../services/account.service';
-import {findIndex} from 'lodash';
-import {ReplaceTeacherModalComponent} from '../../replace-teacher-modal/replace-teacher-modal.component';
-import {TeachersListService} from '../../../../services/teachers-list.service';
-import {Teacher} from '../../../../models/teacher';
-import {SubjectToRemove} from '../../../../models/subject-to-remove';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { UserDetails } from '../../../../models/user-details';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { get } from 'lodash';
+import { AccountService } from '../../../../services/account.service';
+import { ReplaceTeacherModalComponent } from '../../replace-teacher-modal/replace-teacher-modal.component';
+import { TeachersListService } from '../../../../services/teachers-list.service';
+import { Teacher } from '../../../../models/teacher';
+import { SubjectToRemove } from '../../../../models/subject-to-remove';
 
 
 @Component({
@@ -56,7 +55,7 @@ export class EditUserComponent implements OnInit {
   }
 
   hasModifiedDataEvent(hasModifiedData) {
-    this.hasModifiedData = hasModifiedData
+    this.hasModifiedData = hasModifiedData;
   }
 
   hasModifiedSubjects(subjectsHaveBeenModified) {
@@ -102,7 +101,9 @@ export class EditUserComponent implements OnInit {
     subjects.forEach(subject => {
       teachersList.forEach(teacher => {
         if (teacher.taught_subjects.includes(Number(subject['id']))) {
-          if (!availableTeachersForSubjects[subject['name']]) availableTeachersForSubjects[subject['name']] = [];
+          if (!availableTeachersForSubjects[subject['name']]) {
+            availableTeachersForSubjects[subject['name']] = [];
+          }
           availableTeachersForSubjects[subject['name']].push(teacher);
         }
       });
@@ -137,7 +138,9 @@ export class EditUserComponent implements OnInit {
 
     this.subjectsToRemove = [];
     userDetails.assigned_study_classes?.forEach(studyClass => {
-      if (!assignedClassesSubjectsIds.includes(studyClass.subject_id)) assignedClassesSubjectsIds.push(studyClass.subject_id);
+      if (!assignedClassesSubjectsIds.includes(studyClass.subject_id)) {
+        assignedClassesSubjectsIds.push(studyClass.subject_id);
+      }
     });
     userDetails.taught_subjects?.forEach(subject => taughtSubjectsIds.push(subject.id));
     assignedClassesSubjectsIds.forEach(assignedSubjectId => {
@@ -164,6 +167,10 @@ export class EditUserComponent implements OnInit {
       this.userDetailsId = get(params, 'userId', null);
       this.httpClient.get<UserDetails>(this.path + this.userDetailsId + '/').subscribe(response => {
         this.userDetails = response;
+      }, error => {
+        if (error.status === 404) {
+          this.router.navigateByUrl('').then();
+        }
       });
     });
   }

@@ -14,6 +14,8 @@ import { ListPage } from '../../list-page/list-page';
 import { IdText } from '../../../models/id-text';
 import BaseRequestParameters from '../../list-page/base-request-parameters';
 import { ViewUserModalComponent } from '../../manage-users/view-user-modal/view-user-modal.component';
+import {AcademicYearCalendarService} from '../../../services/academic-year-calendar.service';
+import {AcademicYearCalendar} from '../../../models/academic-year-calendar';
 
 class RequestParams extends BaseRequestParameters {
   readonly ordering: string;
@@ -42,22 +44,14 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
   private classId: string;
 
   classDetails: ClassDetails;
-  ownPupilsData: any[];
-  subjectsDataList: { [key: number]: { studentListData: any, subjectId: number } } = {};
+  subjectsDataList: { [key: number]: { studentListData: any, subjectId: number, sortedBy?: string } } = {};
 
   tabs: TableTab[];
   activeTab: any;
   tableData: any;
   tabsInitialised: boolean = false;
+  modifiedPupilData: boolean = false;
   initialSortCriteria: any = null;
-  pupilCount: number;
-
-  @ViewChild('addGradesBulkModal', {static: false}) addGradesBulkModal: AddGradesBulkModalComponent;
-  @ViewChild('addAbsencesBulkModal', {static: false}) addAbsencesBulkModal: AddAbsencesBulkModalComponent;
-  @ViewChild('settingsModal', {static: false}) settingsModal: SettingsModalComponent;
-  @ViewChild('appViewUserModal', {'static': false}) appViewUserModal: ViewUserModalComponent;
-  @ViewChild('scrollContainer', {static: false}) scrollContainerRef: ElementRef;
-
   readonly defaultSortingCriterion: IdText = new IdText({id: 'student_name', text: 'Nume'});
   urlParams = {'ordering': this.defaultSortingCriterion?.id};
 
@@ -65,9 +59,21 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
   readonly classPupilsTab: string | number = 0;
   classMasterTab: string | number = -1;
 
+  pupilCount: number;
+  academicYearCalendar: AcademicYearCalendar;
+
+  @ViewChild('addGradesBulkModal', {static: false}) addGradesBulkModal: AddGradesBulkModalComponent;
+  @ViewChild('addAbsencesBulkModal', {static: false}) addAbsencesBulkModal: AddAbsencesBulkModalComponent;
+  @ViewChild('settingsModal', {static: false}) settingsModal: SettingsModalComponent;
+
+  @ViewChild('appViewUserModal', {'static': false}) appViewUserModal: ViewUserModalComponent;
+
+  @ViewChild('scrollContainer', {static: false}) scrollContainerRef: ElementRef;
+
   constructor(injector: Injector,
               private httpClient: HttpClient,
-              private elementRef: ElementRef) {
+              private elementRef: ElementRef,
+              private academicYearCalendarService: AcademicYearCalendarService) {
     super(injector);
     this.sendClassMessageList = this.sendClassMessageList.bind(this);
 
@@ -87,6 +93,10 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
         this.fetchClassData(urlParams);
       }
     });
+
+    this.academicYearCalendarService.getData(false).subscribe(response => {
+      this.academicYearCalendar = response;
+    });
   }
 
   ngOnInit(): void {
@@ -104,7 +114,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
 
   refreshClassData = () => {
     this.fetchCatalogData(this.activeTab.id, this.urlParams);
-  }
+  };
 
   private setScrollableContainerHeight(): void {
     setTimeout(() => {
@@ -140,10 +150,14 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
         this.initialiseTabs();
       }
 
-      if (this.classDetails.is_class_master) {
+      if (this.classDetails.is_class_master && this.activeTab.tableLayout === 'class_students') {
         this.fetchOwnPupilData(urlParams);
       } else {
-        this.fetchCatalogData(this.classDetails.taught_subjects[0].id, urlParams);
+        if (this.activeTab) {
+          this.fetchCatalogData(this.activeTab.id, urlParams);
+        } else {
+          this.fetchCatalogData(this.classDetails.taught_subjects[0].id, urlParams);
+        }
       }
       this.setScrollableContainerHeight();
     }, error => {
@@ -175,19 +189,24 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
   private fetchOwnPupilData(urlParams?: Params) {
     const httpParams = new RequestParams({...urlParams}).getHttpParams();
     const dataPath = 'own-study-classes/' + this.classId + '/pupils/';
+    this.tableData = null;
     this.httpClient.get(dataPath, {params: httpParams}).subscribe((response: any[]) => {
-      this.ownPupilsData = response;
+      this.tableData = response;
       this.pupilCount = response.length;
+      this.subjectsDataList[0] = {studentListData: response, subjectId: 0, sortedBy: this.activeUrlParams.ordering};
     });
   }
 
   private fetchCatalogData(subjectId: any, urlParams?: Params): void {
     const httpParams = new RequestParams({...urlParams}).getHttpParams();
+    if (subjectId !== this.activeTab.id) {
+      this.tableData = null;
+    }
 
     this.httpClient.get(`own-study-classes/${this.classId}/subjects/${subjectId}/catalogs/`, {params: httpParams}).subscribe((response: any[]) => {
-      this.subjectsDataList[subjectId] = {studentListData: response, subjectId};
       this.tableData = response;
       this.pupilCount = response.length;
+      this.subjectsDataList[subjectId] = {studentListData: response, subjectId, sortedBy: this.activeUrlParams.ordering};
       this.setScrollableContainerHeight();
     });
   }
@@ -196,23 +215,26 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     this.activeTab = this.tabs[findIndex(this.tabs, {id: parseInt(tab, 10)})];
 
     if (parseInt(tab, 10) === this.classPupilsTab && this.classDetails?.is_class_master) {
-      this.tableData = this.ownPupilsData;
       this.setScrollableContainerHeight();
-    } else {
-      this.setDataForTab(tab);
     }
+    this.setDataForTab(tab);
     this.pupilCount = this.tableData?.length;
   }
 
   private setDataForTab(id) {
     // If we already have the data, set it.
-    if (this.subjectsDataList[id]) {
+    if (this.subjectsDataList[id] && this.activeUrlParams.ordering === this.subjectsDataList[id].sortedBy && !this.modifiedPupilData) {
       this.tableData = this.subjectsDataList[id].studentListData;
       this.pupilCount = this.tableData.length;
       this.setScrollableContainerHeight();
     } else {
       // Else, fetch it from the server and set it;
-      this.fetchCatalogData(id, this.activeUrlParams);
+      if (this.classDetails.is_class_master && this.activeTab.tableLayout === 'class_students') {
+        this.fetchOwnPupilData(this.activeUrlParams);
+        this.modifiedPupilData = false;
+      } else {
+        this.fetchCatalogData(id, this.activeUrlParams);
+      }
     }
   }
 
@@ -350,7 +372,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
       // Invalidate "Elevii Clasei" content due to the addition/removal of grades/absences, so we have to request the data for that tab again
       if (changesCatalogContent) {
         if (this.classDetails.is_class_master) {
-          this.fetchOwnPupilData();
+          this.modifiedPupilData = true;
           this.fetchCatalogData(tabBeforeRequest);
         } else {
           this.fetchCatalogData(tabBeforeRequest);

@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 export class TableCellComponent implements OnInit {
   @Input() cellType: string;
   @Input() cellIdentifier: string;
+  @Input() cellWidth: 'small' | 'regular' | 'big' | 'huge';
   @Input() data: any;
   @Input() navigateTo: string;
   @Input() isExpandable?: boolean;
@@ -35,6 +36,7 @@ export class TableCellComponent implements OnInit {
   readonly maxGrades = 4;
   classId: number;
   isStudentsSituation = false;
+  detailsLabel: string;
 
   constructor(private activatedRoute: ActivatedRoute) {
     this.onCellClick = this.onCellClick.bind(this);
@@ -42,6 +44,10 @@ export class TableCellComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.detailsLabel = 'Vedere detaliată';
+    if (this.cellWidth === 'small') {
+      this.detailsLabel = '';
+    }
     this.isStudentsSituation = ['students_situation_ors', 'students_situation_teacher_principal'].includes(this.tableLayoutAsIdentifier);
   }
 

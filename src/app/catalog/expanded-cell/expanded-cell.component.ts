@@ -5,6 +5,8 @@ import {SingleGradeOverlayComponent} from '../single-grade-overlay/single-grade-
 import {SingleAbsenceOverlayComponent} from '../single-absence-overlay/single-absence-overlay.component';
 import {Absence, Grade} from '../../models/student-grade-absence';
 import {ConfirmationModalComponent} from '../../shared/confirmation-modal/confirmation-modal.component';
+import {AcademicYearCalendar} from '../../models/academic-year-calendar';
+import {getCurrentSemesterStartDate} from '../../shared/utils';
 
 @Component({
   selector: 'app-expanded-cell',
@@ -19,6 +21,7 @@ export class ExpandedCellComponent implements OnInit {
   @Input() isClassMaster: boolean = false;
   @Input() tableLayoutAsIdentifier: string;
   @Input() loggedUserRole: string;
+  @Input() academicYearCalendar: AcademicYearCalendar;
   @Output() addGrade: EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number }> = new EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number }>();
   @Output() addAbsence: EventEmitter<any> = new EventEmitter<any>();
   @Output() deleteGrade: EventEmitter<Grade> = new EventEmitter<Grade>();
@@ -29,6 +32,7 @@ export class ExpandedCellComponent implements OnInit {
   @ViewChild('confirmationModal', {static: false}) confirmationModal: ConfirmationModalComponent;
 
   isOnViewPupilDataPage: boolean = false;
+  currentSemesterStartDate: Date;
 
 
   constructor(private root: ElementRef) {
@@ -107,10 +111,12 @@ export class ExpandedCellComponent implements OnInit {
   }
 
   openGradeOverlay(event: Event, isThesis: boolean, grade?: any): void {
+    this.currentSemesterStartDate = getCurrentSemesterStartDate(this.academicYearCalendar);
     this.singleGradeModal.open(event.target, this.root.nativeElement, grade, isThesis);
   }
 
   openAbsenceOverlay(event: Event, absence?: any): void {
+    this.currentSemesterStartDate = getCurrentSemesterStartDate(this.academicYearCalendar);
     this.singleAbsenceModal.open(event.target, this.root.nativeElement, absence);
   }
 

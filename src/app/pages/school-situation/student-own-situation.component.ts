@@ -30,6 +30,7 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
   dataExists: boolean = false;
   initialQueryParams: Params;
   constructorSub: Subscription;
+  isDetailsSectionOpen: boolean = false;
   readonly defaultAcademicYear: IdText = new IdText({id: getCurrentAcademicYear(), text: `${getCurrentAcademicYear()} - ${getCurrentAcademicYear() + 1}`});
 
   @ViewChild('appViewUserModal', {'static': false}) appViewUserModal: ViewUserModalComponent;
@@ -50,6 +51,7 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
         this.getData(this.activatedRoute.snapshot.queryParams);
         this.initialQueryParams = this.activatedRoute.snapshot.queryParams;
         this.dataExists = true;
+        this.isDetailsSectionOpen = false;
       }
     });
     this.initFilters({
@@ -107,7 +109,6 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
       bodyElm.scrollTop = 0;
 
       // Set scrollable container height
-      document.body.style.overflow = 'unset';
       setTimeout(() => {
         const scrollableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
         const headerHeight = document.getElementById('page-header').clientHeight;

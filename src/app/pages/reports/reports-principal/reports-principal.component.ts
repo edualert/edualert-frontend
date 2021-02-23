@@ -364,35 +364,30 @@ export class ReportsPrincipalComponent extends ScrollableList implements OnInit,
         req.request.subscribe((response) => {
           this.data[id_top][id_bottom][this.month] = formatChartData(response, 'Elevi');
           this.displayChart = shouldDisplayChart(response);
-          this.loading = false;
+          this.loading = this.initialRequestInProgress = false;
         }, error => {
           this.data[id_top][id_bottom][this.month] = error.detail;
-          this.loading = false;
+          this.loading = this.initialRequestInProgress = false;
         });
       } else {
+        this.loading = this.initialRequestInProgress = false;
         this.displayChart = shouldDisplayChart(this.data[id_top][id_bottom][this.month]['chartData'][0]['series']);
       }
 
       if (previousMonth !== 7 && !this.data[id_top][id_bottom][previousMonth]) {
         req.requestPrevious.subscribe((response) => {
           this.data[id_top][id_bottom][previousMonth] = formatChartData(response, 'Elevi');
-          this.loading = false;
+          this.loading = this.initialRequestInProgress = false;
         }, error => {
           this.data[id_top][id_bottom][previousMonth] = error.detail;
-          this.loading = false;
+          this.loading = this.initialRequestInProgress = false;
         });
       }
       return;
     }
 
     req.request.subscribe((response) => {
-      if (id_bottom === 'study_classes_absences') {
-        this.data[id_top][id_bottom] = response.map(item => new Absences(
-          {
-            ...item,
-            name: `Clasa ${item.class_grade} ${item.class_letter}`
-          }));
-      } else if (this.infiniteScrollTabIds.includes(id_bottom)) {
+      if (this.infiniteScrollTabIds.includes(id_bottom)) {
         if (this.data[id_top][id_bottom] !== null) {
           response.forEach(item => {
             this.data[id_top][id_bottom].push(item);
@@ -421,6 +416,7 @@ export class ReportsPrincipalComponent extends ScrollableList implements OnInit,
       } else {
         this.data[id_top][id_bottom] = response;
       }
+
       this.activeTab = this.activeTabBottom;
       this.loading = this.initialRequestInProgress = false;
       if (req.generate && !this.tableIsGenerated) {
@@ -458,7 +454,8 @@ export class ReportsPrincipalComponent extends ScrollableList implements OnInit,
       name: 'Medie anuală profil',
       dataKey: this.isSecondSemesterEnded ? 'avg_annual' : 'avg_sem1',
       minWidth: '130px',
-      columnType: 'graded-cell'
+      columnType: 'graded-cell',
+      pivotPoint: 5
     }));
   }
 
@@ -498,15 +495,16 @@ export class ReportsPrincipalComponent extends ScrollableList implements OnInit,
     this.schoolStudyClassesAveragesTable.push(new Column({
       backgroundColor: '#EDF0F5',
       name: 'Nume clasă',
-      dataKey: 'class_full_name',
-      columnType: 'class-name',
+      dataKey: 'name',
+      columnType: 'simple-cell',
       minWidth: '200px'
     }));
     this.schoolStudyClassesAveragesTable.push(new Column({
       name: 'Medie anuală clasă',
       dataKey: this.isSecondSemesterEnded ? 'avg_annual' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '130px'
+      minWidth: '130px',
+      pivotPoint: 5
     }));
   }
 
@@ -546,7 +544,7 @@ export class ReportsPrincipalComponent extends ScrollableList implements OnInit,
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Medie generală anuală',
       dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
-      columnType: 'graded-cell-dynamic-limit',
+      columnType: 'graded-cell',
       pivotPoint: 5,
       minWidth: '140px'
     }));
@@ -567,7 +565,7 @@ export class ReportsPrincipalComponent extends ScrollableList implements OnInit,
     this.schoolStudentsAtRiskTable.push(new Column({
       name: 'Notă anuală purtare',
       dataKey: this.isSecondSemesterEnded ? 'behavior_grade_annual' : 'behavior_grade_sem1',
-      columnType: 'graded-cell-dynamic-limit',
+      columnType: 'graded-cell',
       pivotPoint: 'behavior_grade_limit',
       minWidth: '120px'
     }));

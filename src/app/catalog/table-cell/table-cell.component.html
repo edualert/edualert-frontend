@@ -5,7 +5,7 @@
 
   <div class="expanded-overlay" *ngIf="isExpanded">
     <div class="label">
-      <span class="char" *ngFor="let char of 'Vedere detaliată'.split('')">{{char}}</span>
+      <span class="char" *ngFor="let char of detailsLabel.split('')">{{char}}</span>
     </div>
     <div class="x-button" (click)="xClick($event)"></div>
   </div>
@@ -71,6 +71,11 @@
           {{data.avg}}
         </div>
       </div>
+      <div class="horizontal-mobile">
+        <div class="bg-element average {{data?.avg ? data.avg >= pivotPoint ? 'blue-text' : 'red-text' : ''}}">
+          {{data?.avg ? data.avg : '-'}}
+        </div>
+      </div>
     </div>
 
     <!-- ABSENCES LIST ----------------------------------  -->
@@ -82,8 +87,16 @@
         </div>
         <div *ngIf="this.data?.length > 3" class="hidden-items"> + {{data?.length - 3}}</div>
       </div>
+
       <div class="horizontal">
-        <div *ngIf="data?.length" class="bg-element {{data?.length >= exceptionRule || data?.length >= pivotPoint ? 'red-text' : 'blue-text'}}">{{data?.length}}</div>
+        <div *ngIf="data?.length" class="bg-element {{data?.length >= exceptionRule || data?.length >= pivotPoint ? 'red-text' : 'blue-text'}}">
+          {{data?.length}}
+        </div>
+      </div>
+      <div class="horizontal-mobile">
+        <div class="bg-element big-bg-element {{data?.length >= exceptionRule || data?.length >= pivotPoint ? 'red-text' : 'blue-text'}}">
+          {{data?.length}}
+        </div>
       </div>
     </div>
 
