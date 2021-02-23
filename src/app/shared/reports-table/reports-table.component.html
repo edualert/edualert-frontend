@@ -52,10 +52,6 @@
               </div>
 
               <div *ngIf="column.columnType === 'graded-cell'"
-                   class="{{ data[column?.dataKey] < 5 ? 'red-text' : '' }}">
-                {{ data[column?.dataKey] }}
-              </div>
-              <div *ngIf="column.columnType === 'graded-cell-dynamic-limit'"
                    class="{{ data[column?.dataKey] < (data[column?.pivotPoint] ? data[column?.pivotPoint] : column?.pivotPoint) ? 'red-text' : '' }}">
                 {{ data[column?.dataKey] }}
               </div>

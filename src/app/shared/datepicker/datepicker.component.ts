@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output,
+  Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges,
   ViewChild
 } from '@angular/core';
 
@@ -39,7 +39,7 @@ export class InternalDate {
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss']
 })
-export class DatepickerComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input() readonly layout?: number = 1;
   @Input() readonly dateValue: Date | string;
   @Input() readonly minDateValue?: Date;
@@ -94,6 +94,13 @@ export class DatepickerComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     if (!this.dateValue) {
       this.setToday();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes.minDateValue && changes.minDateValue.previousValue !== changes.minDateValue.currentValue) ||
+      (changes.maxDateValue && changes.maxDateValue.previousValue !== changes.maxDateValue.currentValue)) {
+      this.constructDays();
     }
   }
 

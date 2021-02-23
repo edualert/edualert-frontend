@@ -60,6 +60,7 @@ export class StudyClassesAverageService extends OneTimeDataGetter {
         const studyClassesAverage = [];
         if (response.count > 0) {
           response.results.forEach(studyClass => {
+            studyClass.name = `Clasa ${studyClass.class_grade} ${studyClass.class_letter}`;
             studyClassesAverage.push(new Averages(studyClass));
           });
         }
@@ -84,6 +85,7 @@ export class StudyClassesAbsencesService extends OneTimeDataGetter {
         const studyClassesAbsences = [];
         if (response.count > 0) {
           response.results.forEach(studyClass => {
+            studyClass.name = `Clasa ${studyClass.class_grade} ${studyClass.class_letter}`;
             studyClassesAbsences.push(new Absences(studyClass));
           });
         }

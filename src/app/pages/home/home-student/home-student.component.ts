@@ -125,7 +125,7 @@ export class HomeStudentComponent implements OnInit {
     this.myOwnSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
       dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
-      columnType: 'graded-cell-dynamic-limit',
+      columnType: 'graded-cell',
       pivotPoint: 'avg_limit',
       minWidth: '120px',
     }));

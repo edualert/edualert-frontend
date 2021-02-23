@@ -10,6 +10,7 @@
           <app-datepicker #datepicker
                           [dateValue]="selectedDate"
                           [maxDateValue]="today"
+                          [minDateValue]="currentSemesterStartDate"
                           [color]="'#0077DB'"
                           (dateChanged)="selectDate($event)"
           ></app-datepicker>

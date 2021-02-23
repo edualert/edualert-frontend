@@ -49,6 +49,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
 
   month: number = moment().month();
   loading: boolean = false;
+  loadingPreviousMonth: boolean = false;
 
   data = {
     my_classes: {
@@ -159,7 +160,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
   }
 
   fetchData(id_top: string, id_bottom: string) {
-    if (this.shouldDisplayNoDataMessage || this.loading) {
+    if (this.shouldDisplayNoDataMessage || this.loading || this.loadingPreviousMonth) {
       return;
     }
     this.tableIsGenerated = !(this.data[id_top][id_bottom] === null || this.data[id_top][id_bottom] === undefined);
@@ -188,6 +189,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
       this.currentPages[id_top][id_bottom].currentPage = this.page;
     }
 
+    this.loading = true;
     const month = this.getPreviousCurrentAndNextMonth(this.month);
 
     const notClassMasterRequests = {
@@ -248,16 +250,20 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
           this.loading = false;
         });
       } else {
+        this.loading = false;
         this.displayChart = shouldDisplayChart(this.data[id_top][id_bottom][this.month]['chartData'][0]['series']);
       }
 
       if (previousMonth !== 7 && !this.data[id_top][id_bottom][previousMonth]) {
+        this.loadingPreviousMonth = true;
         req.requestPrevious.subscribe((response) => {
           this.data[id_top][id_bottom][previousMonth] = formatChartData(response, 'Elevi');
           this.loading = false;
+          this.loadingPreviousMonth = false;
         }, error => {
           this.data[id_top][id_bottom][previousMonth] = error.detail;
           this.loading = false;
+          this.loadingPreviousMonth = false;
         });
       }
       return;
@@ -383,7 +389,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Medie generală anuală',
       dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
-      columnType: 'graded-cell-dynamic-limit',
+      columnType: 'graded-cell',
       pivotPoint: 5,
       minWidth: '130px'
     }));
@@ -404,7 +410,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
     this.ownStudentsAtRiskTable.push(new Column({
       name: 'Notă anuală purtare',
       dataKey: this.isSecondSemesterEnded ? 'behavior_grade_annual' : 'behavior_grade_sem1',
-      columnType: 'graded-cell-dynamic-limit',
+      columnType: 'graded-cell',
       pivotPoint: 'behavior_grade_limit',
       minWidth: '115px'
     }));
@@ -426,7 +432,8 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
       name: 'Medie generală anuală',
       dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell',
-      minWidth: '120px'
+      minWidth: '120px',
+      pivotPoint: 5
     }));
   }
 
@@ -445,8 +452,9 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
     this.ownStudentsAbsencesTable.push(new Column({
       name: 'Număr total absențe nemotivate pe an',
       dataKey: this.isSecondSemesterEnded ? 'unfounded_abs_count_annual' : 'unfounded_abs_count_sem1',
-      columnType: 'numbered-cell',
-      minWidth: '240px'
+      columnType: 'numbered-cell-dynamic-limit',
+      minWidth: '240px',
+      pivotPoint: this.isSecondSemesterEnded ? 22 : 11
     }));
   }
 
@@ -465,7 +473,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
     this.ownStudentsBehaviourGradeTable.push(new Column({
       name: 'Notă anuală purtare',
       dataKey: this.isSecondSemesterEnded ? 'behavior_grade_annual' : 'behavior_grade_sem1',
-      columnType: 'graded-cell-dynamic-limit',
+      columnType: 'graded-cell',
       pivotPoint: 'behavior_grade_limit',
       minWidth: '115px'
     }));

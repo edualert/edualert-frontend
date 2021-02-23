@@ -11,6 +11,8 @@ import BaseRequestParameters from '../list-page/base-request-parameters';
 import { PupilStatisticsList, PupilStatisticsListOrs } from '../../models/pupil-statistics-list';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { CurrentAcademicYearService } from '../../services/current-academic-year.service';
+import * as moment from 'moment';
 
 class RequestParams extends BaseRequestParameters {
   readonly search: string;
@@ -49,10 +51,19 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
   readonly defaultAcademicYear: IdText = new IdText({id: getCurrentAcademicYear(), text: `${getCurrentAcademicYear()} - ${getCurrentAcademicYear() + 1}`});
 
   constructor(injector: Injector,
+              private currentAcademicYear: CurrentAcademicYearService,
               private accountService: AccountService,
               private http: HttpClient,
               private elementRef: ElementRef) {
     super(injector);
+
+    currentAcademicYear.getData().subscribe(response => {
+      if (moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf() <=
+        moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+        this.router.navigateByUrl('').then();
+        return;
+      }
+    });
 
     this.accountService.account.subscribe((user: UserDetails) => {
       this.accountRole = user.user_role;

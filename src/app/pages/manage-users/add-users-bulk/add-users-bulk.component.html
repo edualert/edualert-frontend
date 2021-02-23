@@ -10,7 +10,7 @@
         <div class="report-message big-text bold">{{ successMessage }}</div>
         <hr>
         <div class="error-card" *ngFor="let error of formatErrors(responseErrors)">
-          <div class="card-title blue-text biggish-text bold">{{ 'Randul ' + error.rowName + ':' }}</div>
+          <div class="card-title blue-text biggish-text bold">{{ 'Rândul ' + error.rowName + ':' }}</div>
           <div class="error-detail" *ngFor="let key of error.errorKeys">
             {{ key + ':  ' }}
             <span class="red-text">{{ error.errorData[key] }}</span>

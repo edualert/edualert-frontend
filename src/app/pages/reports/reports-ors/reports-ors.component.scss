@@ -14,3 +14,13 @@
   color: $color-text-normal;
 }
 
+#tabs-container {
+  width: calc(100% - #{$nav-bar-width} - #{$margin-xsmall});
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  #tabs-container {
+    width: initial;
+  }
+}
+

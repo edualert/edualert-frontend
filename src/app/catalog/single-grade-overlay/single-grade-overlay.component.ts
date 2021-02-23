@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import * as moment from 'moment';
 import OpenCloseable from '../../shared/open-closeable';
 import { DatepickerComponent } from '../../shared/datepicker/datepicker.component';
@@ -9,6 +9,9 @@ import { DatepickerComponent } from '../../shared/datepicker/datepicker.componen
   styleUrls: ['./single-grade-overlay.component.scss', '../grade-absence-overlay.scss']
 })
 export class SingleGradeOverlayComponent extends OpenCloseable {
+  @Input() currentSemesterStartDate: Date;
+  @Input() tableLayoutAsIdentifier: string;
+
   @Output() save: EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }> =
     new EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }>();
   readonly grades = new Array(10).fill(null).map((val, i) => i + 1);
@@ -67,12 +70,16 @@ export class SingleGradeOverlayComponent extends OpenCloseable {
   }
 
   private resetData(existingGrade?: { grade: number, taken_at: number, id: number }) {
-
     // Set existing grade or reset data to default;
     if (existingGrade) {
       this.existingId = existingGrade.id;
       this.selectedGrade = existingGrade.grade;
-      this.selectedDate = moment(existingGrade.taken_at, 'DD-MM-YYYY').toDate();
+      if (this.tableLayoutAsIdentifier === 'class_master') {
+        // Automatically move the behavior grade's date to today for edit
+        this.selectedDate = new Date();
+      } else {
+        this.selectedDate = moment(existingGrade.taken_at, 'DD-MM-YYYY').toDate();
+      }
     } else {
       this.existingId = null;
       this.selectedGrade = null;

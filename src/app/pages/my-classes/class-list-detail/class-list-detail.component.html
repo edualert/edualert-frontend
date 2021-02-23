@@ -42,10 +42,10 @@
     </div>
   </app-header>
   <div class="page-content">
-    <div [ngSwitch]="activeTab?.id">
+    <div [ngSwitch]="activeTab?.id" class="catalog-wrapper" *ngIf="tableData else loadingList">
       <ng-container *ngSwitchCase="0">
         <app-catalog
-          [data]="ownPupilsData"
+          [data]="tableData"
           [tableLayout]="activeTab?.tableLayout"
           [activeTabId]="activeTab?.id"
           (onLinkClick)="onLinkClick($event)"
@@ -71,16 +71,27 @@
 <div class="animated-page">
   <div class="page-content">
     <app-toolbar [buttonsObjList]="provideButtonsList()" >
-      <ng-container id="count-container">
+      <ng-container id="count-container" *ngIf="tableData else loadingList">
         {{pupilCount}} elevi afișați din {{pupilCount}}
       </ng-container>
-
     </app-toolbar>
   </div>
 </div>
 
-<app-add-grades-bulk-modal #addGradesBulkModal></app-add-grades-bulk-modal>
-<app-add-absences-bulk-modal #addAbsencesBulkModal></app-add-absences-bulk-modal>
+<ng-template #loadingList>
+  <div class="list-count">
+    Se încarcă datele...
+  </div>
+</ng-template>
+
+<app-add-grades-bulk-modal
+  #addGradesBulkModal
+  [academicYearCalendar]="academicYearCalendar"
+></app-add-grades-bulk-modal>
+<app-add-absences-bulk-modal
+  #addAbsencesBulkModal
+  [academicYearCalendar]="academicYearCalendar"
+></app-add-absences-bulk-modal>
 <app-settings-modal
   #settingsModal
   (refreshCatalogData)="refreshClassData()"

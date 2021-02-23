@@ -1,6 +1,6 @@
 // TODO: Define classes and types
 
-import {AcademicYearCalendar} from './academic-year-calendar';
+import { AcademicYearCalendar } from './academic-year-calendar';
 
 export type CellIdentifier = 'name' | 'grades_sem_1' | 'grades_sem_2' | 'grade_annual' | 'abs_sem_1' | 'abs_sem_2' | 'abs_annual';
 export type CellType =
@@ -55,7 +55,6 @@ export class CatalogLayout {
     }
   }
 }
-
 
 export const ownClassSubjectFirstSemester = new CatalogLayout({ // TAUGHT SUBJECT
   cellWidths: [
@@ -199,7 +198,6 @@ export const ownClassSubjectSecondSemesterEnded = new CatalogLayout({ // TAUGHT 
   ]
 });
 
-
 export const classMasteryFirstSemester = new CatalogLayout({   // DIRIGENTIE
   cellWidths: [
     'regular',
@@ -234,7 +232,6 @@ export const classMasteryFirstSemester = new CatalogLayout({   // DIRIGENTIE
     {type: 'labels', identifier: 'labels', dataKey: 'labels'},
   ],
 });
-
 
 export const classMasterySecondSemester = new CatalogLayout({   // DIRIGENTIE
   cellWidths: [
@@ -283,7 +280,6 @@ export const classMasterySecondSemester = new CatalogLayout({   // DIRIGENTIE
     {type: 'labels', identifier: 'labels', dataKey: 'labels'},
   ],
 });
-
 
 export const classMasterySecondSemesterEnded = new CatalogLayout({   // DIRIGENTIE
   cellWidths: [
@@ -468,7 +464,7 @@ export const studentCatalogFirstSemester = new CatalogLayout({ // Toate materiil
     'regular',
     'big',
     'big'
-    ],
+  ],
   headerRow: [
     {label: 'Materii'},
     {label: 'Medii'},
@@ -500,7 +496,7 @@ export const studentCatalogSecondSemester = new CatalogLayout({ // Toate materii
     'big',
     'small',
     'big'
-    ],
+  ],
   headerRow: [
     {label: 'Materii'},
     {label: 'Medii'},
@@ -757,7 +753,23 @@ export const studentsSituationOrsSecondSemester = new CatalogLayout({
 });
 
 export const studentsSituationOrsSecondSemesterEnded = new CatalogLayout({
-  cellWidths: ['regular', 'small', 'small', 'small', 'small', 'small', 'small', 'small', 'small', 'small', 'small', 'regular', 'huge', 'small', 'huge'],
+  cellWidths: [
+    'regular',
+    'small',
+    'small',
+    'small',
+    'small',
+    'small',
+    'small',
+    'small',
+    'small',
+    'small',
+    'small',
+    'regular',
+    'huge',
+    'small',
+    'huge'
+  ],
   headerRow: [
     {label: 'Nume'},
     {label: 'Medii generale'}, {label: ''}, {label: ''},

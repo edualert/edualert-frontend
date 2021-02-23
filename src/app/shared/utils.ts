@@ -3,6 +3,7 @@ import { LocalStorageService } from '../services/local-storage.service';
 import { monthDatesAndNames } from './constants';
 import { findIndex } from 'lodash';
 import { saveAs } from 'file-saver';
+import {AcademicYearCalendar} from '../models/academic-year-calendar';
 
 // TODO change this hardcoded date!
 export const academicYearStart = moment(`07.09.${moment().year()}`, 'DD.MM.YYYY');
@@ -171,4 +172,14 @@ export function getFileFromBlobResponse(blobResponse: Blob, fileName: string, fi
   const blob = new Blob([blobResponse], {type: responseType});
   const file = new File([blob], fileName + fileExt, {type: responseType});
   saveAs(file);
+}
+
+export function getCurrentSemesterStartDate(academicYearCalendar: AcademicYearCalendar): Date {
+  const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+  if (now <= moment(academicYearCalendar.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+    return new Date(moment(academicYearCalendar.first_semester.starts_at, 'DD-MM-YYYY').valueOf());
+  }
+  if (now <= moment(academicYearCalendar.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+    return new Date(moment(academicYearCalendar.second_semester.starts_at, 'DD-MM-YYYY').valueOf());
+  }
 }

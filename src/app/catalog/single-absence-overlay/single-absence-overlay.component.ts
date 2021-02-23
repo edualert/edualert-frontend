@@ -9,6 +9,7 @@ import {DatepickerComponent} from '../../shared/datepicker/datepicker.component'
   styleUrls: ['./single-absence-overlay.component.scss', '../grade-absence-overlay.scss']
 })
 export class SingleAbsenceOverlayComponent extends OpenCloseable {
+  @Input() currentSemesterStartDate: Date;
   @Output() save: EventEmitter<{isFounded: boolean, date: Date}> = new EventEmitter<{isFounded: boolean, date: Date}>();
   isFounded: boolean = false;
   selectedDate: any;

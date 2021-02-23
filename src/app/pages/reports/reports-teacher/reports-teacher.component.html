@@ -14,6 +14,7 @@
       <app-tabs
         [tabsList]="tabs_bottom"
         [activeTab]="activeTabBottom"
+        [shouldScrollToActiveTab]="true"
         (tabHasBeenSelected)="changeTab($event, 'bottom')"></app-tabs>
     </div>
   </app-header>
@@ -105,5 +106,5 @@
 </div>
 
 <ng-template #noDataMessageView>
-  <div class="big-text bold padded-top info-card">{{ noDataMessage }}</div>
+  <div class="big-text bold padded-top info-card border-unset">{{ noDataMessage }}</div>
 </ng-template>

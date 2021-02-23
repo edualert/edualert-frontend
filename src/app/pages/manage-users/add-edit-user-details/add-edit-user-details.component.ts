@@ -64,7 +64,6 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   convertStringToDate = convertStringToDate;
 
   passwordShouldBeSubmitted: boolean = false;
-  disableRoleDropdown: boolean = false;
 
   // Extra Data
   parents: IdFullname[];
@@ -332,7 +331,9 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
     let newErrorsModified: boolean = false;
 
     this.hasModifiedDataOutput.emit(true);
-    this.parents.push(this.userDetails.parents[index]);
+    if (this.userDetails.parents[index].id) {
+      this.parents.push(this.userDetails.parents[index]);
+    }
     this.userDetails.parents.splice(index, 1);
 
     if (this.errors.parentFrontValidation) {
@@ -458,12 +459,6 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
     this.getLabelsFromBackend();
     this.getParentsFromBackend();
     this.changeDetector.detectChanges();
-
-    if (this.userDetails.last_online !== null ||
-      (this.userDetails.user_role === 'TEACHER' && this.userDetails.assigned_study_classes.length !== 0) ||
-      (this.userDetails.user_role === 'STUDENT' && this.userDetails.class_id)) {
-      this.disableRoleDropdown = true;
-    }
   }
 
   emitFormData(): void {

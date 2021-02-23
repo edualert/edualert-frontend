@@ -17,6 +17,7 @@
              color="#0077DB"
              #datepicker
              [maxDateValue]="today"
+             [minDateValue]="currentSemesterStartDate"
              [dateValue]="selectedDate"
              (dateChanged)="changeDate($event)"
            >
@@ -66,7 +67,7 @@
             </div>
           </div>
           <span class="add-absence text-button bold blue" *ngIf="this.students[i].addedAbsences.length" (click)="addAbsenceForStudent(i, $event)">
-            Adaugă incă o absență
+            Adaugă încă o absență
           </span>
         </div>
       </div>

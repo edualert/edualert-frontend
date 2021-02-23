@@ -81,7 +81,7 @@ export class HomeOrsComponent implements OnInit {
     });
     this.institutionsEnrollmentService.getData(true).subscribe(response => {
       this.displayChart = shouldDisplayChart(response);
-      this.institutionsEnrollmentStatistics = formatChartData(response, 'Institutii');
+      this.institutionsEnrollmentStatistics = formatChartData(response, 'Instituții');
     });
     this.studentsRiskEvolutionService.getData(true).subscribe(response => {
       this.studentsRiskDisplayChart = shouldDisplayChart(response);
@@ -92,13 +92,13 @@ export class HomeOrsComponent implements OnInit {
   generateInstitutionsAtRiskTableLayout(): void {
     this.institutionsAtRiskTableLayout.push(new Column({
       backgroundColor: '#FFFFFF',
-      name: 'Nume institutie',
+      name: 'Nume instituție',
       dataKey: 'name',
       columnType: 'simple-cell',
       minWidth: '200px'
     }));
     this.institutionsAtRiskTableLayout.push(new Column({
-      name: 'Numar elevi cu risc',
+      name: 'Număr elevi cu risc',
       dataKey: 'students_at_risk_count',
       columnType: 'numbered-cell',
       minWidth: '120px'
@@ -108,13 +108,13 @@ export class HomeOrsComponent implements OnInit {
   generateInactiveInstitutionsTableLayout(): void {
     this.inactiveInstitutionsTableLayout.push(new Column({
       backgroundColor: '#FFFFFF',
-      name: 'Nume institutie',
+      name: 'Nume instituție',
       dataKey: 'name',
       columnType: 'simple-cell',
       minWidth: '210px',
     }));
     this.inactiveInstitutionsTableLayout.push(new Column({
-      name: 'Data ultimei modificari',
+      name: 'Data ultimei modificări',
       dataKey: 'last_change_in_catalog',
       minWidth: '130px',
       displayFormatter: (value: string) => {

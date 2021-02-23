@@ -43,13 +43,13 @@ export class SettingsModalComponent {
   updateSettings() {
     this.http.put(`own-study-classes/${this.classId}/subjects/${this.subjectId}/settings/`, this.updateSettingsBody).subscribe((response: StudentSettings[]) => {
       this.classSettings = response;
+      this.refreshCatalogData.emit();
     }, (error) => {});
   }
 
   save() {
     this.updateSettings();
     this.close();
-    this.refreshCatalogData.emit();
   }
 
   close() {

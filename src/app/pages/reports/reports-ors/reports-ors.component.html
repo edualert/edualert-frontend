@@ -10,6 +10,7 @@
       <app-tabs
         [tabsList]="tabs"
         [activeTab]="activeTab"
+        [shouldScrollToActiveTab]="true"
         (tabHasBeenSelected)="changeTab($event)"></app-tabs>
     </div>
   </app-header>
@@ -78,7 +79,7 @@
         </app-reports-table>
       </ng-container>
       <ng-container *ngSwitchCase="'students_risk_evolution'">
-        <h1 class="title">Evolutie număr elevi cu risc</h1>
+        <h1 class="title">Evoluție număr elevi cu risc</h1>
         <app-month-picker (dateChanged)="changeMonth($event, 'students_risk_evolution')"></app-month-picker>
         <div class="chart-container">
           <div class="chart-holder" *ngIf="studentsDisplayChart">

@@ -1,15 +1,15 @@
-import {Component, Input} from '@angular/core';
-import {AccountService} from '../services/account.service';
-import {NavigationEnd, Router} from '@angular/router';
-import {NavBarSize} from '../models/types';
-import {userRoles} from '../models/user-roles';
-import {AuthService} from '../services/auth.service';
-import {UserDetails} from '../models/user-details';
-import {menuLinks as globalMenuLinks} from '../shared/constants';
-import {getLoginPageRoute} from '../shared/utils';
-import {IdFullname} from '../models/id-fullname';
-import {findIndex} from 'lodash';
-import {CurrentAcademicYearService} from '../services/current-academic-year.service';
+import { Component, Input } from '@angular/core';
+import { AccountService } from '../services/account.service';
+import { NavigationEnd, Router } from '@angular/router';
+import { NavBarSize } from '../models/types';
+import { userRoles } from '../models/user-roles';
+import { AuthService } from '../services/auth.service';
+import { UserDetails } from '../models/user-details';
+import { menuLinks as globalMenuLinks } from '../shared/constants';
+import { getLoginPageRoute } from '../shared/utils';
+import { IdFullname } from '../models/id-fullname';
+import { findIndex } from 'lodash';
+import { CurrentAcademicYearService } from '../services/current-academic-year.service';
 import * as moment from 'moment';
 
 @Component({
@@ -43,13 +43,15 @@ export class NavBarComponent {
       if (account.user_role === 'PARENT') {
         this.children = account.children;
       }
-      currentAcademicYear.getData().subscribe(response => {
-        if (this.currentDate <= moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()
-        && ['ADMINISTRATOR', 'SCHOOL_PRINCIPAL', 'TEACHER'].includes(account.user_role)) {
-          const studentsSituationIndex = findIndex(this.menuLinks[account.user_role], {path: 'students-situation'});
-          this.menuLinks[account.user_role].splice(studentsSituationIndex, 1);
-        }
-      });
+
+      if (['ADMINISTRATOR', 'SCHOOL_PRINCIPAL', 'TEACHER'].includes(account.user_role)) {
+        currentAcademicYear.getData().subscribe(response => {
+          if (this.currentDate <= moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+            const studentsSituationIndex = findIndex(this.menuLinks[account.user_role], {path: 'students-situation'});
+            this.menuLinks[account.user_role].splice(studentsSituationIndex, 1);
+          }
+        });
+      }
     });
 
     accountService.selectedChild.subscribe((child: IdFullname) => {
@@ -57,7 +59,7 @@ export class NavBarComponent {
     });
   }
 
-  selectChild(child: {element: IdFullname, index: number}) {
+  selectChild(child: { element: IdFullname, index: number }) {
     this.accountService.selectChild(child.element.id as number);
   }
 
