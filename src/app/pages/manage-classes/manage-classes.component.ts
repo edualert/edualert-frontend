@@ -79,7 +79,9 @@ export class ManageClassesComponent extends ListPage {
   }
 
   shouldDisplayActionButtonsContainer(studyClass: StudyClass, section: {key: string, value: StudyClass[]}) {
-    return this.isEditable || this.shouldDisplayMoveButton(studyClass, section.key, section);
+    return this.isEditable;
+    // Replaced the above line to temporarily disable clone class feature
+    // return this.isEditable || this.shouldDisplayMoveButton(studyClass, section.key, section);
   }
 
   shouldDisplayMoveButton(studyClass: StudyClass, sectionId: string, section: any): boolean {

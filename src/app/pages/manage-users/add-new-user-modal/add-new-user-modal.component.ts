@@ -18,7 +18,7 @@ export class AddNewUserModalComponent {
   title: string = 'Adaugă un utilizator nou';
   infoText: string = 'Alegeți o metodă de adăugare utilizator(i):';
   newUserButtonText: string = 'Adăugare utilizator unic';
-  importUsersButtonText: string = 'Import listă utilizatori';
+  importUsersButtonText: string = 'Importă listă utilizatori';
   singleUserChoice: boolean = false;
   multipleUsersChoice: boolean = false;
 

@@ -209,15 +209,15 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
         generate: this.generateOwnStudentsAtRiskTable
       },
       'class_mastery-own_students_average': {
-        request: this.ownStudentsAverageService.getData(false),
+        request: this.ownStudentsAverageService.getData(true),
         generate: this.generateOwnStudentsAverageTable
       },
       'class_mastery-own_students_absences': {
-        request: this.ownStudentsAbsencesService.getData(false),
+        request: this.ownStudentsAbsencesService.getData(true),
         generate: this.generateOwnStudentsAbsencesTable
       },
       'class_mastery-own_students_behaviour_grade': {
-        request: this.ownStudentsBehaviourGradeService.getData(false),
+        request: this.ownStudentsBehaviourGradeService.getData(true),
         generate: this.generateOwnStudentsBehaviourGradeTable
       },
       'class_mastery-own_students_risk_evolution': {

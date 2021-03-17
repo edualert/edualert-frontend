@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import { DateValidator } from '../../pages/manage-school-calendar/edit-study-year/date-validator';
 
 export const getMonthsInInterval = (startDate: moment.Moment, endDate: moment.Moment): string[] => {
   const startDateClone = startDate.clone().startOf('month');
@@ -105,7 +106,7 @@ export const mapWeeksToMonths = (weekMapping: moment.Moment[][], months: string[
 };
 
 export const convertDateToString = function(date: Date): string {
-  return date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear();
+  return date.getDate() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
 };
 
 export const convertStringToDate = function(date: string): Date | string {
@@ -116,3 +117,23 @@ export const convertStringToDate = function(date: string): Date | string {
 };
 
 export const weekDays = (locale: string): string[] => [0, 1, 2, 3, 4, 5, 6].map(day => moment().locale(locale).weekday(day).format('dd'));
+
+export const getStudyYearEndDate = function(firstSemesterDateString: Date): Date {
+  const studyYearEndDate = new Date(firstSemesterDateString);
+  studyYearEndDate.setFullYear(studyYearEndDate.getFullYear() + 1);
+  studyYearEndDate.setDate(studyYearEndDate.getDate() - 1);
+  return studyYearEndDate;
+};
+
+export const getMaxDateString = function(datesArray: string[]): string {
+  let maxValue = 0;
+  let maxDateString = '';
+  datesArray.forEach(dateString => {
+    const millisecondsOfDateToCompare = moment(dateString, 'DD-MM-YYYY').valueOf();
+    if (millisecondsOfDateToCompare > maxValue) {
+      maxValue = millisecondsOfDateToCompare;
+      maxDateString = dateString;
+    }
+  });
+  return maxDateString;
+};

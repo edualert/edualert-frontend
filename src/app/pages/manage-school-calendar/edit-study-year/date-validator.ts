@@ -11,20 +11,21 @@ export class DateValidator {
   }
 
   static checkDateIsInRange(date: Date, startDate: Date, endDate: Date): boolean {
-    return date > startDate && date < endDate;
+    return date >= startDate && date <= endDate;
   }
 
-  static isDateUnique(currentStartDate: Date, currentEndDate: Date, object: {}[], index: number): boolean {
+  static isDateUnique(currentStartDate: Date, currentEndDate: Date, object: {}[], index?: number): boolean {
     let error = true;
-
     for (const [i, schoolEvent] of object.entries()) {
       if (i === index) {
         continue;
       }
-      const startDateToCompare = DateValidator.formatDateMMDDYYYY(schoolEvent['starts_at']);
-      const endDateToCompare = DateValidator.formatDateMMDDYYYY(schoolEvent['ends_at']);
-      if (currentEndDate.getTime() >= startDateToCompare.getTime() && currentStartDate.getTime() <= endDateToCompare.getTime()) {
-        error = false;
+      if (schoolEvent['starts_at'] && (schoolEvent['ends_at'])) {
+        const startDateToCompare = DateValidator.formatDateMMDDYYYY(schoolEvent['starts_at']);
+        const endDateToCompare = DateValidator.formatDateMMDDYYYY(schoolEvent['ends_at']);
+        if (currentEndDate.getTime() >= startDateToCompare.getTime() && currentStartDate.getTime() <= endDateToCompare.getTime()) {
+          error = false;
+        }
       }
     }
 
@@ -32,7 +33,7 @@ export class DateValidator {
   }
 
   static isDateAfter(date: Date, dateToCompare: Date): boolean {
-    return date.getTime() >= dateToCompare.getTime();
+    return date.getTime() > dateToCompare.getTime();
   }
 
   static formatDateMMDDYYYY(date: string) {

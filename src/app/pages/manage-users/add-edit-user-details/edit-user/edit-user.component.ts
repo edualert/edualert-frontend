@@ -20,6 +20,8 @@ export class EditUserComponent implements OnInit {
   account: UserDetails;
   userDetails: UserDetails;
   errors: any = {};
+  displayErrorToast: boolean = false;
+  toastErrorMessage: string;
   userDetailsId: string;
   availableFields: any;
   hasModifiedData: boolean = false;
@@ -31,6 +33,7 @@ export class EditUserComponent implements OnInit {
   hasEditedSubjects: boolean = false;
 
   private readonly path = 'users/';
+  readonly removeSubjectsErrorMessage = 'Pentru a elimina materii predate din listă este nevoie să înlocuiți profesorul care predă materiile respective la fiecare clasă.';
 
   @ViewChild('saveButton') saveButton: ElementRef;
   @ViewChild('replaceTeacherModal', {static: false}) replaceTeacherModal: ReplaceTeacherModalComponent;
@@ -65,13 +68,14 @@ export class EditUserComponent implements OnInit {
   submitData(userDetails) {
     if (userDetails !== null) {
       if (this.hasEditedSubjects) {
-        if (this.hasAssignedStudyClassesForRemovedTaughtSubjects(userDetails)) {
-          this.teachersListService.getData(true, 'false').subscribe(response => {
-            this.teachersList = response;
-            this.openReplaceAssignedTeacherModal(userDetails);
-          });
-          return;
-        }
+        // openReplaceAssignedTeacherModal logic commented for now
+        // if (this.hasAssignedStudyClassesForRemovedTaughtSubjects(userDetails)) {
+        //   this.teachersListService.getData(true, 'false').subscribe(response => {
+        //     this.teachersList = response;
+        //     this.openReplaceAssignedTeacherModal(userDetails);
+        //   });
+        //   return;
+        // }
       }
       for (const key of Object.keys(userDetails)) {
         if (userDetails[key] === '') {
@@ -91,7 +95,10 @@ export class EditUserComponent implements OnInit {
         this.hasUnsavedData = false;
         this.router.navigate(['manage-users']);
       }, (error) => {
-        this.errors = error['error'];
+        if (error.error.new_teachers) {
+          this.displayErrorToast = true;
+          this.toastErrorMessage = this.removeSubjectsErrorMessage;
+        }
       });
     }
   }
@@ -177,6 +184,11 @@ export class EditUserComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUserDetails();
+  }
+
+  hideErrorToast() {
+    this.toastErrorMessage = '';
+    this.displayErrorToast = false;
   }
 
 }
