@@ -325,11 +325,11 @@ export class ReportsPrincipalComponent extends ScrollableList implements OnInit,
         generate: this.generateAcademicProfilesAtRiskTable
       },
       'profiles-academic_programs_average': {
-        request: this.academicProgramsAverageService.getData(false),
+        request: this.academicProgramsAverageService.getData(true),
         generate: this.generateAcademicProgramsAveragesTable
       },
       'profiles-academic_programs_absences': {
-        request: this.academicProgramsAbsencesService.getData(false),
+        request: this.academicProgramsAbsencesService.getData(true),
         generate: this.generateAcademicProgramsAbsencesTable
       },
       'classes-study_classes_at_risk': {
@@ -337,11 +337,11 @@ export class ReportsPrincipalComponent extends ScrollableList implements OnInit,
         generate: this.generateSchoolStudyClassesAtRiskTable
       },
       'classes-study_classes_average': {
-        request: this.studyClassesAverageService.getData(false),
+        request: this.studyClassesAverageService.getData(true),
         generate: this.generateSchoolStudyClassesAveragesTable
       },
       'classes-study_classes_absences': {
-        request: this.studyClassesAbsencesService.getData(false),
+        request: this.studyClassesAbsencesService.getData(true),
         generate: this.generateSchoolStudyClassesAbsencesTable
       },
       'students-students_at_risk': {

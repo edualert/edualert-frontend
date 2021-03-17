@@ -38,9 +38,22 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
     this.activateOrDeactivateArrows();
     const positionInArray = this.tabsList.map(el => el.id.toString()).indexOf(tabClicked.toString());
     const clickedTab = this.tabsList[positionInArray].id.toString();
-    if (this.shouldScrollToActiveTab) {
+
+    if (this.shouldScrollToActiveTab || this.checkIfTheActiveTabIsNotFullyVisible(positionInArray)) {
       this.scrollTheContainer(clickedTab);
     }
+  }
+
+  checkIfTheActiveTabIsNotFullyVisible(positionInArray): boolean {
+    const tabRect = this.tabContainer.nativeElement.children[positionInArray].getBoundingClientRect();
+    const containerRect = this.tabContainer.nativeElement.getBoundingClientRect();
+
+    const containerLeftEdge = containerRect.x;
+    const tabLeftEdge = tabRect.x;
+    const containerRightEdge = containerRect.x + containerRect.width;
+    const tabRightEdge = tabRect.x + tabRect.width;
+
+    return tabRightEdge > containerRightEdge || tabLeftEdge < containerLeftEdge;
   }
 
   scrollTheContainer(tabClicked: string | number): void {

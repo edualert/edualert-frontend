@@ -1,5 +1,13 @@
 <div class="animated-page">
   <app-header>
+    <div id="error-alert">
+      <div class="error-toast" *ngIf="displayErrorToast">
+        <div class="request-error">
+          {{ toastErrorMessage }}
+        </div>
+        <div class="close-error" (click)="hideErrorToast()"></div>
+      </div>
+    </div>
     <a id="header-back-button" [routerLink]="['/manage-users']">
       <div class="arrow left"></div>
       <div class="blue-text bold column">

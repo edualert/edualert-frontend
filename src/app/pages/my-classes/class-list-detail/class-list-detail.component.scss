@@ -61,28 +61,37 @@
     width: calc(100% - 465px);
     bottom: 45px
   }
-
-  .mobile-sort {
-    display: none;
-  }
-}
-
-.arrow-right {
-  margin-top: $margin-default;
-  width: 120%;
-  background: url("../../../../assets/img/long-arrow.svg") no-repeat right;
 }
 
 .link-content {
   cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
 
   &:hover {
     filter: brightness(1.3);
   }
+
+  &.arrow-right::after {
+    padding-left: 5px;
+    content: url("../../../../assets/img/long-arrow.svg");
+  }
+}
+
+.value {
+  overflow: hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
 }
 
 .column {
   pointer-events: auto;
+}
+
+.mobile-only {
+  display: none !important;
 }
 
 @media (max-width: $mobile-screen-width-normal) {
@@ -96,15 +105,28 @@
     width: 100%;
   }
 
+  #header-top-right-container {
+    height: 100%;
+
+    .column {
+      max-width: 100%;
+      padding: unset;
+    }
+
+    .value + .label {
+      margin-top: $margin-tiny;
+    }
+  }
+
   #tabs-container {
     width: initial;
   }
 
-  .desktop-sort {
-    display: none;
+  .desktop-only {
+    display: none !important;
   }
 
-  .mobile-sort {
-    display: unset;
+  .mobile-only {
+    display: revert !important;
   }
 }

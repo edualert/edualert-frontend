@@ -14,8 +14,7 @@ export enum EventTypesFirstSemester {
 
 export enum EventTypesOtherEvents {
   CORIGENTE = 'Corigențe',
-  DIFERENTE = 'Diferențe',
-  LEGAL_PUBLIC_HOLIDAY = 'Sărbătoare legală'
+  DIFERENTE = 'Diferențe'
 }
 
 export const eventTypesNames: {key: string, name: string}[] = Object.keys(EventTypesOtherEvents).map((key: string) => ({key: key, name: (EventTypesOtherEvents[key] as string)}));

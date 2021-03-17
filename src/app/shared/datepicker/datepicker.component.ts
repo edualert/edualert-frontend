@@ -79,7 +79,7 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
     'Septembrie',
     'Octombrie',
     'Noiembrie',
-    'Decemberie',
+    'Decembrie',
   ];
   rawDaysMatrix: RawMatrixDay[][];
   readonly minimumYear = 1000;

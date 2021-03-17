@@ -53,7 +53,6 @@ hr {
 
 .event-list {
   width: 100%;
-  height: 80px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -94,8 +93,7 @@ app-date-input {
 
 .delete-button {
   padding-left: $margin-big;
-  padding-bottom: 70px;
-  margin-bottom: calc(#{$margin-big} + #{$margin-xsmall});
+  padding-bottom: calc(#{$margin-big} + #{$margin-xsmall});
   border-left: 1px solid $color-separator;
 }
 

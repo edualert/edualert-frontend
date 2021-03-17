@@ -58,11 +58,12 @@
                          *ngIf="isEditable && !studyClass.has_previous_catalog_data">
                       Șterge
                     </div>
-                    <div class="text-button red-text"
-                          *ngIf="shouldDisplayMoveButton(studyClass, section.key, section)"
-                         (click)="moveClass(studyClass)">
-                      Mută
-                    </div>
+                    <!--Move button commented to temporarily disable clone class feature-->
+                    <!--<div class="text-button red-text"-->
+                          <!--*ngIf="shouldDisplayMoveButton(studyClass, section.key, section)"-->
+                         <!--(click)="moveClass(studyClass)">-->
+                      <!--Mută-->
+                    <!--</div>-->
                   </div>
                 </div>
               </div>
