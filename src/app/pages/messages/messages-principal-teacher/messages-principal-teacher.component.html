@@ -155,7 +155,7 @@
                         </div>
                         <div class="cells-wrapper no-border">
                           <ng-container *ngFor="let student of message.target_user_through.children">
-                            <div *ngIf="student.study_class && (student.study_class | json) !== '{}'; else blankCell">
+                            <div *ngIf="student.study_class && (student.study_class | json) !== '{}'; else blankCell" class="desktop">
                               <hr class="vertical">
                               <div class="cell">
                                 <span class="title">Clasă:</span>
@@ -180,7 +180,7 @@
                         <div class="cells-wrapper" *ngFor="let student of message.target_user_through.children">
                           <div class="cell">
                             <span class="title">Părinte elev:</span>
-                            <span class="text-item link-content blue-text bold">
+                            <span class="text-item link-content blue-text bold" (click)="openUserModal($event, student.id)">
                               {{student.full_name}}
                               <div class="arrow right"></div>
                             </span>
@@ -192,8 +192,8 @@
                               <span
                                 class="text-item link-content blue-text bold"
                                 [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
-                                  ['/manage-classes', message.target_study_class.id, 'view'] :
-                                  ['/my-classes', message.target_study_class.id, 'class-detail']"
+                                  ['/manage-classes', student.study_class.id, 'view'] :
+                                  ['/my-classes', student.study_class.id, 'class-detail']"
                               >
                                 {{student.study_class.class_grade + " " + student.study_class.class_letter}}
                                 <div class="arrow right"></div>

@@ -28,6 +28,10 @@
 
     .text-content {
       align-self: center;
+      white-space: nowrap;
+      min-width: 85px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .icon-right {
@@ -50,6 +54,13 @@
   padding-left: 10px;
   margin-left: 10px;
   border-left: 1px solid $color-separator;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-selected {
+  max-width: calc(100% - 185px);
 }
 
 .text-button {
@@ -66,6 +77,14 @@
 
     .action-button {
       margin-bottom: $margin-tiny;
+
+      + .action-button {
+        max-width: 100%;
+      }
+
+      &.file-selected {
+        max-width: unset;
+      }
     }
   }
 }

@@ -5,6 +5,11 @@
   min-width: 800px;
 }
 
+.card-title {
+  display: block;
+  max-width: calc(100% - 230px);
+}
+
 @media (max-width: $mobile-screen-width-intermediate) {
   .page-content {
     .card {
@@ -32,6 +37,13 @@
           margin-top: unset;
         }
       }
+
+      .card-title {
+        max-width: 100%;
+      }
     }
+  }
+  .list-count-mobile {
+    margin-left: $margin-xsmall;
   }
 }

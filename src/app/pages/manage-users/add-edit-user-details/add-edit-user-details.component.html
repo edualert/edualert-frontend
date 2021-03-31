@@ -246,20 +246,28 @@
                  (inputChange)="addInput($event, 'educator_full_name')"
                  [maxLength]="180">
       </app-input>
-      <app-input label="Număr de telefon"
-                 type="regular"
-                 [value]="userDetails?.educator_phone_number"
-                 [errorMessage]="errors?.educator_phone_number"
-                 (inputChange)="addInput($event, 'educator_phone_number')"
-                 [maxLength]="20">
-      </app-input>
-      <app-input label="Adresă de email"
-                 type="regular"
-                 [value]="userDetails?.educator_email"
-                 [errorMessage]="errors?.educator_email"
-                 (inputChange)="addInput($event, 'educator_email')"
-                 [maxLength]="150">
-      </app-input>
+      <div class="detail-element-container margin-top-small">
+        <div class="label-container fixed-width">Număr de telefon</div>
+        <div class="value-container full-width">
+          <app-input-new
+            [value]="userDetails?.educator_phone_number"
+            [error]="errors?.educator_phone_number"
+            (inputChange)="addInput($event, 'educator_phone_number')"
+            [maxLength]="20"
+          ></app-input-new>
+        </div>
+      </div>
+      <div class="detail-element-container margin-top-small">
+        <div class="label-container fixed-width">Adresă de email</div>
+        <div class="value-container full-width">
+          <app-input-new
+            [value]="userDetails?.educator_email"
+            [error]="errors?.educator_email"
+            (inputChange)="addInput($event, 'educator_email')"
+            [maxLength]="150"
+          ></app-input-new>
+        </div>
+      </div>
     </div>
   </div>
 

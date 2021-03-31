@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, Injector, OnDestroy} from '@angular/core';
-import {MessagesComponent, MessagesRequestParams} from '../messages.component';
-import {HttpClient} from '@angular/common/http';
-import {Params} from '@angular/router';
-import {ReceivedMessage, SentMessage} from '../../../models/message';
-import {NetworkingListResponse} from '../../../models/networking-list-response';
+import { AfterViewInit, Component, Injector, OnDestroy } from '@angular/core';
+import { MessagesComponent, MessagesRequestParams } from '../messages.component';
+import { HttpClient } from '@angular/common/http';
+import { Params } from '@angular/router';
+import { ReceivedMessage } from '../../../models/message';
+import { NetworkingListResponse } from '../../../models/networking-list-response';
 
 
 @Component({
@@ -51,7 +51,7 @@ export class MessagesStudentParentComponent extends MessagesComponent implements
   }
 
   ngOnDestroy(): void {
-    document.body.removeEventListener('scroll',  this.scrollHandle);
+    document.body.removeEventListener('scroll', this.scrollHandle);
   }
 
 }

@@ -4,10 +4,15 @@
     <div id="header-filter">
       <app-filter
       [noCount]="false">
-        <ng-container *ngIf="!this.requestInProgress" id="list-count-mobile">
-          <div class="list-count-mobile">
+        <ng-container id="list-count-mobile">
+          <div class="list-count-mobile" *ngIf="!this.requestInProgress else loadingListFilter">
             {{students.length}} utilizatori afișați din {{studentsTotalCount}}
           </div>
+          <ng-template #loadingListFilter>
+            <div class="list-count-mobile loading-list">
+              Se încarcă datele...
+            </div>
+          </ng-template>
         </ng-container>
         <span class="mobile-title">Filtrează</span>
         <app-filter-search

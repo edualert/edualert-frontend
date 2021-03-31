@@ -283,11 +283,13 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
 
   onSubjectTabClicked(tabClicked: string) {
     this.subjectActiveTab = tabClicked;
+    document.body.scrollTop = 0;
   }
 
   onYearGradeTabClicked(tabClicked: string) {
     this.yearGradeActiveTab = tabClicked;
     this.setSubjectsTabsList();
+    document.body.scrollTop = 0;
   }
 
   subjectNameChange(index: number, value: string): void {

@@ -68,29 +68,31 @@
     .card {
       display: block;
       width: 280px;
-      height: 87px;
       margin-top: $margin-tiny;
       padding: $margin-tiny $margin-small;
 
       .card-left-container {
         height: unset;
+
+        .categories {
+          margin-bottom: $margin-tiny;
+        }
       }
 
       &.wide {
         width: 280px;
-        height: 113px;
+        min-height: 113px;
       }
 
       .card-right-container {
-        right: $margin-small;
+        position: unset;
         top: unset;
         bottom: 0;
         height: auto;
-        width: calc(100% - #{$margin-small * 2});
         display: block;
 
         .buttons {
-          margin: $margin-small 0;
+          margin: $margin-small 0 $margin-xsmall 0;
           height: unset;
           width: 100%;
           display: flex;

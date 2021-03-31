@@ -2,7 +2,7 @@
 
 .list-count-mobile {
   display: none;
-  margin-left: 16px;
+  margin-left: $margin-small;
   color: white;
   font-weight: lighter;
 
@@ -23,7 +23,7 @@
         color: white;
         display: block;
         margin-top: -5px;
-        margin-bottom: 5px;
+        margin-bottom: $margin-xsmall;
         font-weight: 300 !important;
       }
     }
@@ -32,7 +32,7 @@
   .filter-container {
     .dropdown-parent {
       width: 100% !important;
-      margin: 5px 0 !important;
+      margin: $margin-xsmall 0 !important;
 
       input {
         font-weight: normal !important;
@@ -48,7 +48,7 @@
 
     .search-form {
       width: 234px;
-      margin: 5px 0 !important;
+      margin: $margin-xsmall 0 !important;
       
       input.search-input {
         width: 100% !important;
