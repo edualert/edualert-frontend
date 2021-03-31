@@ -226,6 +226,7 @@ export class AddEditStudyClassComponent implements OnInit {
 
   onTabClick(event) {
     this.activeTab = event;
+    document.body.scrollTop = 0;
   }
 
   addStudent() {

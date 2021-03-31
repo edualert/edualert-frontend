@@ -8,7 +8,7 @@
       <button class="action-button" [routerLink]="['/manage-schools/add']">Adaugă o unitate nouă</button>
     </div>
     <div id="header-filter">
-      <app-filter>
+      <app-filter [noCount]="false">
         <ng-container *ngIf="!this.requestInProgress; else loadingListCountMobile" id="list-count-mobile">
           <div class="list-count-mobile">
             {{schools.length}} unități afișate din {{totalCount}}

@@ -4,9 +4,17 @@
 .card {
   min-width: 648px;
 
-  .targets {
+  .card-left-container .targets {
     .receiver-info-wrapper {
-      max-width: 345px;
+      white-space: nowrap;
+      width: 100%;
+      display: flex;
+      align-items: center;
+
+      .cell:nth-of-type(2) {
+        flex-grow: 2;
+        flex-basis: 350px;
+      }
     }
   }
 
@@ -15,7 +23,7 @@
     height: calc(100% - #{$margin-default * 2});
 
     .message-status {
-      max-width: 139px;
+      max-width: $simple-header-height;
 
       &.read {
         max-width: unset;
@@ -27,6 +35,43 @@
 
       &.unread {
         max-width: 231px;
+      }
+    }
+  }
+
+  .card-title {
+    display: block;
+    max-width: calc(100% - 230px);
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .card {
+    .card-title {
+      max-width: 100%;
+    }
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .page-content {
+    .card {
+
+      .card-left-container .targets {
+        .receiver-info-wrapper {
+          max-width: 345px;
+          white-space: unset;
+          display: unset;
+
+          .cell {
+            :nth-of-type(2) {
+              flex-grow: unset;
+              flex-basis: unset;
+            }
+
+            max-width: 100%;
+          }
+        }
       }
     }
   }

@@ -300,3 +300,9 @@
     }
   }
 }
+
+@media (max-width: $mobile-screen-width-normal) {
+  .list-count-mobile {
+    margin-left: 9px;
+  }
+}

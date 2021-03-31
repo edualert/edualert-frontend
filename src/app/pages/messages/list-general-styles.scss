@@ -17,6 +17,7 @@
     width: auto;
     font-size: $font-size-big;
     color: $color-text-normal;
+    word-break: break-word;
   }
 
   .targets {
@@ -25,7 +26,7 @@
 
       hr.vertical {
         height: 18px;
-        margin: 0 $margin-default -5px;
+        margin: 0 $margin-default 0;
         display: inline-block;
       }
 
@@ -71,7 +72,7 @@
 
       &.column {
         display: inline-flex;
-        align-items: flex-start;
+        align-items: baseline;
 
         .mobile-horizontal {
           display: none;
@@ -82,7 +83,7 @@
         }
 
         .desktop {
-          display: inline-block;
+          display: flex;
         }
 
         .cells-wrapper {
@@ -101,6 +102,19 @@
             .cell {
               &:first-of-type {
                 margin-top: $margin-tiny;
+              }
+            }
+
+            .desktop {
+
+              .vertical {
+                margin-top: $margin-tiny;
+              }
+
+              &:first-of-type {
+                .cell, .vertical {
+                  margin-top: unset;
+                }
               }
             }
           }
@@ -162,7 +176,7 @@
         position: absolute;
         height: calc(100% - 18px);
         top: 9px;
-        right: calc(139px - #{$margin-small});
+        right: calc(#{$simple-header-height} - #{$margin-small});
       }
 
       .timestamp {

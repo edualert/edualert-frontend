@@ -78,6 +78,7 @@ export class ClassDetailComponent {
 
   tabClicked(tabClicked: string) {
     this.activeTab = tabClicked;
+    document.body.scrollTop = 0;
   }
 
   openUserModal(event, id) {

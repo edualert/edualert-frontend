@@ -10,7 +10,7 @@
     </h2>
     <div id="header-subsubtitle">
       <span class="subtitle-wrapper">
-        <ng-container *ngIf="!rip"><span class="bold">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</span></ng-container>
+        <ng-container *ngIf="!rip"><span class="bold" *ngIf="studyClass?.class_grade else noValue">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</span></ng-container>
         <ng-container *ngIf="rip">...</ng-container>
       </span>
     </div>
@@ -18,22 +18,25 @@
       <div class="catalog-top-right">
         <div class="column">
           <div class="gray-text label">{{academicYearToDisplay}} - {{academicYearToDisplay + 1}}</div>
-          <div class="value bold">{{rip ? "..." : studyClass?.academic_program_name}}</div>
+          <div class="value bold">{{rip ? "..." : studyClass?.academic_program_name ? studyClass?.academic_program_name : '-'}}</div>
         </div>
         <div class="column">
           <div class="gray-text label">Diriginte</div>
-          <div class="value bold blue-text arrow-right link-content" *ngIf="!rip"
+          <div class="value bold blue-text link-content"
+               [class.arrow-right]="studyClass?.class_master.full_name"
+               *ngIf="!rip"
                (click)="openUserModal($event, studyClass?.class_master.id)">
-            {{studyClass?.class_master.full_name}}</div>
+            {{studyClass?.class_master.full_name ? studyClass?.class_master.full_name : '-'}}
+          </div>
           <div class="value bold blue-text link-content" *ngIf="rip">...</div>
         </div>
       </div>
       <div class="details-container-mobile" *ngIf="isDetailsSectionOpen">
-        <div class="bold">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</div>
+        <div class="bold" *ngIf="studyClass?.class_grade else noValue">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</div>
         <hr class="mobile-horizontal">
         <div class="column">
           <div class="gray-text label">{{academicYearToDisplay}} - {{academicYearToDisplay + 1}}</div>
-          <div class="value bold">{{rip ? "..." : studyClass?.academic_program_name}}</div>
+          <div class="value bold">{{rip ? "..." : studyClass?.academic_program_name ? studyClass?.academic_program_name : '-'}}</div>
         </div>
         <div class="column">
           <div class="gray-text label">Diriginte</div>
@@ -42,7 +45,7 @@
             <div class="bold blue-text link-content">
               {{studyClass?.class_master.full_name}}
             </div>
-            <div class="arrow right"></div>
+            <div class="arrow right" *ngIf="studyClass?.class_master else noValue"></div>
           </div>
           <div class="value bold blue-text link-content" *ngIf="rip">...</div>
         </div>
@@ -81,4 +84,5 @@
   </div>
 </div>
 
+<ng-template #noValue>-</ng-template>
 <app-view-user-modal #appViewUserModal></app-view-user-modal>

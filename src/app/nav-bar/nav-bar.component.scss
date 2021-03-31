@@ -166,12 +166,12 @@ $anim-time: 0.3s;
     border-right: none;
     width: 100%;
     //height: 50px;
-    max-height: 50px;
+    max-height: $mobile-nav-bar-height;
 
     .upper-bar {
       position: relative;
       border-bottom: 1px solid $color-separator;
-      min-height: 50px;
+      min-height: $mobile-nav-bar-height;
       background-color: white;
       transform: translate3d(0, 0, 1px);
 
@@ -209,7 +209,7 @@ $anim-time: 0.3s;
     }
 
     .menu {
-      height: calc(100% - 50px);
+      height: calc(100% - #{$mobile-nav-bar-height});
       pointer-events: none;
       padding: 0;
       transform: translateY(-50%);

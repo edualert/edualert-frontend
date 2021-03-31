@@ -14,7 +14,7 @@
           </span>
           <span [ngClass]="{'image-none': !singleUserChoice}" class="icon-right"></span>
         </div>
-        <div class="action-button" (click)="multipleUsersChoiceClick()">
+        <div class="action-button" [class.file-selected]="uploadedFileName" (click)="multipleUsersChoiceClick()">
           <span class="text-content">
             {{importUsersButtonText}}
           </span>

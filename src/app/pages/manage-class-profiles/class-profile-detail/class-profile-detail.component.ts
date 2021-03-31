@@ -95,10 +95,12 @@ export class ClassProfileDetailComponent implements OnInit {
 
   onSubjectTabClicked(tabClicked: string) {
     this.subjectActiveTab = tabClicked;
+    document.body.scrollTop = 0;
   }
 
   onYearGradeTabClicked(tabClicked: string) {
     this.yearGradeActiveTab = tabClicked;
+    document.body.scrollTop = 0;
   }
 
 }

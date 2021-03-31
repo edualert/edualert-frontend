@@ -103,8 +103,10 @@
                                [maxLength]="100"></app-input-new>
               </div>
               <ng-container>
-                <div class="vertical-line"></div>
-                <div class="delete-button text-button dark-text" (click)="deleteSubject($i)">Șterge</div>
+                <div class=desktop-only>
+                  <div class="vertical-line"></div>
+                  <div class="delete-button text-button dark-text" (click)="deleteSubject($i)">Șterge</div>
+                </div>
               </ng-container>
             </div>
 
@@ -122,6 +124,12 @@
                 ></app-dropdown>
               </div>
             </div>
+            <ng-container>
+              <div class="mobile-only">
+                <div class="vertical-line"></div>
+                <div class="delete-button text-button dark-text" (click)="deleteSubject($i)">Șterge</div>
+              </div>
+            </ng-container>
             <hr class="margin-list">
           </div>
           <div class="add-subject-button text-button blue" (click)="addSubject()">Adaugă o materie nouă</div>

@@ -34,9 +34,13 @@
   margin-top: $margin-big;
   margin-bottom: $margin-tiny;
   position: sticky;
-  top: 148px;
+  top: $simple-header-height;
   background-color: $color-background;
   z-index: 1;
+
+  @media (max-width: $mobile-screen-width-normal) {
+    top: $mobile-nav-bar-height;
+  }
 }
 
 .close-error {
@@ -159,6 +163,33 @@ hr {
     background-image: url(../../../../assets/img/long-arrow.svg);
     transform: rotateZ(-90deg);
     filter: grayscale(0.93) brightness(150%);
+  }
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: $mobile-screen-width-normal) {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: unset;
+  }
+
+  .delete-button {
+    margin-top: $margin-tiny;
+    width: 52px;
+
+    &:before {
+      width: 100%;
+    }
+  }
+
+  .subjects-container {
+    padding-top: unset;
   }
 }
 

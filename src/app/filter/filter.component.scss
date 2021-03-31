@@ -64,7 +64,7 @@
       width: 100%;
       line-height: 16px;
       font-size: $font-size-small;
-      padding: 0 $margin-default;
+      padding: 0 $margin-tiny 0 $margin-default;
       height: 28px;
       order: 2;
       pointer-events: all;
@@ -80,7 +80,7 @@
         background-size: cover;
         vertical-align: middle;
         display: inline-block;
-        margin-left: $margin-tiny;
+        margin-left: $margin-xsmall;
         margin-top: -3px;
       }
 
@@ -88,7 +88,7 @@
         border-right: 1px solid rgba(255, 255, 255, 0.3);
         font-weight: bold;
         color: white;
-        padding-right: $margin-small;
+        padding-right: $margin-tiny;
       }
     }
 

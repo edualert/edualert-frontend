@@ -56,5 +56,15 @@
     display: unset;
   }
 
+  .list-count-mobile {
+    margin-left: $margin-xsmall;
+
+    &.loading-list {
+      margin-left: $margin-small;
+      color: white;
+      float: right;
+      margin-right: $margin-big + $margin-tiny;
+    }
+  }
 }
 

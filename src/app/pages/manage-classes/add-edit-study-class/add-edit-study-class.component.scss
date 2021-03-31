@@ -62,7 +62,7 @@ hr {
   margin-top: 40px;
   margin-bottom: $margin-big;
   position: sticky;
-  top: 148px;
+  top: $simple-header-height;
   background-color: $color-background;
   z-index: 1;
 }
@@ -142,11 +142,6 @@ hr {
 }
 
 @media screen and (max-width: $mobile-screen-width-normal) {
-
-  .tabs-container {
-    position: unset;
-  }
-
   .half-width {
     flex-grow: 1;
   }
@@ -193,6 +188,10 @@ hr {
 
   .mobile-margin {
     margin-left: 0;
+  }
+
+  .tabs-container {
+    top: #{$mobile-nav-bar-height};
   }
 
 }

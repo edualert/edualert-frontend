@@ -3,7 +3,8 @@ export class InputValidator {
 
   static validateEmail(value: string): string | null {
     let error: string = null;
-    if (!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/.test(value) || value?.length > 150) {
+    if (value != null && (!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/.test(value)
+      || value?.length > 150)) {
       error = 'Format incorect. Scrieți maxim 150 caractere în formatul: numeutilizator@numedomeniu.extensiedomeniu';
     }
     return error;
@@ -11,9 +12,9 @@ export class InputValidator {
 
   static validatePhoneNumber(value: string): string | null {
     let error: string = null;
-    value = value.toString();
-    const phoneNumber = value?.includes('+') ? value.slice(1, value.length - 1) : value;
-    if (!/\+?[0-9]+$/.test(phoneNumber) || !(phoneNumber?.length >= 10 && phoneNumber?.length <= 20)) {
+    value = value?.toString();
+    const phoneNumber = value?.includes('+') ? value.slice(1, value.length) : value;
+    if (value != null && !/\+?[0-9]+$/.test(phoneNumber) || !(phoneNumber?.length >= 10 && phoneNumber?.length <= 20)) {
       error = 'Format incorect. Scrieți minim 10, maxim 20 caractere: doar cifre și semnul \'+\' sunt acceptate, fără spații.\n';
     }
     return error;

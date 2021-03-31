@@ -154,21 +154,24 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       this.errors.email = 'Acest câmp este obligatoriu.';
       resp = false;
     }
-    if (this.userDetails.email && (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userDetails.email) || userDetails.email?.length > 150)) {
-      this.errors.email = 'Format incorect. Scrieți maxim 150 caractere în formatul: numeutilizator@numedomeniu.extensiedomeniu';
+    const userEmailError = InputValidator.validateEmail(this.userDetails.email);
+    if (this.userDetails.email && userEmailError !== null) {
+      this.errors.email = userEmailError;
       resp = false;
     }
-    if (this.userDetails.educator_email && (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userDetails.educator_email) || userDetails.educator_email?.length > 150)) {
-      this.errors.educator_email = 'Format incorect. Scrieți maxim 150 caractere în formatul: numeutilizator@numedomeniu.extensiedomeniu';
+    const educatorEmailError = InputValidator.validateEmail(this.userDetails.educator_email);
+    if (this.userDetails.educator_email && educatorEmailError !== null) {
+      this.errors.educator_email = educatorEmailError;
       resp = false;
     }
-    if (this.userDetails.phone_number && (!/^\+?[0-9]+$/.test(userDetails.phone_number) || !(userDetails.phone_number?.length >= 10 && userDetails.phone_number?.length <= 20))) {
-      this.errors.phone_number = 'Format incorect. Scrieți minim 10, maxim 20 caractere: doar cifre și semnul \'+\' sunt acceptate, fără spații.';
+    const userPhoneNumberError = InputValidator.validatePhoneNumber(this.userDetails.phone_number);
+    if (this.userDetails.phone_number && userPhoneNumberError !== null) {
+      this.errors.phone_number = userPhoneNumberError;
       resp = false;
     }
-    if (this.userDetails.educator_phone_number && (!/\+?[0-9]+/.test(userDetails.educator_phone_number) ||
-      !(userDetails.educator_phone_number?.length >= 10 && userDetails.educator_phone_number?.length <= 20))) {
-      this.errors.educator_phone_number = 'Format incorect. Scrieți minim 10, maxim 20 caractere: doar cifre și semnul \'+\' sunt acceptate, fără spații.';
+    const educatorPhoneNumberError = InputValidator.validatePhoneNumber(this.userDetails.educator_phone_number);
+    if (this.userDetails.educator_phone_number && educatorPhoneNumberError !== null) {
+      this.errors.educator_phone_number = educatorPhoneNumberError;
       resp = false;
     }
     if (this.userDetails.educator_phone_number === '') {
@@ -340,7 +343,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       const errorsCount = _.size(this.errors.parentFrontValidation);
 
       // keep the errors messages and keys before the deleted dropdown
-      for (let i = 0; i < index; i ++) {
+      for (let i = 0; i < index; i++) {
         if (this.errors.parentFrontValidation[i]) {
           newErrors[i] = this.errors.parentFrontValidation[i];
         }
