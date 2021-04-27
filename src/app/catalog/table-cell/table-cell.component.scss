@@ -394,6 +394,31 @@
   }
 }
 
+.tag-tooltip {
+  position: absolute;
+  max-width: 300px;
+  white-space: normal;
+  z-index: 1;
+  text-align: center;
+  line-height: normal;
+  color: $color-text-normal;
+  border: 1px solid $color-separator;
+  background-color: $color-background;
+  box-shadow: 0 2px 5px 0 rgba(black, 0.1);
+  border-radius: $border-radius-tiny;
+  padding: $margin-tiny;
+  animation: tagsOverlay 0.2s 0s $ease-in-out 1 backwards;
+  transform: translate(-10px, -30px);
+  pointer-events: none;
+  display: none;
+}
+
+.tag:hover {
+  .tag-tooltip {
+    display: flex;
+  }
+}
+
 .plain-text-cell {
   padding-left: $margin-tiny;
   white-space: pre-wrap;
@@ -402,6 +427,15 @@
 
 .horizontal-mobile {
   display: none;
+}
+
+
+@media (max-width: $mobile-screen-width-normal) {
+  .tag:hover {
+    .tag-tooltip {
+      display: none;
+    }
+  }
 }
 
 

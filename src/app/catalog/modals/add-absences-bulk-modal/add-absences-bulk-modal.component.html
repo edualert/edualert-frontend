@@ -54,7 +54,8 @@
           <div class="absence-wrapper" *ngIf="studentData.addedAbsences.length">
             <div class="absence-cell" *ngFor="let absence of studentData.addedAbsences; let j = index;">
               <div class="checkbox-fancy-label">
-                <span class="label">Absență motivată</span>
+                <span class="label desktop-only">Absență motivată</span>
+                <span class="label mobile-only">Motivată</span>
                 <div class="element checkbox-container"
                      (click)="absenceChanged($event, i, j)"
                      [class.checked]="this.students[i].addedAbsences[j]">

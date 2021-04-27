@@ -13,6 +13,7 @@ export class UserDetails extends UserDetailsBase {
   is_active: string;
   last_online: string;
   labels?: IdText[];
+  risk_description?: string;
   taught_subjects?: IdName[];
   parents?: IdFullname[] | UserDetailsBase[];
   class_grade?: string;
@@ -43,6 +44,7 @@ export class UserDetails extends UserDetailsBase {
       this.is_active = get(value, 'is_active', null);
       this.last_online = get(value, 'last_online', null);
       this.labels = get(value, 'labels', null) ? get(value, 'labels').map(label => new IdText(label)) : [];
+      this.risk_description = get(value, 'risk_description', null);
       this.taught_subjects = get(value, 'taught_subjects', null) ? get(value, 'taught_subjects').map(taught_subjects => new IdName(taught_subjects)) : [];
       this.parents = get(value, 'parents', null) ? get(value, 'parents').map(parents => new UserDetailsBase(parents)) : [];
       this.children = get(value, 'children', null) ? get(value, 'children', null).map( child => new IdFullname(child)) : [];

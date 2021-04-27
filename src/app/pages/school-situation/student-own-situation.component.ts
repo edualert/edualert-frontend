@@ -87,6 +87,7 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
     if (urlParams.academicYear) {
       requestUrl += `?academic_year=${urlParams.academicYear}`;
     }
+    this.isDetailsSectionOpen = false;
     this.rip = true;
     this.httpClient.get(requestUrl).subscribe((response: any) => {
       this.student = new UserDetails({
@@ -95,6 +96,7 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
         labels: response.labels,
         parents: response.parents
       });
+      this.student.risk_description = response.risk_description;
       this.studyClass = response.study_class;
       this.catalog = [];
       this.catalog = this.formatCatalog(response.catalogs_per_subjects);

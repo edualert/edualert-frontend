@@ -17,7 +17,7 @@
         <span class="mobile-title">Filtrează</span>
         <app-filter-search
           [searchString]="filterParams.search"
-          (searchSubmit)="changeSearch($event)"
+          (searchSubmit)="changeSearchParams($event)"
         ></app-filter-search>
         <div class="dropdown-parent">
           <app-dropdown
@@ -33,7 +33,7 @@
           <app-dropdown
             [list]="filterData.genericAcademicPrograms"
             [displayedProperty]="'name'"
-            (elementHasBeenSelected)="changeGenericAcademicProfile($event.element)"
+            (elementHasBeenSelected)="filterGenericAcademicProfile($event.element)"
             [appliedElement]="filterParams.genericAcademicProgram"
             [placeholder]="'Profil academic'"
             [withSearch]="true"
@@ -42,7 +42,7 @@
         <div class="dropdown-parent">
           <app-dropdown
             [list]="filterData.studyClassGrades"
-            (elementHasBeenSelected)="changeStudyClassGrade($event.element)"
+            (elementHasBeenSelected)="filterStudyClassGrade($event.element)"
             [appliedElement]="filterParams.studyClassGrade"
             [placeholder]="'Clasă'"
           ></app-dropdown>

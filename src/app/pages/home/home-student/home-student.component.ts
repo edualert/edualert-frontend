@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
 import { UserDetails } from '../../../models/user-details';
 import { MyOwnAbsencesEvolutionService, MyOwnSchoolActivityService, MyOwnStatisticsService, MyOwnSubjectsAtRiskService } from '../../../services/statistics-services/my-own-statistics.service';
@@ -6,13 +6,14 @@ import { ChildSchoolActivity, ChildStatistics, SubjectForChild } from '../../../
 import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-student',
   templateUrl: './home-student.component.html',
   styleUrls: ['./home-student.component.scss', '../home.component.scss']
 })
-export class HomeStudentComponent implements OnInit {
+export class HomeStudentComponent implements OnInit, OnDestroy {
   @Input() userDetails: UserDetails;
   graphSubtitle: string;
   currentMonth = moment().month();
@@ -30,6 +31,7 @@ export class HomeStudentComponent implements OnInit {
 
   forceRequest: boolean = true;
 
+  currentAcademicYearEvolutionSubscription: Subscription;
   myOwnAbsencesList: any;
   myOwnAbsencesView: any[];
   colorSchemeRed = {
@@ -48,10 +50,10 @@ export class HomeStudentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.currentAcademicYearService.getData().subscribe(response => {
+    this.currentAcademicYearEvolutionSubscription = this.currentAcademicYearService.getData().subscribe(response => {
       const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
 
-      if (now >  moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
+      if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.isFirstSemesterEnded = true;
       }
       if (now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
@@ -63,6 +65,10 @@ export class HomeStudentComponent implements OnInit {
     });
 
     this.forceRequest = false;
+  }
+
+  ngOnDestroy(): void {
+    this.currentAcademicYearEvolutionSubscription.unsubscribe();
   }
 
   fetchPageData(): void {

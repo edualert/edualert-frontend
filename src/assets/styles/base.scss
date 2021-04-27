@@ -63,8 +63,18 @@ $events-list-width: 630px;
 $mobile-screen-width-normal: 1024px; /* From generic tablet downwards */
 $mobile-screen-width-intermediate: 768px;
 $mobile-screen-width-small: 500px; /* For phones */
+$mobile-screen-width-tiny: 310px;
 
-$scrollable-modal-height: 500px;
-$scrollable-modal-height-small: 350px;
+$mobile-browser-interface-height: 85px;
+$mobile-modal-normal-header-and-footer-height: 150px;
+
+$user-details-modal-default-header-height: 85px;
+$user-details-modal-default-bottom-height: 55px;
 
 $simple-header-height: 139px;
+$reports-header-two-lines-tabs: 187px;
+$mobile-reports-header-two-lines-tabs: 159px;
+
+$msg-for-label-width: 42px;
+$msg-student-parent-label-width: 71px;
+$msg-teacher-label-width: 52px;

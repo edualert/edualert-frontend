@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {ModalComponent} from '../modal/modal.component';
 
 @Component({
@@ -12,6 +12,7 @@ export class ConfirmationModalComponent {
   description: string;
   cancelButtonText: string = 'Nu';
   confirmButtonText: string = 'Da';
+  justConfirmButton: boolean = false;
 
   // Will get its value from the callback passed as param in the open() method
   confirmButtonAction() {
@@ -22,7 +23,8 @@ export class ConfirmationModalComponent {
   open(modalData: ModalData) {
     this.title = modalData.title;
     this.description = modalData.description;
-    if (modalData.cancelButtonText) {
+    this.justConfirmButton = modalData?.justConfirmButton;
+    if (modalData.cancelButtonText && this.justConfirmButton) {
       this.cancelButtonText = modalData.cancelButtonText;
     }
     if (modalData.confirmButtonText) {
@@ -45,5 +47,6 @@ class ModalData {
   description?: string;
   cancelButtonText?: string;
   confirmButtonText?: string;
+  justConfirmButton?: boolean;
   confirmButtonCallback: (...param: any) => any; // function
 }

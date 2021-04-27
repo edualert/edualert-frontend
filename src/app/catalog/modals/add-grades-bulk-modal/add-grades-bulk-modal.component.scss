@@ -161,6 +161,7 @@
 
   #modal-body {
     width: calc(100vw - 160px);
+    max-height: calc(var(--vh, 1vh) * 100 - #{$mobile-browser-interface-height + $mobile-modal-normal-header-and-footer-height});
     margin-right: -10px;
   }
 
@@ -173,7 +174,7 @@
 
 @media(max-width: $mobile-screen-width-intermediate) {
   #modal-body {
-    width: calc(100vw - 65px);
+    width: calc(100vw - #{$margin-default} - 10px); // 10px represents the scrollbar width
     margin-right: unset;
   }
 

@@ -73,8 +73,8 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   academicCalendar: AcademicYearCalendar;
   expandableCells: boolean[][];
   editableCells: boolean[][];
-
   currentSemester: number;
+  initialScrollWidth: number;
 
   constructor(academicCalendarService: AcademicYearCalendarService,
               private headerService: HeaderService) {
@@ -101,10 +101,11 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.scrollContainer.nativeElement.addEventListener('scroll', this.bringExpandedCellToScreen);
+    this.initialScrollWidth = this.scrollContainer.nativeElement.scrollWidth;
   }
 
   private bringExpandedCellToScreen() {
-    if (this.expandedCellElem) {
+    if (this.expandedCellElem && this.initialScrollWidth - this.expandedCellElem.nativeElement.clientWidth >= this.scrollContainer.nativeElement.scrollLeft) {
       this.expandedCellElem.nativeElement.style.left = `${this.scrollContainer.nativeElement.scrollLeft}px`;
     }
   }

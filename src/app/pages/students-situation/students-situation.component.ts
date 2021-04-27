@@ -176,11 +176,26 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
   }
 
   changeRequestedAcademicYear(value) {
-    this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0].removeEventListener('scroll', this.scrollHandle);
+    this.removeScrollListener();
     this.tableContainer.scrollTop = 0;
     this.page = 1;
     this.academicYearToRequest = value?.id;
     this.setStudyClassGradesFilter(this.academicYearToRequest);
+  }
+
+  filterGenericAcademicProfile(value) {
+    this.removeScrollListener();
+    this.changeGenericAcademicProfile(value);
+  }
+
+  filterStudyClassGrade(value) {
+    this.removeScrollListener();
+    this.changeStudyClassGrade(value);
+  }
+
+  changeSearchParams(searchString): void {
+    this.removeScrollListener();
+    this.changeSearch(searchString);
   }
 
   onLinkClick(event) {
@@ -198,8 +213,12 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
     this.deleteFilters();
   }
 
-  ngOnDestroy(): void {
+  removeScrollListener(): void {
     this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0].removeEventListener('scroll', this.scrollHandle);
+  }
+
+  ngOnDestroy(): void {
+    this.removeScrollListener();
   }
 
 }

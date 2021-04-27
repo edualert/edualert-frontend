@@ -32,7 +32,6 @@
 }
 
 .head {
-  height: fit-content;
   padding: $margin-xsmall 0 $margin-xsmall $margin-xsmall;
 
   &:last-of-type {
@@ -42,6 +41,10 @@
 
 .table {
   width: 100%;
+
+  &.extended-width {
+    width: fit-content;
+  }
 }
 
 .row {
@@ -123,14 +126,6 @@
 }
 
 @media screen and (max-width: $mobile-screen-width-small) {
-
-  .table-head {
-    width: calc(100vw - 50px);
-  }
-
-  .row {
-    width: calc(100vw - 50px);
-  }
 
   .table {
     max-height: 380px;

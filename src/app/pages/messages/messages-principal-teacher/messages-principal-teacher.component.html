@@ -6,7 +6,8 @@
     </div>
     <div id="header-filter">
       <app-filter
-      [noCount]="false">
+      [noCount]="false"
+      [isDatePickerOpen]="isDatePickerOpen">
         <ng-container
           *ngIf="!this.requestInProgress; else loadingListCountMobile"
           id="list-count-mobile"
@@ -36,6 +37,7 @@
               [dateValue]="convertStringToDate(filterParams.createdDate)"
               [maxDateValue]="today"
               (dateChanged)="changeCreatedDate($event)"
+              (onDatePickerClose)="isDatePickerOpen=$event"
             >
             </app-datepicker>
           </div>
@@ -73,7 +75,7 @@
                     <div class="cell">
                       <span class="title">Pentru:</span>
                       <span
-                        class="text-item link-content blue-text bold"
+                        class="text-item link-content blue-text bold arrow-right"
                         [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
                           ['/manage-classes', message.target_study_class.id, 'view'] :
                           ['/my-classes', message.target_study_class.id, 'class-detail']"
@@ -88,14 +90,15 @@
                     class="receiver-info-wrapper"
                   >
                     <div class="cell">
-                      <span class="title">Pentru :</span>
+                      <span class="title">Pentru:</span>
                       <span class="text-item dark-text bold">Părinți</span>
                     </div>
                     <hr class="vertical">
                     <div class="cell">
                       <span class="title">Clasă:</span>
                       <span
-                        class="text-item link-content blue-text bold"
+                        *ngIf="message.target_study_class && (message.target_study_class | json) !== '{}' else nullIndicator"
+                        class="text-item link-content blue-text bold arrow-right"
                         [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
                           ['/manage-classes', message.target_study_class.id, 'view'] :
                           ['/my-classes', message.target_study_class.id, 'class-detail']"
@@ -111,7 +114,7 @@
                   >
                     <div class="cell">
                       <span class="title">Pentru:</span>
-                      <span class="text-item link-content blue-text bold" (click)="openUserModal($event, message.target_user_through.user_profile)">
+                      <span class="text-item link-content blue-text bold arrow-right" (click)="openUserModal($event, message.target_user_through.user_profile)">
                         {{message.target_user_through.user_profile_full_name}}
                         <div class="arrow right"></div>
                       </span>
@@ -120,7 +123,8 @@
                     <div class="cell">
                       <span class="title">Clasă:</span>
                       <span
-                        class="text-item link-content blue-text bold"
+                        *ngIf="message.target_study_class && (message.target_study_class | json) !== '{}' else nullIndicator"
+                        class="text-item link-content blue-text bold arrow-right"
                         [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
                           ['/manage-classes', message.target_study_class.id, 'view'] :
                           ['/my-classes', message.target_study_class.id, 'class-detail']"
@@ -136,7 +140,7 @@
                   >
                     <div class="cell">
                       <span class="title">Pentru:</span>
-                      <span class="text-item link-content blue-text bold" (click)="openUserModal($event, message.target_user_through.user_profile)">
+                      <span class="text-item link-content blue-text bold arrow-right" (click)="openUserModal($event, message.target_user_through.user_profile)">
                         {{message.target_user_through.user_profile_full_name}}
                         <div class="arrow right"></div>
                       </span>
@@ -155,11 +159,12 @@
                         </div>
                         <div class="cells-wrapper no-border">
                           <ng-container *ngFor="let student of message.target_user_through.children">
-                            <div *ngIf="student.study_class && (student.study_class | json) !== '{}'; else blankCell" class="desktop">
+                            <div class="desktop">
                               <hr class="vertical">
                               <div class="cell">
                                 <span class="title">Clasă:</span>
                                 <span
+                                  *ngIf="student.study_class && (student.study_class | json) !== '{}' else nullIndicator"
                                   class="text-item link-content blue-text bold"
                                   [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
                                     ['/manage-classes', student.study_class.id, 'view'] :
@@ -180,23 +185,22 @@
                         <div class="cells-wrapper" *ngFor="let student of message.target_user_through.children">
                           <div class="cell">
                             <span class="title">Părinte elev:</span>
-                            <span class="text-item link-content blue-text bold" (click)="openUserModal($event, student.id)">
+                            <span class="text-item link-content blue-text bold arrow-right" (click)="openUserModal($event, student.id)">
                               {{student.full_name}}
-                              <div class="arrow right"></div>
                             </span>
                           </div>
-                          <ng-container *ngIf="student.study_class && (student.study_class | json) !== '{}'">
+                          <ng-container>
                             <hr class="vertical">
                             <div class="cell">
                               <span class="title">Clasă:</span>
                               <span
-                                class="text-item link-content blue-text bold"
+                                *ngIf="student.study_class && (student.study_class | json) !== '{}' else nullIndicator"
+                                class="text-item link-content blue-text bold arrow-right"
                                 [routerLink]="accountRole === 'SCHOOL_PRINCIPAL' ?
                                   ['/manage-classes', student.study_class.id, 'view'] :
                                   ['/my-classes', student.study_class.id, 'class-detail']"
                               >
                                 {{student.study_class.class_grade + " " + student.study_class.class_letter}}
-                                <div class="arrow right"></div>
                               </span>
                             </div>
                           </ng-container>
@@ -263,3 +267,6 @@
   </div>
 </div>
 <app-view-user-modal #appViewUserModal></app-view-user-modal>
+<ng-template #nullIndicator>
+  <span class="text-item bold">-</span>
+</ng-template>

@@ -28,6 +28,7 @@ export class ViewUserModalComponent {
     pedagogueSection?: boolean
     risk_alerts?: boolean,
   };
+  labelsString: string;
 
   private static constructAvailableFields(userRole: string): object {
     return {
@@ -77,16 +78,23 @@ export class ViewUserModalComponent {
     if (!userId) {
       return;
     }
+    if (!document.documentElement.style.getPropertyValue('--vh')) {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
 
     this.httpClient.get<UserDetails>('users/' + userId + '/?include_risk_alerts=true').subscribe(response => {
       this.user = new UserDetails(response);
       this.availableFields = ViewUserModalComponent.constructAvailableFields(this.user.user_role);
+      if (this.availableFields.labels) {
+        this.labelsString = this.getLabelsString();
+      }
     });
     this.modal.open();
     return;
   }
 
   cancel(): void {
+    document.getElementsByClassName('modal-body')[0].scrollTop = 0;
     this.modal.close();
     return;
   }

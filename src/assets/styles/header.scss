@@ -73,7 +73,7 @@ header#page-header {
     right: 385px;
     top: 50px;
     pointer-events: initial;
-    z-index: 1001;
+    z-index: 1;
   }
 
   .bottom-right-container {
@@ -139,7 +139,7 @@ header#page-header {
     position: unset;
 
     .filter {
-      z-index: 2;
+      z-index: 3;
     }
 
     hr {

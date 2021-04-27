@@ -3,7 +3,7 @@
 	<span>{{isOpen ? "Închide" : "Filtrează"}}</span>
 	<ng-content select="#list-count-mobile"></ng-content>
 </div>
-  <div class="filter-container">
+  <div class="filter-container" [class.datepicker-open]="isDatePickerOpen">
     <ng-content>
     	
     </ng-content>

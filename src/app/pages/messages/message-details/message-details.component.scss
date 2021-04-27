@@ -3,16 +3,19 @@
 .info-wrapper {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
   font-size: $font-size-normal;
   margin-top: $margin-big;
-  height: 18px;
   width: 100%;
 
   .label {
     width: $fixed-width-column;
     min-width: $fixed-width-column;
+  }
+
+  .link-content {
+    cursor: pointer;
   }
 
   .cell {
@@ -38,7 +41,7 @@
   hr.vertical {
     color: $color-separator;
     width: 1px;
-    height: 100%;
+    height: 18px;
     margin: 0 $margin-small;
   }
 
@@ -49,6 +52,14 @@
       margin-left: 0;
     }
   }
+
+  .title + .link-content {
+    padding-left: $margin-xsmall;
+  }
+}
+
+.null-indicator {
+  margin-left: $margin-xsmall;
 }
 
 .margin-list {
@@ -59,6 +70,66 @@
   word-wrap: break-word;
 }
 
+.header {
+  .value-container {
+    word-break: break-word;
+    max-width: calc(100% - #{$fixed-width-column});
+  }
+}
+
+.custom-cell {
+  min-width: 100px;
+}
+
+.unset-grow {
+  flex-grow: unset;
+}
+
+.receiver-cell {
+  min-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.students-wrapper {
+  flex-direction: column;
+  max-width: calc(100% - 225px);
+  border-left: 1px solid $color-separator;
+  padding-left: $margin-tiny;
+  margin-left: $margin-tiny;
+  flex-grow: 1;
+
+  .details-row {
+    display: flex;
+    flex-direction: row;
+    margin-top: $margin-xsmall;
+
+    &:first-of-type {
+      margin-top: unset;
+    }
+
+    .cell {
+      display: flex;
+
+      .title {
+        white-space: nowrap;
+      }
+    }
+
+    .arrow {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .link-content {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
 @media (max-width: $mobile-screen-width-normal) {
   .info-wrapper {
     display: flex;
@@ -67,8 +138,28 @@
     align-items: unset;
     justify-content: unset;
 
+    .students-wrapper {
+      border-left: unset;
+      padding-left: unset;
+      margin-left: unset;
+      max-width: unset;
+    }
+
+    .details-row {
+      margin-top: unset;
+      flex-direction: column;
+    }
+
     .cell {
       margin-top: $margin-tiny;
     }
+
+    .vertical {
+      display: none;
+    }
+  }
+
+  .header .value-container {
+    max-width: unset;
   }
 }

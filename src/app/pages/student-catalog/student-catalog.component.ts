@@ -18,7 +18,8 @@ export class StudentCatalogComponent implements OnInit, OnDestroy {
     id: string,
     full_name: string,
     labels: any[],
-    parents: any[]
+    parents: any[],
+    risk_description?: string
   };
   studyClass: {
     id: number,
@@ -66,6 +67,7 @@ export class StudentCatalogComponent implements OnInit, OnDestroy {
         full_name: response.full_name,
         id: response.id,
         labels: response.labels,
+        risk_description: response?.risk_description,
         parents: response.parents
       };
       this.studyClass = response.study_class;

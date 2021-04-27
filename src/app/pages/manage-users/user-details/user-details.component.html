@@ -18,17 +18,18 @@
     <div id="header-top-right-container">
       <div class="button-container">
         <div *ngIf="userDetails?.is_active" class="text-button red-text"
-             (click)="changeUserStateButtonClicked('deactivate')">Dezactivează
+             (click)="openDeActivateUserModal(userDetails, $event)">
+          Dezactivează
         </div>
         <div *ngIf="!userDetails?.is_active" class="text-button green-text"
-             (click)="changeUserStateButtonClicked('activate')">Activare
+             (click)="openDeActivateUserModal(userDetails, $event)">
+          Activare
         </div>
         <div class="text-button" [routerLink]="['/manage-users/' + userDetails?.id + '/edit']">Editează</div>
-        <div
-          *ngIf="isUserInactive"
-          class="text-button dark-text"
-          (click)="deleteUserButtonClicked()"
-        >Șterge
+        <div *ngIf="isUserInactive"
+             class="text-button dark-text"
+             (click)="openDeleteUserModal(userDetails, $event)">
+          Șterge
         </div>
       </div>
     </div>
@@ -146,3 +147,4 @@
 </div>
 
 <app-view-user-modal #userDetailsModal></app-view-user-modal>
+<app-confirmation-modal #appConfirmationModal></app-confirmation-modal>

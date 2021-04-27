@@ -17,7 +17,10 @@
       </div>
       <div class="label">Dată</div>
       <div class="date-container">
-        <input class="date" (click)="openDatepicker()" [value]="displayDate(selectedDate)">
+        <input class="date"
+               type="button"
+               (click)="openDatepicker()"
+               [value]="displayDate(selectedDate)">
         <div class="datepicker-container">
           <app-datepicker #datepicker
                           [dateValue]="selectedDate"
