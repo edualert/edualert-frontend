@@ -9,6 +9,7 @@ import { formatPhoneNumber } from '../../../shared/utils';
 import { userRoles } from '../../../models/user-roles';
 import { ViewUserModalComponent } from '../view-user-modal/view-user-modal.component';
 import { ManageUsersComponent } from '../manage-users.component';
+import { ConfirmationModalComponent } from '../../../shared/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-user-details',
@@ -17,6 +18,7 @@ import { ManageUsersComponent } from '../manage-users.component';
 })
 export class UserDetailsComponent implements OnInit {
   @ViewChild('userDetailsModal', {static: false}) userDetailsModal: ViewUserModalComponent;
+  @ViewChild('appConfirmationModal', {static: false}) appConfirmationModal: ConfirmationModalComponent;
 
   readonly userRoles = userRoles;
   userId: string;
@@ -87,69 +89,75 @@ export class UserDetailsComponent implements OnInit {
     return result.substring(0, result.length - 2);
   }
 
-  deleteUserButtonClicked() {
-    if (confirm(`Doriți să ștergeți contul utilizatorului ${this.userDetails.full_name}?`)) {
-      this.httpClient.delete(`users/${this.userDetails.id}/`).subscribe((response) => {
-        if (response === null) {
-          this.router.navigate(['manage-users']);
-        }
-      }, (error) => {
-        if (error.status === 400) {
-          this.displayErrorToast = true;
-          switch (this.userDetails.user_role) {
-            case 'SCHOOL_PRINCIPAL':
-              this.toastErrorMessage = ManageUsersComponent.principalChangeErrorMsg;
-              break;
-            case 'TEACHER':
-              this.toastErrorMessage = ManageUsersComponent.teacherChangeErrorMsg;
-              break;
-            case 'STUDENT':
-              this.toastErrorMessage = ManageUsersComponent.studentChangeErrorMsg;
-              break;
-            default:
-              this.toastErrorMessage = ManageUsersComponent.defaultChangeErrorMsg;
-          }
-        }
-      });
-      return true;
-    }
-    return false;
-  }
-
-  changeUserStateButtonClicked(state: string) {
-    if (state === 'deactivate') {
-      if (confirm(`Doriți să dezactivați contul utilizatorului ${this.userDetails.full_name}? Acest utilizator nu se va mai putea autentifica în contul EduAlert.`)) {
-        this.httpClient.post('users/' + this.userDetails.id + '/deactivate/', {}).subscribe((response => {
-          this.userDetails = new UserDetails(response);
-          this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
-        }), (error) => {
-          if (error.error.new_school_principal) {
-            this.displayErrorToast = true;
-            this.toastErrorMessage = ManageUsersComponent.principalChangeErrorMsg;
-          } else if (error.error.new_teachers) {
-            this.displayErrorToast = true;
-            this.toastErrorMessage = ManageUsersComponent.teacherChangeErrorMsg;
-          }
-        });
-        return true;
-      }
-      return false;
-    }
-    if (state === 'activate') {
-      if (confirm(`Doriți să reactivați contul utilizatorului ${this.userDetails.full_name}? Acest utilizator se va putea autentifica din nou în contul EduAlert.`)) {
-        this.httpClient.post('users/' + this.userDetails.id + '/activate/', {}).subscribe((response => {
-            this.userDetails = new UserDetails(response);
-            this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
-          })
-        );
-        return true;
-      }
-      return false;
-    }
-  }
-
   hideErrorToast() {
     this.toastErrorMessage = '';
     this.displayErrorToast = false;
+  }
+
+  openDeActivateUserModal(user: UserDetails, event?: any) {
+    event.stopPropagation();
+    const modalData = {
+      title: `Doriți să ${user.is_active ? 'dezactivați' : 'activați'} contul utilizatorului ${user.full_name}?`,
+      description: `Acest utilizator ${user.is_active ? 'nu' : ''} se va ${user.is_active ? 'mai' : ''} putea autentifica ${user.is_active ? '' : 'din nou'} în contul EduAlert.`,
+      cancelButtonText: 'NU',
+      confirmButtonText: 'DA',
+      confirmButtonCallback: () => {
+        if (user.is_active) {
+          this.httpClient.post('users/' + this.userDetails.id + '/deactivate/', {}).subscribe((response => {
+            this.userDetails = new UserDetails(response);
+            this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
+          }), (error) => {
+            if (error.error.new_school_principal) {
+              this.displayErrorToast = true;
+              this.toastErrorMessage = ManageUsersComponent.principalChangeErrorMsg;
+            } else if (error.error.new_teachers) {
+              this.displayErrorToast = true;
+              this.toastErrorMessage = ManageUsersComponent.teacherChangeErrorMsg;
+            }
+          });
+        } else {
+          this.httpClient.post('users/' + this.userDetails.id + '/activate/', {}).subscribe((response => {
+              this.userDetails = new UserDetails(response);
+              this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
+            })
+          );
+        }
+      }
+    };
+    this.appConfirmationModal.open(modalData);
+  }
+
+  openDeleteUserModal(user: UserDetails, event?: any) {
+    event.stopPropagation();
+    const modalData = {
+      title: `Doriți să ștergeți contul utilizatorului ${user.full_name}?`,
+      cancelButtonText: 'NU',
+      confirmButtonText: 'DA',
+      confirmButtonCallback: () => {
+        this.httpClient.delete(`users/${this.userDetails.id}/`).subscribe((response) => {
+          if (response === null) {
+            this.router.navigate(['manage-users']);
+          }
+        }, (error) => {
+          if (error.status === 400) {
+            this.displayErrorToast = true;
+            switch (this.userDetails.user_role) {
+              case 'SCHOOL_PRINCIPAL':
+                this.toastErrorMessage = ManageUsersComponent.principalChangeErrorMsg;
+                break;
+              case 'TEACHER':
+                this.toastErrorMessage = ManageUsersComponent.teacherChangeErrorMsg;
+                break;
+              case 'STUDENT':
+                this.toastErrorMessage = ManageUsersComponent.studentChangeErrorMsg;
+                break;
+              default:
+                this.toastErrorMessage = ManageUsersComponent.defaultChangeErrorMsg;
+            }
+          }
+        });
+      }
+    };
+    this.appConfirmationModal.open(modalData);
   }
 }

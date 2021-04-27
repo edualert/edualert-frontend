@@ -120,10 +120,32 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     setTimeout(() => {
       const scrollableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
       const toolbar = this.elementRef.nativeElement.getElementsByClassName('toolbar')[0];
-      const pageHeaderHeight = document.getElementById('page-header').clientHeight;
+      const pageHeader = document.getElementById('page-header');
 
-      if (scrollableContainer.clientHeight > (document.body.clientHeight - pageHeaderHeight - toolbar.clientHeight)) {
-        const scrollableContainerComputedHeight = scrollableContainer.clientHeight - toolbar.clientHeight;
+      let navBar;
+      let pageHeaderMarginTop;
+      let navBarHeight;
+
+      if (pageHeader.clientWidth < 1024) {
+        navBar = document.getElementById('nav-bar');
+        pageHeaderMarginTop = parseInt(window.getComputedStyle(pageHeader).marginTop, 10);
+        navBarHeight = navBar.clientHeight;
+      }
+
+      const diff = window.outerHeight - window.innerHeight;
+      let browserInterfaceHeight;
+
+      if (diff) {
+        browserInterfaceHeight = diff - 70; // iOS browser interface height
+      } else {
+        browserInterfaceHeight = 50; // android browser interface height
+      }
+
+      if (scrollableContainer.clientHeight > (document.body.clientHeight - pageHeader.clientHeight - toolbar.clientHeight)) {
+        let scrollableContainerComputedHeight = scrollableContainer.clientHeight - toolbar.clientHeight;
+        if (pageHeader.clientWidth < 1024) {
+          scrollableContainerComputedHeight = scrollableContainerComputedHeight - pageHeaderMarginTop - navBarHeight - browserInterfaceHeight;
+        }
         scrollableContainer.style.height = scrollableContainerComputedHeight + 'px';
         document.body.style.overflow = 'unset';
       }
@@ -194,6 +216,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
       this.tableData = response;
       this.pupilCount = response.length;
       this.subjectsDataList[0] = {studentListData: response, subjectId: 0, sortedBy: this.activeUrlParams.ordering};
+      this.setScrollableContainerHeight();
     });
   }
 
@@ -365,7 +388,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
       }
 
       // Do not update TableData if tab has been changed while the request was being made.
-      if (this.activeTab.id === tabBeforeRequest) {
+      if (this.activeTab.id === tabBeforeRequest && !changesCatalogContent) {
         this.tableData = cloneDeep(this.subjectsDataList[tabBeforeRequest].studentListData);
       }
 

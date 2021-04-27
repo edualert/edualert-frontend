@@ -26,6 +26,8 @@
 
 .modal {
   min-height: 100px;
+  max-height: 100vh;
+  max-width: calc(100% - #{2 * $margin-xbig});
   min-width: 200px;
   height: auto;
   box-shadow: 0 5px 30px 0 rgba(#0a0a10, 0.05);
@@ -128,9 +130,19 @@
 
 @media (max-width: $mobile-screen-width-intermediate) {
   .modal {
+    max-width: initial;
     min-height: 100px;
     min-width: 200px;
-    width: calc(100% - 40px);
+    width: calc(100% - 10px);
     margin-bottom: 65px;
+  }
+
+  .body {
+    max-height: calc(var(--vh, 1vh) * 100 - #{$mobile-browser-interface-height + $mobile-modal-normal-header-and-footer-height});
+    overflow: auto;
+  }
+
+  .modal {
+    max-height: calc(var(--vh, 1vh) * 100);
   }
 }

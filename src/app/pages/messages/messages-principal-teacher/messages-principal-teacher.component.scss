@@ -36,6 +36,10 @@
           display: block;
           margin-top: unset;
         }
+
+        .receiver-info-wrapper .cell .text-item .arrow.right {
+          display: none;
+        }
       }
 
       .card-title {
@@ -43,7 +47,17 @@
       }
     }
   }
+
   .list-count-mobile {
     margin-left: $margin-xsmall;
+  }
+
+  .link-content {
+    &.arrow-right::before {
+      content: url("../../../../assets/img/long-arrow.svg");
+      padding-left: $margin-xsmall;
+      margin-top: -2px;
+      float: right;
+    }
   }
 }

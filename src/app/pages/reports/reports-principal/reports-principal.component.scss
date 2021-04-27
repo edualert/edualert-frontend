@@ -14,3 +14,11 @@
   opacity: 0.5;
 }
 
+.page-content {
+  max-height: calc(100vh - #{$reports-header-two-lines-tabs});
+
+  @media (max-width: $mobile-screen-width-normal) {
+    max-height: calc(100vh - #{$mobile-reports-header-two-lines-tabs} - #{$mobile-nav-bar-height});
+  }
+}
+

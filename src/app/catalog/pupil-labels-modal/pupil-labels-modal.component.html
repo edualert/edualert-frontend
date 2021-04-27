@@ -9,9 +9,16 @@
     <div class="body">
       <div class="labels-container">
         <div *ngFor="let label of labels" class="action-button">
-          <span class="text-content">
+          <span class="text-content"
+                [class.yellow-text]="label.text==='Risc Abandon 1'"
+                [class.red-text]="label.text==='Risc Abandon 2'">
             {{label.text}}
           </span>
+          <ng-container *ngIf="['Risc Abandon 1', 'Risc Abandon 2'].includes(label.text)">
+            <div class="tag-tooltip">
+              {{riskDescription}}
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>

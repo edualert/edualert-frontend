@@ -28,7 +28,7 @@
                (click)="openUserModal($event, studyClass?.class_master.id)">
             {{studyClass?.class_master.full_name ? studyClass?.class_master.full_name : '-'}}
           </div>
-          <div class="value bold blue-text link-content" *ngIf="rip">...</div>
+          <div class="value bold" *ngIf="rip">...</div>
         </div>
       </div>
       <div class="details-container-mobile" *ngIf="isDetailsSectionOpen">
@@ -50,19 +50,11 @@
           <div class="value bold blue-text link-content" *ngIf="rip">...</div>
         </div>
         <hr class="mobile-horizontal">
-        <div class="tags">
-          <div class="label">Etichete</div>
-          <div class="tag" *ngFor="let tag of student?.labels">{{tag.text}}</div>
-          <span class="no-tags" *ngIf="!student?.labels || !student?.labels.length">-</span>
-        </div>
+        <ng-template [ngTemplateOutlet]="tags"></ng-template>
       </div>
     </div>
     <div id="labels-container">
-      <div class="tags">
-        <div class="label">Etichete</div>
-        <div class="tag" *ngFor="let tag of student?.labels">{{tag.text}}</div>
-        <span class="no-tags" *ngIf="!student?.labels || !student?.labels.length">-</span>
-      </div>
+      <ng-template [ngTemplateOutlet]="tags"></ng-template>
     </div>
     <div id="header-filter">
       <app-filter>
@@ -84,5 +76,25 @@
   </div>
 </div>
 
-<ng-template #noValue>-</ng-template>
+<ng-template #tags>
+  <div class="tags">
+    <div class="label">Etichete</div>
+    <div class="tag" *ngFor="let tag of student?.labels"
+         [class.yellow-text]="tag.text==='Risc Abandon 1'"
+         [class.red-text]="tag.text==='Risc Abandon 2'">
+      {{tag.text}}
+      <ng-container *ngIf="['Risc Abandon 1', 'Risc Abandon 2'].includes(tag.text)">
+        <div class="tag-tooltip">
+          {{student.risk_description}}
+        </div>
+      </ng-container>
+    </div>
+    <span class="no-tags" *ngIf="!student?.labels || !student?.labels.length">-</span>
+  </div>
+</ng-template>
+<ng-template #noValue>
+  <span class="value bold">
+    -
+  </span>
+</ng-template>
 <app-view-user-modal #appViewUserModal></app-view-user-modal>

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { cloneDeep } from 'lodash';
 import { HttpClient } from '@angular/common/http';
@@ -14,6 +14,7 @@ import { findIndex } from 'lodash';
 import { AcademicYearCalendarService } from '../../../services/academic-year-calendar.service';
 import { CanComponentDeactivate } from '../../../services/can-leave-guard.service';
 import { Subscription } from 'rxjs';
+import { ConfirmationModalComponent } from '../../../shared/confirmation-modal/confirmation-modal.component';
 
 class SubjectError {
   subject_name?: string;
@@ -86,6 +87,8 @@ class CreatableProgram {
   styleUrls: ['./class-profile-add-edit.component.scss', '../../../shared/label-styles.scss']
 })
 export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnDestroy {
+  @ViewChild('appConfirmationModal', {static: false}) appConfirmationModal: ConfirmationModalComponent;
+
   page: 'add' | 'edit';
   academicProgram: AcademicProgramDetails = new AcademicProgramDetails();
   yearGradesTabList: IdName[] = [];
@@ -320,8 +323,12 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
   submit(): void {
     this.hasUnsavedData = false;
     this.hasModifiedData = false;
+    if (this.checkErrors()) {
+      this.isErrorOnOtherTab();
+      return;
+    }
     if (this.page === 'add') {
-      this.create();
+      this.openInfoModal();
     } else {
       this.update();
     }
@@ -404,11 +411,6 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
   }
 
   private create(): void {
-    if (this.checkErrors()) {
-      this.isErrorOnOtherTab();
-      return;
-    }
-
     const creatableObject = new CreatableProgram(this.academicProgram);
     this.httpClient.post(`years/${this.defaultAcademicYear.id}/academic-programs/`, creatableObject).subscribe((resp: AcademicProgramDetails) => {
       this.router.navigate([`manage-class-profiles`]);
@@ -418,11 +420,6 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
   }
 
   private update(): void {
-    if (this.checkErrors()) {
-      this.isErrorOnOtherTab();
-      return;
-    }
-
     const updatableObject = new UpdatableProgram(this.academicProgram);
     this.httpClient.patch(`academic-programs/${this.academicProgram.id}/`, updatableObject).subscribe((resp) => {
       this.router.navigateByUrl(`manage-class-profiles`);
@@ -454,6 +451,17 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
   inputChanged(): void {
     this.hasUnsavedData = true;
     this.hasModifiedData = true;
+  }
+
+  openInfoModal(): void {
+    const modalData = {
+      title: `ATENȚIE!`,
+      description: 'Acest profil va putea fi editat doar înainte de a i se adăuga clase.',
+      confirmButtonText: 'Confirmă',
+      justConfirmButton: true,
+      confirmButtonCallback: () => { this.create(); }
+    };
+    this.appConfirmationModal.open(modalData);
   }
 
   ngOnDestroy() {

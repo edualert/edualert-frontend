@@ -209,11 +209,15 @@ export class LoginComponent implements OnInit {
   }
 
   switchToLogin(event): void {
-    this.username = '';
-    this.password = '';
-    this.clearErrors();
-    event.preventDefault();
-    this.router.navigateByUrl(getLoginPageRoute());
+    if (LocalStorageService.getAccessToken()) {
+      this.router.navigateByUrl('').then(() => window.location.reload());
+    } else {
+      this.username = '';
+      this.password = '';
+      this.clearErrors();
+      event.preventDefault();
+      this.router.navigateByUrl(getLoginPageRoute());
+    }
   }
 
   handleSchoolChange(entry: { element, index }): void {

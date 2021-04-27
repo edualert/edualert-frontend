@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {ModalComponent} from '../../shared/modal/modal.component';
 import {IdText} from '../../models/id-text';
 
@@ -12,6 +12,7 @@ export class PupilLabelsModalComponent {
 
   labels: IdText[];
   studentName: string;
+  riskDescription: string;
 
   close() {
     this.modal.close();
@@ -20,7 +21,7 @@ export class PupilLabelsModalComponent {
   open(studentData) {
     this.labels = studentData.labels;
     this.studentName = studentData.full_name;
+    this.riskDescription = studentData?.risk_description;
     this.modal.open();
   }
-
 }

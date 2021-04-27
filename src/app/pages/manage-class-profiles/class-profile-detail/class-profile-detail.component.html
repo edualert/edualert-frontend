@@ -14,7 +14,7 @@
       <ng-template #loading>Se încarcă datele...</ng-template>
     </h2>
     <div id="header-top-right-container"
-         *ngIf="!(academicProgramDetails?.academic_year < currentAcademicYear)">
+         *ngIf="!(academicProgramDetails?.academic_year < currentAcademicYear) && !academicProgramDetails.classes_count">
       <div *ngIf="!requestInProgress"
            class="button-container">
         <a [routerLink]="'/manage-class-profiles/' + academicProgramDetails?.id + '/edit'"
@@ -22,8 +22,8 @@
           Editează
         </a>
         <div class="text-button dark-text"
-             *ngIf="academicProgramDetails?.classes_count === 0"
-             (click)="openDeleteAcademicProgramModal(academicProgramDetails)">Șterge
+             (click)="openDeleteAcademicProgramModal(academicProgramDetails)">
+          Șterge
         </div>
       </div>
     </div>

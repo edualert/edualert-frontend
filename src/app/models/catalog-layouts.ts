@@ -479,11 +479,11 @@ export const studentCatalogFirstSemester = new CatalogLayout({ // Toate materiil
     {type: 'subject-name-cell', identifier: 'name', dataKey: 'subject'},
     {
       type: 'grades-list', identifier: 'grades_sem_1', dataKey: 'grades_sem1', pivotPoint: 'avg_limit',
-      expandableDecider: () => true
+      expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.grades_sem1?.grades?.length
     },
     {
       type: 'absences-list', identifier: 'abs_sem_1', dataKey: 'abs_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',
-      expandableDecider: () => true,
+      expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.abs_sem1?.length,
       editableDecider: () => true
     }
   ]
@@ -519,7 +519,7 @@ export const studentCatalogSecondSemester = new CatalogLayout({ // Toate materii
     },
     {
       type: 'grades-list', identifier: 'grades_sem_2', dataKey: 'grades_sem2', pivotPoint: 'avg_limit',
-      expandableDecider: () => true
+      expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.grades_sem2?.grades?.length
     },
     {
       type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'abs_count_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',

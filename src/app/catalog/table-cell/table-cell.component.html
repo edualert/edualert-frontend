@@ -155,14 +155,32 @@
     <!-- LABELS ----------------------------------  -->
     <div *ngSwitchCase="'labels'" class="labels-observations">
       <div class="tags" *ngIf="isStudentsSituation">
-        <div class="tag" *ngIf="data && data[0]">
+        <div class="tag"
+             *ngIf="data && data[0]"
+             [class.yellow-text]="data[0].text==='Risc Abandon 1'"
+             [class.red-text]="data[0].text==='Risc Abandon 2'">
           {{data[0].text.length > 15 ? data[0].text.slice(0, 15) + '...' : data[0].text}}
+          <ng-container *ngIf="data?.length < 2">
+            <div class="tag-tooltip">
+              {{dataRow.risk_description}}
+            </div>
+          </ng-container>
         </div>
         <div *ngIf="!data || !data[0]">-</div>
         <ng-container *ngIf="data && data?.length > 1">
           <div class="bold plus-tags">+{{data?.length - 1}}</div>
           <div class="tags-overlay" *ngIf="data?.length">
-            <div class="tag" *ngFor="let tag of data">{{tag.text}}</div>
+            <div class="tag"
+                 *ngFor="let tag of data"
+                 [class.yellow-text]="tag.text==='Risc Abandon 1'"
+                 [class.red-text]="tag.text==='Risc Abandon 2'">
+              {{tag.text}}
+              <ng-container *ngIf="(tag.text).includes('Risc')">
+                <div class="tag-tooltip">
+                  {{dataRow.risk_description}}
+                </div>
+              </ng-container>
+            </div>
           </div>
         </ng-container>
       </div>

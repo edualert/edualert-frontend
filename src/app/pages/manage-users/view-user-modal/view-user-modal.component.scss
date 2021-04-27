@@ -25,6 +25,8 @@
 .modal-container {
   padding-top: $margin-default;
   min-width: 600px;
+  height: 100%;
+
   @media (max-width: $mobile-screen-width-normal) {
     min-width: unset;
     padding-top: unset;
@@ -44,22 +46,16 @@
 
 .modal-body {
   padding-bottom: $margin-big;
-  height: $scrollable-modal-height;
-
-  @media screen and (max-height: 750px) { // Specific size given to handle all Galaxy devices
-    height: $scrollable-modal-height - 50px;
-  }
-
-  @media screen and (max-height: 670px) {
-    height: $scrollable-modal-height-small;
-  }
-
+  height: 100%;
+  max-height: calc(var(--vh, 1vh) * 100 - #{$user-details-modal-default-header-height
+    + $user-details-modal-default-bottom-height + $margin-default + $margin-big});
   overflow-y: scroll;
 }
 
 .subheader_bold {
   font-size: $font-size-big;
 }
+
 .risk-alert-container {
   width: calc(100% - #{$fixed-width-column});
   padding-right: $margin-default;
@@ -70,6 +66,7 @@
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
+
   .risk-alert-container-header {
     padding-left: $margin-default;
     padding-top: $margin-tiny;
@@ -83,10 +80,22 @@
       font-size: $font-size-small;
     }
   }
+
   .risk-alert-container-content {
     background-color: $color-separator;
     padding: $margin-tiny $margin-default;
     border-radius: 0 0 $border-radius-normal $border-radius-normal;
+
+    .label-container {
+      width: fit-content;
+      margin-right: $margin-tiny;
+      align-self: baseline;
+    }
+
+    .value-container {
+      max-width: fit-content;
+    }
+
     @media (max-width: $mobile-screen-width-normal) {
       padding-top: $margin-xsmall;
       .margin-top-small {
@@ -94,21 +103,24 @@
       }
     }
   }
+
   .value-container {
     max-width: calc(100% - #{$fixed-width-column-small});
   }
 }
+
 .margin-bottom-default {
   padding-bottom: $margin-default;
 }
+
 .value-container {
   &.full-width-with-risk-alert {
-    width: calc(100% - 240px);
+    width: calc(100% - #{$fixed-width-column + $margin-default});
   }
 }
 
 .labels-string {
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
 @media (max-width: $mobile-screen-width-normal) {
@@ -127,5 +139,10 @@
         margin-top: unset;
       }
     }
+  }
+
+  .modal-body {
+    max-height: calc(var(--vh, 1vh) * 100 - #{$mobile-browser-interface-height + $mobile-modal-normal-header-and-footer-height});
+
   }
 }

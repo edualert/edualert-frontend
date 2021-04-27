@@ -5,6 +5,9 @@
   <app-home-parent *ngSwitchCase="'PARENT'" [userDetails]="userDetails"></app-home-parent>
   <app-home-student *ngSwitchCase="'STUDENT'" [userDetails]="userDetails"></app-home-student>
   <div *ngSwitchDefault>
-    [Some kind of error message for unknown user role]
+    <ng-container *ngIf="requestInProgress"></ng-container>
+    <ng-container *ngIf="!requestInProgress">
+      [Some kind of error message for unknown user role]
+    </ng-container>
   </div>
 </ng-container>

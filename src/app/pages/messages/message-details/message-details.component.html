@@ -37,7 +37,8 @@
               <hr class="vertical">
               <div class="cell">
                 <span class="title">Clasă:</span>
-                <a class="text-item link-content blue-text bold arrow right"
+                <a *ngIf="message.target_study_class && (message.target_study_class | json) !== '{}' else nullIndicator"
+                   class="text-item link-content blue-text bold arrow right"
                    [routerLink]="account.user_role === 'SCHOOL_PRINCIPAL' ?
                           ['/manage-classes', message.target_study_class.id, 'view'] :
                           ['/my-classes', message.target_study_class.id, 'class-detail']">
@@ -54,7 +55,9 @@
               <hr class="vertical">
               <div class="cell">
                 <span class="title">Clasă:</span>
-                <a class="text-item link-content blue-text bold arrow right"
+                <a
+                  *ngIf="message.target_study_class && (message.target_study_class | json) !== '{}' else nullIndicator"
+                  class="text-item link-content blue-text bold arrow right"
                    [routerLink]="account.user_role === 'SCHOOL_PRINCIPAL' ?
                           ['/manage-classes', message.target_study_class.id, 'view'] :
                           ['/my-classes', message.target_study_class.id, 'class-detail']">
@@ -63,28 +66,35 @@
               </div>
             </ng-container>
             <ng-container *ngSwitchCase="'ONE_PARENT'" class="receiver-info-wrapper">
-              <div class="cell">
+              <div class="cell receiver-cell">
                 <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.target_user_through.user_profile)">
 									{{message.target_user_through?.user_profile_full_name}}
 								</span>
               </div>
-              <hr class="vertical" *ngIf="message.target_user_through.children.length">
-              <div class="cell" *ngIf="message.target_user_through.children.length">
-                <span class="title">Părinte elev:</span>
-                <span class="text-item link-content blue-text bold arrow right" (click)="openViewUserModal(message.target_user_through.children[0].id)">
-									{{message.target_user_through.children[0]?.full_name}}
-								</span>
-              </div>
-              <hr class="vertical" *ngIf="message.target_user_through.children.length">
-              <div class="cell" *ngIf="message.target_user_through.children.length">
-                <span class="title">Clasă:</span>
-                <span *ngIf="!message.target_user_through.children[0]?.study_class"> - </span>
-                <a class="text-item link-content blue-text bold arrow right" *ngIf="message.target_user_through.children[0]?.study_class"
-                   [routerLink]="account.user_role === 'SCHOOL_PRINCIPAL' ?
-                          ['/manage-classes', message.target_user_through.children[0]?.study_class.id, 'view'] :
-                          ['/my-classes', message.target_user_through.children[0]?.study_class.id, 'class-detail']">
-									{{message.target_user_through.children[0]?.study_class.class_grade + " " + message.target_user_through.children[0]?.study_class.class_letter}}
-								</a>
+              <div class="students-wrapper">
+                <div class="details-row" *ngFor="let student of message.target_user_through.children; let i = index;">
+                  <div class="cell custom-cell" [class.unset-grow]="message.target_user_through.children.length < 2"
+                       *ngIf="message.target_user_through.children.length">
+                    <div class="title">Părinte elev:</div>
+                    <div class="text-item link-content blue-text bold" (click)="openViewUserModal(message.target_user_through.children[i].id)">
+									    {{student.full_name}}
+                      <div class="arrow right"></div>
+								</div>
+                  </div>
+                  <hr class="vertical" *ngIf="message.target_user_through.children.length">
+                  <div class="cell" *ngIf="message.target_user_through.children.length">
+                    <span class="title">Clasă:</span>
+                    <span *ngIf="!student?.study_class"> - </span>
+                    <a *ngIf="student?.study_class && (student?.study_class | json) !== '{}' else nullIndicator"
+                       class="text-item link-content blue-text bold"
+                       [routerLink]="account.user_role === 'SCHOOL_PRINCIPAL' ?
+                          ['/manage-classes', student.study_class.id, 'view'] :
+                          ['/my-classes', student.study_class.id, 'class-detail']">
+                      {{student.study_class.class_grade + " " + student.study_class.class_letter}}
+                      <div class="arrow right"></div>
+                    </a>
+                  </div>
+                </div>
               </div>
             </ng-container>
           </ng-container>
@@ -162,5 +172,9 @@
     </ng-container>
   </div>
 </div>
+
+<ng-template #nullIndicator>
+  <span class="text-item bold null-indicator">-</span>
+</ng-template>
 
 <app-view-user-modal #userDetailsModal></app-view-user-modal>

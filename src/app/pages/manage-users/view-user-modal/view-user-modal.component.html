@@ -15,7 +15,10 @@
       <div *ngIf="this.availableFields?.studyClass" class="detail-element-container margin-top-small">
         <div class="label-container fixed-width">Clasă</div>
         <div class="value-container bold blue-text arrow-right"
-             (click)="onClassNameClick()">{{user?.class_grade + ' ' + user?.class_letter}}</div>
+             *ngIf="user?.class_grade else nullIndicator"
+             (click)="onClassNameClick()">
+          {{user?.class_grade + ' ' + user?.class_letter}}
+        </div>
       </div>
       <div class="detail-element-container margin-top-small">
         <div class="label-container fixed-width">Stare</div>
@@ -23,7 +26,7 @@
       </div>
       <div *ngIf="availableFields?.labels" class="detail-element-container margin-top-small">
         <div class="label-container fixed-width">Etichete</div>
-        <div class="value-container bold labels-string" [class.full-width-with-risk-alert]="availableFields?.risk_alerts">{{ getLabelsString() }}</div>
+        <div class="value-container bold labels-string" [class.full-width-with-risk-alert]="availableFields?.risk_alerts">{{ labelsString ? labelsString : '-' }}</div>
       </div>
       <div *ngIf="user?.risk_alerts.dates?.length > 0 && availableFields?.risk_alerts" class="detail-element-container margin-top-small">
         <div class="label-container fixed-width"></div>
@@ -38,7 +41,7 @@
                   <b>{{user?.full_name}}</b>
                   <b class="gray-text regular">&ensp;la&ensp;</b>
                   <b>{{user?.email}}</b>
-                  <b>, {{user?.phone_number}}</b>
+                  <b *ngIf="user?.phone_number">, {{user?.phone_number}}</b>
                 </div>
               </div>
             </div>
@@ -123,3 +126,7 @@
     <span class="text-button dark-text" (click)="cancel()">Închide</span>
   </div>
 </app-modal>
+
+<ng-template #nullIndicator>
+  <span class="text-item bold">-</span>
+</ng-template>

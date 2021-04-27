@@ -1,4 +1,4 @@
-import {Component, Injector, ViewChild} from '@angular/core';
+import { Component, EventEmitter, Injector, Output, ViewChild } from '@angular/core';
 import {ListPage} from '../list-page/list-page';
 import {AccountService} from '../../services/account.service';
 import {UserDetails} from '../../models/user-details';
@@ -37,6 +37,7 @@ export class MessagesComponent extends ListPage {
   accountRole: string;
   accountService: AccountService;
   today: Date;
+  isDatePickerOpen: boolean = false;
 
   convertStringToDate = convertStringToDate;
 
@@ -55,6 +56,7 @@ export class MessagesComponent extends ListPage {
 
   openPicker() {
     this.datepicker.open();
+    this.isDatePickerOpen = true;
   }
 
   openUserModal(event, id) {

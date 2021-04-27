@@ -84,6 +84,10 @@
 
       .checkbox-container {
         margin-right: $margin-small;
+
+        .checkbox-button {
+          vertical-align: bottom;
+        }
       }
 
       .absence-wrapper {
@@ -122,6 +126,10 @@
 
               .checkbox-container {
                 margin-right: unset;
+              }
+
+              .mobile-only {
+                display: none;
               }
             }
           }
@@ -185,6 +193,7 @@
 
   #modal-body {
     width: calc(100vw - 160px);
+    max-height: calc(var(--vh, 1vh) * 100 - #{$mobile-browser-interface-height + $mobile-modal-normal-header-and-footer-height});
     margin-right: -10px;
   }
 
@@ -197,7 +206,7 @@
 
 @media(max-width: $mobile-screen-width-intermediate) {
   #modal-body {
-    width: calc(100vw - 65px);
+    width: calc(100vw - #{$margin-default} - 10px); // 10px represents the scrollbar width
     margin-right: unset;
   }
 
@@ -218,6 +227,12 @@
       .column {
         display: block;
         width: 58%;
+
+        @media (max-width: $mobile-screen-width-tiny) {
+          display: flex;
+          flex-direction: column;
+          align-items: baseline;
+        }
 
         &:first-of-type {
           padding: unset;
@@ -250,22 +265,59 @@
 
             &:first-of-type{
               margin-top: unset;
+              @media (max-width: $mobile-screen-width-tiny) {
+                margin-top: $margin-tiny;
+              }
             }
 
             div.checkbox-fancy-label {
-              margin-left: unset; 
+              margin-left: unset;
+
+              .desktop-only {
+                display: none;
+              }
+
+              .mobile-only {
+                display: unset;
+
+                &.label {
+                  margin-right: 3px;
+                }
+              }
+
+              border-radius: $border-radius-tiny;
+              padding: $margin-xsmall $margin-xsmall;
             }
 
-            .text-button.dark-text {
-              margin-right: unset; 
+            .text-button {
+              &.dark-text {
+                margin-right: unset;
+
+                &.bold {
+                  margin-left: $margin-tiny;
+                  margin-right: $margin-xsmall;
+                  @media (max-width: $mobile-screen-width-tiny) {
+                    margin-left: $margin-tiny;
+                    margin-right: 0;
+                  }
+                }
+              }
+
+              &.add-absence {
+                margin-left: $margin-xsmall;
+              }
             }
           }
         }
 
         .add-absence {
           width: fit-content;
-          margin-top: 15px;
+          margin-top: $margin-small;
           margin-left: 26px;
+
+          @media (max-width: $mobile-screen-width-tiny) {
+            margin-left: $margin-tiny;
+          }
         }
       }
     }

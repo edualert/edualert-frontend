@@ -3,7 +3,8 @@
     <h1 id="header-title">Mesaje primite</h1>
     <div id="header-filter">
       <app-filter
-      [noCount]="false">
+      [noCount]="false"
+      [isDatePickerOpen]="isDatePickerOpen">
         <ng-container
           *ngIf="!this.requestInProgress; else loadingListCountMobile"
           id="list-count-mobile"
@@ -33,6 +34,7 @@
               [dateValue]="convertStringToDate(filterParams.createdDate)"
               [maxDateValue]="today"
               (dateChanged)="changeCreatedDate($event)"
+              (onDatePickerClose)="isDatePickerOpen=$event"
             >
             </app-datepicker>
           </div>
@@ -69,7 +71,7 @@
                   >
                     <div class="cell">
                       <span class="title">De la:</span>
-                      <span class="text-item link-content blue-text bold" (click)="openUserModal($event, message.from_user)">
+                      <span class="text-item link-content blue-text bold arrow-right" (click)="openUserModal($event, message.from_user)">
                         {{message.from_user_full_name}}
                         <div class="arrow right"></div>
                       </span>
@@ -85,7 +87,7 @@
                   >
                     <div class="cell">
                       <span class="title">De la:</span>
-                      <span class="text-item link-content blue-text bold" (click)="openUserModal($event, message.from_user)">
+                      <span class="text-item link-content blue-text bold arrow-right" (click)="openUserModal($event, message.from_user)">
                         {{message.from_user_full_name}}
                         <div class="arrow right"></div>
                       </span>

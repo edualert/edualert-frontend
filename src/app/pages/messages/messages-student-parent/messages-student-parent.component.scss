@@ -9,11 +9,19 @@
       white-space: nowrap;
       width: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
+
+      .cell:nth-of-type(1) {
+        min-width: 200px;
+        max-width: 50%;
+      }
 
       .cell:nth-of-type(2) {
-        flex-grow: 2;
-        flex-basis: 350px;
+        max-width: calc(50% - #{$msg-for-label-width});
+
+        .text-item {
+          max-width: calc(100% - #{$msg-teacher-label-width + $margin-tiny});
+        }
       }
     }
   }
@@ -46,16 +54,11 @@
 }
 
 @media (max-width: $mobile-screen-width-intermediate) {
-  .card {
-    .card-title {
-      max-width: 100%;
-    }
-  }
-}
-
-@media (max-width: $mobile-screen-width-intermediate) {
   .page-content {
     .card {
+      .card-title {
+        max-width: 100%;
+      }
 
       .card-left-container .targets {
         .receiver-info-wrapper {
@@ -73,6 +76,25 @@
           }
         }
       }
+
+      .targets {
+        .receiver-info-wrapper .cell .arrow.right {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .list-count-mobile {
+    margin-left: $margin-xsmall;
+  }
+
+  .link-content {
+    &.arrow-right::before {
+      content: url("../../../../assets/img/long-arrow.svg");
+      padding-left: $margin-xsmall;
+      margin-top: -2px;
+      float: right;
     }
   }
 }

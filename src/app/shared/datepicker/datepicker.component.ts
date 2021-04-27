@@ -47,6 +47,7 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
   @Input() readonly withConfirmButtons?: boolean;
   @Input() readonly color?: string;
   @Output() dateChanged = new EventEmitter<Date>();
+  @Output() onDatePickerClose = new EventEmitter<boolean>();
   @ViewChild('rootElement') rootElement: ElementRef;
   disableActions = false;
   isOpen = false;
@@ -310,6 +311,7 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
     window.removeEventListener('keydown', this.escapeKeyClose);
     window.removeEventListener('click', this.outsideClickClose);
     this.isOpen = false;
+    this.onDatePickerClose.emit(this.isOpen);
   }
 
   public open() {
