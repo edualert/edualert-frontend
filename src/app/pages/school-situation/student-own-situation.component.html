@@ -40,12 +40,11 @@
         </div>
         <div class="column">
           <div class="gray-text label">Diriginte</div>
-          <div class="value link-content" *ngIf="!rip"
+          <div class="value bold blue-text link-content"
+               [class.arrow-right]="studyClass?.class_master.full_name"
+               *ngIf="!rip"
                (click)="openUserModal($event, studyClass?.class_master.id)">
-            <div class="bold blue-text link-content">
-              {{studyClass?.class_master.full_name}}
-            </div>
-            <div class="arrow right" *ngIf="studyClass?.class_master else noValue"></div>
+            {{studyClass?.class_master.full_name ? studyClass?.class_master.full_name : '-'}}
           </div>
           <div class="value bold blue-text link-content" *ngIf="rip">...</div>
         </div>

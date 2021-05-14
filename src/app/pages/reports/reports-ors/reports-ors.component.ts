@@ -9,7 +9,7 @@ import { StudentsRiskEvolutionService } from '../../../services/statistics-servi
 import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
 import { orsTabs } from '../reports-tabs';
-import { formatChartData, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, handleChartWidthHeight, removeChartTooltip, shouldDisplayChart } from '../../../shared/utils';
 import { ScrollableList } from '../../list-page/scrollable-list';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 
@@ -34,6 +34,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
   colorSchemeRed = {
     domain: ['#CC0033']
   };
+  chartHolderElement: HTMLElement;
   generalChartView: any[];
   institutionsDisplayChart: boolean;
   studentsDisplayChart: boolean;
@@ -327,7 +328,7 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
     this.isOnReportsPage = true;
 
     window.setTimeout(() =>
-        this.generalChartView = handleChartWidthHeight(window.innerHeight - this.chartTitleHeight),
+        this.generalChartView = handleChartWidthHeight(window.innerHeight - this.chartTitleHeight, true, true),
       500);
     this.month_students_risk_evolution = moment().month();
     this.month_enrolled_institutions = moment().month();
@@ -394,7 +395,18 @@ export class ReportsOrsComponent extends ScrollableList implements OnInit, OnCha
 
   @HostListener('window:resize', ['$event'])
   resizeChart(event) {
-    this.generalChartView = handleChartWidthHeight(window.innerHeight - this.chartTitleHeight);
+    this.generalChartView = handleChartWidthHeight(window.innerHeight - this.chartTitleHeight, true, true);
+  }
+
+  addScrollListener(): void {
+    this.chartHolderElement = document.getElementsByClassName('chart-holder')[0] as HTMLElement;
+    document.body.addEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.addEventListener('scroll', removeChartTooltip);
+  }
+
+  removeScrollListener(): void {
+    document.body.removeEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.removeEventListener('scroll', removeChartTooltip);
   }
 
   ngAfterViewInit(): void {

@@ -1,5 +1,5 @@
 import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
-import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, removeChartTooltip, shouldDisplayChart } from '../../../shared/utils';
 import { UserDetails } from '../../../models/user-details';
 import { MyOwnAbsencesEvolutionService, MyOwnSchoolActivityService, MyOwnStatisticsService, MyOwnSubjectsAtRiskService } from '../../../services/statistics-services/my-own-statistics.service';
 import { ChildSchoolActivity, ChildStatistics, SubjectForChild } from '../../../models/child-statistics';
@@ -40,6 +40,7 @@ export class HomeStudentComponent implements OnInit, OnDestroy {
   xAxis: boolean = true;
   yAxis: boolean = true;
   displayChart: boolean;
+  chartHolderElement: HTMLElement;
 
   constructor(private myOwnStatisticsService: MyOwnStatisticsService,
               private myOwnSchoolActivityService: MyOwnSchoolActivityService,
@@ -151,6 +152,17 @@ export class HomeStudentComponent implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   resizeChart(event) {
     this.myOwnAbsencesView = handleChartWidthHeight();
+  }
+
+  addScrollListener(): void {
+    this.chartHolderElement = document.getElementsByClassName('chart-holder')[0] as HTMLElement;
+    document.body.addEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.addEventListener('scroll', removeChartTooltip);
+  }
+
+  removeScrollListener(): void {
+    document.body.removeEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.removeEventListener('scroll', removeChartTooltip);
   }
 
 }

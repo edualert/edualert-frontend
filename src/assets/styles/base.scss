@@ -55,10 +55,15 @@ $big-bouncy-in: cubic-bezier(0.36, 0.06, 0.42, -1.7);
 
 $bouncy-in-out: cubic-bezier(0.36, -1.54, 0.73, 2.51);
 
+$header-web-lateral-padding: 80px;
+
 $nav-bar-width: 300px;
 $big-nav-bar-width: 38vw;
-$mobile-nav-bar-height: 50px;
 $events-list-width: 630px;
+$toolbar-height: 40px;
+
+$mobile-nav-bar-height: 50px;
+$mobile-toolbar-height: 36px;
 
 $mobile-screen-width-normal: 1024px; /* From generic tablet downwards */
 $mobile-screen-width-intermediate: 768px;
@@ -78,3 +83,4 @@ $mobile-reports-header-two-lines-tabs: 159px;
 $msg-for-label-width: 42px;
 $msg-student-parent-label-width: 71px;
 $msg-teacher-label-width: 52px;
+$message-status-max-width: 262px;

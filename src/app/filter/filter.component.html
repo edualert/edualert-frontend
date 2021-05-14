@@ -1,6 +1,6 @@
 <div class="filter" [class.open]="isOpen" [class.narrow]="noCount">
 <div class="filter-label" (click)="toggleIsOpen($event)">
-	<span>{{isOpen ? "Închide" : "Filtrează"}}</span>
+	<span>{{isOpen ? "Închide" : labelName ? labelName : "Filtrează"}}</span>
 	<ng-content select="#list-count-mobile"></ng-content>
 </div>
   <div class="filter-container" [class.datepicker-open]="isDatePickerOpen">

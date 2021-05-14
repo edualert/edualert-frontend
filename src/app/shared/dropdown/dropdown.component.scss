@@ -198,7 +198,7 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
     font-weight: $font-weight-regular !important;
   }
 
-  input::-moz-placeholder {
+  input.no-value::-moz-placeholder {
     color: $color-text-light;
     opacity: 1;
   }

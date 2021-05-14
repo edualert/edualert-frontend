@@ -5,7 +5,6 @@ $cell-height: 66px;
 
 .scrollable-container {
   max-width: calc(100vw - #{465px});
-  max-height: calc(100vh - 260px);
   overflow-anchor: none;
   overflow-x: auto;
 

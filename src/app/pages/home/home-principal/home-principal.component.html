@@ -92,6 +92,8 @@
           [scheme]="colorSchemeRed"
           [results]="studentsEvolutionList?.chartData"
           [xAxisTicks]="studentsEvolutionList?.xAxisTicks"
+          (mouseenter)="addScrollListener()"
+          (mouseleave)="removeScrollListener()"
         >
 
           <ng-template #seriesTooltipTemplate let-model="model">

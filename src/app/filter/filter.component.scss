@@ -31,24 +31,22 @@
 		padding: 0;
 		background: #67778A;
 		border-radius: 10px 0 0 0;
-		max-height: 40px;
+		max-height: $mobile-toolbar-height;
 		will-change: max-height;
 		transition: max-height 0.2s $ease-in-out;
 
 		&.narrow {
-			width: 115px;
+			width: 107px;
 
 			&.open {
 				width: 274px;
 
 				.filter-label {
-					padding: 0 $margin-default;
 					text-align: unset;
 				}
 			}
 
 			.filter-label {
-				padding: 0 $margin-tiny;
 				text-align: right;
 
 				span {
@@ -64,8 +62,8 @@
       width: 100%;
       line-height: 16px;
       font-size: $font-size-small;
-      padding: 0 $margin-tiny 0 $margin-default;
-      height: 28px;
+      padding: $margin-tiny $margin-tiny $margin-tiny $margin-default;
+      height: $mobile-toolbar-height;
 		  order: 2;
       pointer-events: all;
 		  cursor: pointer;
@@ -124,7 +122,7 @@
 			align-self: flex-start;
 			align-items: flex-start;
 			padding: $margin-xsmall $margin-default $margin-default;
-			margin-bottom: calc(57px - #{$margin-default} + #{$margin-xsmall});
+			margin-bottom: $mobile-toolbar-height;
 			pointer-events: none;
 			will-change: opacity, transform;
 			transform: translateY(50%);

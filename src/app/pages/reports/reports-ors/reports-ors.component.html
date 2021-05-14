@@ -28,6 +28,8 @@
               [scheme]="colorSchemeYellow"
               [results]="data[activeTab][month_enrolled_institutions]?.chartData"
               [xAxisTicks]="data[activeTab][month_enrolled_institutions]?.xAxisTicks"
+              (mouseenter)="addScrollListener()"
+              (mouseleave)="removeScrollListener()"
             >
 
               <ng-template #seriesTooltipTemplate let-model="model">
@@ -39,7 +41,7 @@
                       <div class="label">
                         {{ data[activeTab][month_enrolled_institutions]?.chartData[0].name }}
                       </div>
-                    <div class="bottom-tooltip more-bottom">
+                    <div class="bottom-tooltip">
                       <div class="padded">{{ model[0].name }}</div>
                       <div>{{ model[0].weekday }}</div>
                     </div>
@@ -90,6 +92,8 @@
               [scheme]="colorSchemeRed"
               [results]="data[activeTab][month_students_risk_evolution]?.chartData"
               [xAxisTicks]="data[activeTab][month_students_risk_evolution]?.xAxisTicks"
+              (mouseenter)="addScrollListener()"
+              (mouseleave)="removeScrollListener()"
             >
 
               <ng-template #seriesTooltipTemplate let-model="model">
@@ -101,7 +105,7 @@
                     <div class="label">
                       {{ data[activeTab][month_students_risk_evolution]["chartData"][0].name }}
                     </div>
-                    <div class="bottom-tooltip more-bottom">
+                    <div class="bottom-tooltip">
                       <div class="padded">{{ model[0].name }}</div>
                       <div>{{ model[0].weekday }}</div>
                     </div>

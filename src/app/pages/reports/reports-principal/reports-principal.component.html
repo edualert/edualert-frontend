@@ -78,6 +78,8 @@
                   [scheme]="colorSchemeRed"
                   [results]="data[activeTabTop][activeTabBottom][month]?.chartData"
                   [xAxisTicks]="data[activeTabTop][activeTabBottom][month]?.xAxisTicks"
+                  (mouseenter)="addScrollListener()"
+                  (mouseleave)="removeScrollListener()"
                 >
 
                   <ng-template #seriesTooltipTemplate let-model="model">
@@ -89,7 +91,7 @@
                         <div class="label">
                           {{ data[activeTabTop][activeTabBottom][month]["chartData"][0]["name"] }}
                         </div>
-                        <div class="bottom-tooltip more-bottom-tabs">
+                        <div class="bottom-tooltip">
                           <div class="padded">{{ model[0].name }}</div>
                           <div>{{ model[0].weekday }}</div>
                         </div>

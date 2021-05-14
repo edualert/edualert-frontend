@@ -9,7 +9,7 @@ ngx-tooltip-content {
 
 .ngx-charts-tooltip-content {
 
-  &.position-right {
+  &.position-right, &.position-left {
     background-color: unset !important; //$color-blue !important;
     border-radius: $border-radius-normal !important;
     height: 56px;
@@ -23,6 +23,14 @@ ngx-tooltip-content {
 
     .tooltip-caret, .tooltip-item-color {
       display: none;
+    }
+  }
+
+  &.position-left {
+    transform: translate(57px, -120px) !important;
+
+    &.animate {
+      transition: unset;
     }
   }
 }
@@ -85,7 +93,6 @@ text {
 
   .red-tooltip, .blue-tooltip {
     position: absolute;
-    top: -130px;
     height: 56px;
     width: 82px;
     padding: $margin-tiny 0;
@@ -115,19 +122,7 @@ text {
     background-color: white;
     border-radius: 10px;
     position: absolute;
-    bottom: -305px;
-
-    &.more-bottom {
-      bottom: -488px;
-    }
-
-    &.more-bottom-tabs {
-      bottom: -469px;
-    }
-
-    &.parent-student {
-      bottom: -474px;
-    }
+    bottom: calc(-310px - var(--chartHeightAdjust));
 
     .padded {
       padding-bottom: 3px;
@@ -142,32 +137,6 @@ text {
 }
 
 @media screen and (max-width: $mobile-screen-width-normal) {
-
-  .tooltip-content {
-
-    &.bottom-tooltip {
-      height: 40px;
-      width: 40px;
-      font-size: $font-size-normal;
-      bottom: -293px;
-    }
-  }
-}
-
-@media screen and (max-width: $mobile-screen-width-intermediate) {
-
-  .tooltip-content {
-
-    &.bottom-tooltip {
-      height: 40px;
-      width: 40px;
-      font-size: $font-size-normal;
-      bottom: -293px;
-    }
-  }
-}
-
-@media screen and (max-width: $mobile-screen-width-small) {
 
   .tooltip-content {
 

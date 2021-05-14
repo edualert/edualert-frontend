@@ -97,6 +97,10 @@ app-date-input {
   border-left: 1px solid $color-separator;
 }
 
+.detail-element-container {
+  padding-bottom: $margin-default;
+}
+
 @media screen and (max-width: $mobile-screen-width-small) {
 
   .page-content {
@@ -157,8 +161,4 @@ app-date-input {
     }
   }
 
-}
-
-.detail-element-container {
-  padding-bottom: $margin-default;
 }

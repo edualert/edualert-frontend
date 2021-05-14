@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import { Component, ElementRef, HostListener, Input } from '@angular/core';
 
 @Component({
   selector: 'app-filter',
@@ -6,16 +6,25 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./filter.component.scss']
 })
 export class FilterComponent {
-  isOpen: boolean;
   @Input() noCount?: boolean = true;  // Setting the default as we don't need the large filter button(for mobile mainly)
   @Input() isDatePickerOpen?: boolean;
+  @Input() labelName?: string;
+  isOpen: boolean;
 
-  constructor() {
+  constructor(private elementRef: ElementRef) {
     this.isOpen = false;
   }
 
   toggleIsOpen(event) {
     event.preventDefault();
     this.isOpen = !this.isOpen;
+  }
+
+  @HostListener('document:click', ['$event'])
+  clickOutside(event) {
+    if (this.elementRef.nativeElement.contains(event.target)) {
+    } else {
+      this.isOpen = false;
+    }
   }
 }

@@ -14,6 +14,7 @@
 
 .checkbox-button {
   margin-right: 15px;
+  pointer-events: auto;
 }
 
 .student-list {
@@ -22,18 +23,16 @@
   height: 65vh;
 
   overflow-y: scroll;
-  margin-right: -40px;
 
   .table-header .row .column {
     font-weight: $font-weight-regular;
   }
 
   .row {
-    margin-right: 40px;
     padding: 11px 0;
     display: flex;
     align-items: center;
-    width: calc(100% - 40px);
+    width: calc(100% - #{$margin-tiny});
     border-bottom: 1px solid $color-separator;
 
     &:last-of-type {
@@ -63,6 +62,12 @@
     &:last-child {
       flex-grow: 1.5;
     }
+  }
+
+  .checkbox-container {
+    pointer-events: none;
+    outline-style: none;
+    -webkit-tap-highlight-color:transparent;
   }
 }
 
@@ -121,6 +126,11 @@
 
       &:first-child {
         flex-grow: 1;
+      }
+
+      &:nth-child(2) {
+        flex-grow: 1;
+        max-width: 100px;
       }
     }
   }

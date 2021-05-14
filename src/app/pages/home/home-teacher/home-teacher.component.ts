@@ -1,6 +1,6 @@
-import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UserDetails } from '../../../models/user-details';
-import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, removeChartTooltip, shouldDisplayChart } from '../../../shared/utils';
 import { IsTeacherClassMasterService } from '../../../services/study-class.service';
 import { StudyClassAtRisk } from '../../../models/study-class-name';
 import { StudentAtRisk } from '../../../models/student-data-list';
@@ -12,13 +12,14 @@ import { InactiveParent } from '../../../models/parent';
 import * as moment from 'moment';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 import { ViewUserModalComponent } from '../../manage-users/view-user-modal/view-user-modal.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-teacher',
   templateUrl: './home-teacher.component.html',
   styleUrls: ['./home-teacher.component.scss', '../home.component.scss']
 })
-export class HomeTeacherComponent implements OnInit {
+export class HomeTeacherComponent implements OnInit, OnDestroy {
   @Input() userDetails: UserDetails;
   @ViewChild('appViewUserModal', {'static': false}) appViewUserModal: ViewUserModalComponent;
 
@@ -37,7 +38,9 @@ export class HomeTeacherComponent implements OnInit {
   inactiveParentsTable: Column[] = [];
 
   forceRequest: boolean = true;
+  academicYearSubscription: Subscription;
 
+  chartHolderElement: HTMLElement;
   ownStudentsEvolutionList: any;
   ownStudentsChartView: any[];
   colorSchemeRed = {
@@ -65,7 +68,7 @@ export class HomeTeacherComponent implements OnInit {
 
   ngOnInit(): void {
     this.ownStudentsChartView = handleChartWidthHeight();
-    this.currentAcademicYearService.getData().subscribe(response => {
+    this.academicYearSubscription = this.currentAcademicYearService.getData().subscribe(response => {
       const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
 
       if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
@@ -234,5 +237,20 @@ export class HomeTeacherComponent implements OnInit {
 
   openUserModal(event) {
     this.appViewUserModal.open(event);
+  }
+
+  addScrollListener(): void {
+    this.chartHolderElement = document.getElementsByClassName('chart-holder')[0] as HTMLElement;
+    document.body.addEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.addEventListener('scroll', removeChartTooltip);
+  }
+
+  removeScrollListener(): void {
+    document.body.removeEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.removeEventListener('scroll', removeChartTooltip);
+  }
+
+  ngOnDestroy(): void {
+    this.academicYearSubscription.unsubscribe();
   }
 }

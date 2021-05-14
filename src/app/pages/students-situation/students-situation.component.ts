@@ -3,7 +3,7 @@ import { AccountService } from '../../services/account.service';
 import { UserDetails } from '../../models/user-details';
 import { ListPage } from '../list-page/list-page';
 import { IdText } from '../../models/id-text';
-import { getCurrentAcademicYear } from '../../shared/utils';
+import { getCurrentAcademicYear, setScrollableContainerHeight } from '../../shared/utils';
 import { HttpClient } from '@angular/common/http';
 import { Params } from '@angular/router';
 import { NetworkingListResponse } from '../../models/networking-list-response';
@@ -167,6 +167,7 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
       this.initialRequestInProgress = false;
       this.requestInProgress = false;
       this.keepOldList = false;
+      setScrollableContainerHeight();
       setTimeout(() => {
           this.tableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
           this.tableContainer.addEventListener('scroll', this.scrollHandle);
@@ -219,6 +220,7 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
 
   ngOnDestroy(): void {
     this.removeScrollListener();
+    document.body.removeAttribute('style');
   }
 
 }

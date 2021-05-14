@@ -5,6 +5,7 @@ import { cloneDeep } from 'lodash';
 import { Observable } from 'rxjs';
 import * as moment from 'moment';
 import { ViewUserModalComponent } from '../manage-users/view-user-modal/view-user-modal.component';
+import { setScrollableContainerHeight } from '../../shared/utils';
 
 @Component({
   selector: 'app-student-catalog',
@@ -44,20 +45,7 @@ export class StudentCatalogComponent implements OnInit, OnDestroy {
     this.studentId = this.activatedRoute.snapshot.params.studentId;
     this.getCatalogData();
     this.backLink = `/my-classes/${this.classId}/class-detail`;
-    setTimeout(() => this.setScrollableContainerHeight(), 1000);
-  }
-
-  private setScrollableContainerHeight(): void {
-    setTimeout(() => {
-      const scrollableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
-      const pageHeaderHeight = document.getElementById('page-header').clientHeight;
-
-      if (scrollableContainer.clientHeight > (document.body.clientHeight - pageHeaderHeight)) {
-        const scrollableContainerComputedHeight = document.body.clientHeight - pageHeaderHeight - 60; // 60 -> space for toolbar
-        scrollableContainer.style.height = scrollableContainerComputedHeight + 'px';
-        document.body.style.overflow = 'unset';
-      }
-    }, 400);
+    setTimeout(() => setScrollableContainerHeight(), 1000);
   }
 
   private getCatalogData() {

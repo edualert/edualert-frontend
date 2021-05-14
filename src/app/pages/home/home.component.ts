@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.requestInProgress = true;
+    document.documentElement.style.setProperty('--chartHeightAdjust', `0px`);
   }
 
 }
