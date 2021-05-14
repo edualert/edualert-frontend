@@ -40,6 +40,8 @@
               [results]="data[activeTab][month] ? [data[activeTab][month][0]['chartData'][0],
               data[activeTab][month][1]['chartData'][0]] : []"
               [xAxisTicks]="data[activeTab][month] ? data[activeTab][month][0].xAxisTicks : []"
+              (mouseenter)="addScrollListener()"
+              (mouseleave)="removeScrollListener()"
             >
 
               <ng-template #seriesTooltipTemplate let-model="model">
@@ -61,7 +63,7 @@
                         {{ data[activeTab][month][1]['chartData'][0]["name"] }}
                       </div>
                     </div>
-                    <div class="bottom-tooltip parent-student">
+                    <div class="bottom-tooltip">
                       <div class="padded">{{ model[0].name }}</div>
                       <div>{{ model[0].weekday }}</div>
                     </div>

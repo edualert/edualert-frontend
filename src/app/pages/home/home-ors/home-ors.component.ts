@@ -2,7 +2,7 @@ import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { UserDetails } from '../../../models/user-details';
 import { InactiveInstitutionsService, InstitutionsAtRiskService, InstitutionsEnrollmentStatisticsService } from '../../../services/statistics-services/institutions-statistics.service';
 import { InactiveInstitution, InstitutionAtRisk } from '../../../models/institution';
-import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, removeChartTooltip, shouldDisplayChart } from '../../../shared/utils';
 import { StudentsRiskEvolutionService } from '../../../services/statistics-services/students-statistics.service';
 import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
@@ -35,6 +35,7 @@ export class HomeOrsComponent implements OnInit {
   yAxis: boolean = true;
   displayChart: boolean;
 
+  chartHolderElement: HTMLElement;
   studentsRiskEvolutionStatistics: any;
   colorSchemeRed = {
     domain: ['#CC0033']
@@ -127,6 +128,17 @@ export class HomeOrsComponent implements OnInit {
   resizeChart(event) {
     this.institutionsChartView = handleChartWidthHeight();
     this.studentsRiskChartView = handleChartWidthHeight();
+  }
+
+  addScrollListener(): void {
+    this.chartHolderElement = document.getElementsByClassName('chart-holder')[0] as HTMLElement;
+    document.body.addEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.addEventListener('scroll', removeChartTooltip);
+  }
+
+  removeScrollListener(): void {
+    document.body.removeEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.removeEventListener('scroll', removeChartTooltip);
   }
 
 }

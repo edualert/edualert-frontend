@@ -71,6 +71,7 @@ input[type="date"], input.date {
   }
 
   &.custom-date {
+    cursor: pointer;
     padding-right: 65px;
     background-position: calc(100% - #{$margin-default}) 50%
   }

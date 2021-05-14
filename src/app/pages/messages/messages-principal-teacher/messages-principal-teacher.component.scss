@@ -7,7 +7,11 @@
 
 .card-title {
   display: block;
-  max-width: calc(100% - 230px);
+  max-width: calc(100% - #{$message-status-max-width + $margin-tiny});
+}
+
+.message-status {
+  max-width: $message-status-max-width;
 }
 
 @media (max-width: $mobile-screen-width-intermediate) {

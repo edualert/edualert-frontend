@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {Routes, RouterModule, UrlSegment, UrlMatchResult} from '@angular/router';
+import { Routes, RouterModule, UrlSegment, UrlMatchResult, Router, NavigationEnd } from '@angular/router';
 import {LoginComponent} from './pages/login/login.component';
 import {DevtoolsComponent} from './pages/devtools/devtools.component';
 import {ManageClassProfilesComponent} from './pages/manage-class-profiles/manage-class-profiles.component';
@@ -35,6 +35,7 @@ import {ClassListDetailComponent} from './pages/my-classes/class-list-detail/cla
 import {AddEditStudyClassComponent} from './pages/manage-classes/add-edit-study-class/add-edit-study-class.component';
 import {CatalogComponent} from './catalog/catalog.component';
 import {StudentCatalogComponent} from './pages/student-catalog/student-catalog.component';
+import { filter } from 'rxjs/operators';
 
 export function loginMatcher(segments: UrlSegment[]): UrlMatchResult {
   // match login, forgot password and reset password without consuming the segments
@@ -108,4 +109,13 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule {
+  constructor(private router: Router) {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        if (document.body.scrollTop || document.body.scrollLeft) {
+          document.body.scrollTo(0, 0);
+        }
+      });
+  }
 }

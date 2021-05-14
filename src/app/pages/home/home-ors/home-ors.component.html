@@ -98,6 +98,8 @@
           [scheme]="colorSchemeRed"
           [results]="studentsRiskEvolutionStatistics?.chartData"
           [xAxisTicks]="studentsRiskEvolutionStatistics?.xAxisTicks"
+          (mouseenter)="addScrollListener()"
+          (mouseleave)="removeScrollListener()"
         >
 
           <ng-template #seriesTooltipTemplate let-model="model">

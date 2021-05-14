@@ -171,6 +171,8 @@
           [scheme]="colorSchemeRed"
           [results]="childAbsencesList.chartData"
           [xAxisTicks]="childAbsencesList.xAxisTicks"
+          (mouseenter)="addScrollListener()"
+          (mouseleave)="removeScrollListener()"
         >
 
           <ng-template #seriesTooltipTemplate let-model="model">

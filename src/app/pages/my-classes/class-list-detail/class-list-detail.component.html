@@ -44,6 +44,30 @@
       </div>
       <hr>
     </div>
+    <div id="header-filter" class="mobile-only">
+      <app-filter
+        labelName="Acțiuni"
+        [noCount]="false">
+        <ng-container id="list-count-mobile">
+          <div *ngIf="tableData; else loadingListMobile" class="list-count-mobile">
+            {{pupilCount}} utilizatori afișați din {{pupilCount}}
+          </div>
+        </ng-container>
+        <span class="mobile-title">Sortează</span>
+        <div class="dropdown-parent">
+          <app-dropdown
+            [list]="filterData.sortCriteria"
+            [displayedProperty]="'text'"
+            (elementHasBeenSelected)="changeSortingCriterion($event.element)"
+            [appliedElement]="filterParams.sortCriterion"
+            [placeholder]="'Sortează'"
+            [required]="true"
+          ></app-dropdown>
+        </div>
+        <hr class="toolbar-hr-mobile">
+        <app-toolbar [buttonsObjList]="provideButtonsList()"></app-toolbar>
+      </app-filter>
+    </div>
     <div id="tabs-container">
       <app-tabs (tabHasBeenSelected)="changeTab($event)"
                 [activeTab]="activeTab?.id"
@@ -78,8 +102,8 @@
     </div>
   </div>
 </div>
-<div class="animated-page">
-  <div class="page-content">
+<div class="animated-page desktop-only">
+  <div class="toolbar-container">
     <app-toolbar [buttonsObjList]="provideButtonsList()" >
       <ng-container id="count-container" *ngIf="tableData else loadingList">
         {{pupilCount}} elevi afișați din {{pupilCount}}
@@ -90,6 +114,12 @@
 
 <ng-template #loadingList>
   <div class="list-count">
+    Se încarcă datele...
+  </div>
+</ng-template>
+
+<ng-template #loadingListMobile>
+  <div class="list-count-mobile">
     Se încarcă datele...
   </div>
 </ng-template>

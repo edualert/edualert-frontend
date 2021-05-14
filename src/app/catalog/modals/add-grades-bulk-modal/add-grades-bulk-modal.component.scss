@@ -25,7 +25,6 @@
     }
 
     .datepicker-container {
-      width: 400px;
       top: 50px;
       position: absolute;
       z-index: 10;
@@ -35,7 +34,6 @@
       &.custom-date {
         background-position: calc(100% - #{$margin-tiny}) 50%;
         width: 82px;
-        padding-right: 0;
       }
     }
   }
@@ -141,10 +139,9 @@
       margin: unset;
 
       .datepicker-container {
-        width: 300px;
-        top: unset;
-        bottom: 25%;
-        right: 10px;
+        top: 50px;
+        position: absolute;
+        z-index: 10;
       }
 
       .date-label {
@@ -155,6 +152,7 @@
     input.date {
       &.custom-date {
         border-radius: $border-radius-tiny;
+        padding-right: 75px
       }
     }
   }
@@ -176,6 +174,12 @@
   #modal-body {
     width: calc(100vw - #{$margin-default} - 10px); // 10px represents the scrollbar width
     margin-right: unset;
+  }
+
+  .header .datepicker-input-wrapper .datepicker-container {
+    width: 275px;
+    top: unset;
+    transform: translateX(-15px);
   }
 
   .student-list {

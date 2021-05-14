@@ -14,7 +14,7 @@ import {
 import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
 import { parentStudentTabs } from '../reports-tabs';
-import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, removeChartTooltip, shouldDisplayChart } from '../../../shared/utils';
 import { IdFullname } from '../../../models/id-fullname';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 import { ChildStatistics } from '../../../models/child-statistics';
@@ -62,6 +62,7 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
   colorSchemeRedBlue = {
     domain: ['#CC0033', '#0077DB']
   };
+  chartHolderElement: HTMLElement;
   generalChartView: any[];
   displayChart: boolean;
   reqSubscription: any;
@@ -100,7 +101,7 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
   }
 
   ngOnInit(): void {
-    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
+    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight, true), 500);
     this.graphSubtitle = `${getCurrentMonthAsString()} ${getCurrentYear()}`;
   }
 
@@ -434,14 +435,25 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
     }));
   }
 
-  @HostListener('window:resize', ['$event'])
-  resizeChart(event) {
-    this.generalChartView = handleChartWidthHeight(window.innerHeight);
-  }
+  // @HostListener('window:resize', ['$event'])
+  // resizeChart(event) {
+  //   this.generalChartView = handleChartWidthHeight(window.innerHeight, true);
+  // }
 
   private static unsubscribe(subscription: any) {
     if (subscription) {
       subscription.unsubscribe();
     }
+  }
+
+  addScrollListener(): void {
+    this.chartHolderElement = document.getElementsByClassName('chart-holder')[0] as HTMLElement;
+    document.body.addEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.addEventListener('scroll', removeChartTooltip);
+  }
+
+  removeScrollListener(): void {
+    document.body.removeEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.removeEventListener('scroll', removeChartTooltip);
   }
 }

@@ -116,6 +116,7 @@
            [routerLink]="['/my-classes/' + classId + '/students/' + data.id + '/catalog']">
         Toate materiile
       </div>
+      <app-view-user-modal #userDetailsModal></app-view-user-modal>
     </div>
 
     <!-- SUBJECT NAME ----------------------------------  -->
@@ -126,6 +127,7 @@
       <div class="blue-text secondary-text clickable" (click)="openUserDetailsModal(data?.teacher?.id)">
         {{data?.teacher?.full_name}}
       </div>
+      <app-view-user-modal #userDetailsModal></app-view-user-modal>
     </div>
 
     <!-- LINK BUTTON ----------------------------------  -->
@@ -194,10 +196,8 @@
            (click)="openObservationsModal(studentData, studentCatalogID, tableLayoutAsIdentifier)">
         Observații
       </div>
+      <app-pupil-remarks-modal #viewRemarksModal></app-pupil-remarks-modal>
+      <app-pupil-labels-modal #viewLabelsModal></app-pupil-labels-modal>
     </div>
   </ng-container>
 </div>
-
-<app-pupil-labels-modal #viewLabelsModal></app-pupil-labels-modal>
-<app-pupil-remarks-modal #viewRemarksModal></app-pupil-remarks-modal>
-<app-view-user-modal #userDetailsModal></app-view-user-modal>

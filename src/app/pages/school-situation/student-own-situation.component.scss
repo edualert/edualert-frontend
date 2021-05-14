@@ -1,21 +1,50 @@
 @import "../../../assets/styles/base";
 
-.arrow-right {
-  margin-top: $margin-default;
-  width: 120%;
-  background: url("../../../assets/img/long-arrow.svg") no-repeat right;
-}
-
 .link-content {
   cursor: pointer;
 
   &:hover {
     filter: brightness(1.3);
   }
+
+  &.arrow-right::after {
+    padding-left: 5px;
+    content: url("../../../assets/img/long-arrow.svg");
+  }
 }
 
 .catalog-top-right {
   margin-top: -18px !important;
+}
+
+#header-top-right-container {
+
+  .catalog-top-right {
+    flex-direction: column;
+    align-items: unset;
+    max-width: calc((100vw - #{$nav-bar-width + $header-web-lateral-padding * 2}) / 2);
+    float: right;
+
+    .column {
+      padding-right: unset;
+    }
+
+    .column + .column {
+      padding: unset;
+      border-left: unset;
+      margin-top: $margin-tiny;
+    }
+  }
+}
+
+#header-title, #header-subtitle {
+  max-width: calc((100vw - #{$nav-bar-width + $margin-small + $header-web-lateral-padding * 2}) / 2);
+}
+
+.value {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .dropdown-parent {
@@ -89,6 +118,10 @@
     display: none;
   }
 
+  #header-title, #header-subtitle {
+    max-width: initial;
+  }
+
   #show-details-button {
     display: unset;
   }
@@ -110,10 +143,16 @@
 
   .value {
     margin-top: $margin-tiny;
+    display: block;
 
     &.link-content {
-      display: flex;
       align-items: center;
+    }
+
+    .link-content {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 

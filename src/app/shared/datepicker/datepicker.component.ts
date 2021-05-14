@@ -51,6 +51,7 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
   @ViewChild('rootElement') rootElement: ElementRef;
   disableActions = false;
   isOpen = false;
+  isTranslated: boolean = false;
   selectedDate: InternalDate = {
     year: null,
     month: null,
@@ -310,8 +311,14 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
   public close() {
     window.removeEventListener('keydown', this.escapeKeyClose);
     window.removeEventListener('click', this.outsideClickClose);
-    this.isOpen = false;
+    if (this.isTranslated) {
+      this.rootElement.nativeElement.style.transform = '';
+      setTimeout(() => this.isOpen = false, 0);
+    } else {
+      this.isOpen = false;
+    }
     this.onDatePickerClose.emit(this.isOpen);
+    document.body.style.cursor = '';
   }
 
   public open() {
@@ -323,6 +330,7 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
     this.setInternalDatesAtOpen();
     this.initialiseCssVariables();
     this.isOpen = true;
+    document.body.style.cursor = 'pointer';
 
     window.requestAnimationFrame(() => {
       window.addEventListener('keydown', this.escapeKeyClose);
@@ -336,6 +344,7 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
     const rect = elem.getBoundingClientRect();
     if (rect.x < 30) {
       elem.style.transform = `translate(${-rect.x + 30}px)`;
+      this.isTranslated = true;
     }
   }
 

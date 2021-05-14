@@ -1,6 +1,6 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { UserDetails } from '../../../models/user-details';
-import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, getCurrentMonthAsString, getCurrentYear, handleChartWidthHeight, removeChartTooltip, shouldDisplayChart } from '../../../shared/utils';
 import { StudyClassesAtRiskService } from '../../../services/statistics-services/school-statistics.service';
 import { StudyClassAtRisk } from '../../../models/study-class-name';
 import { AcademicProfileAtRisk } from '../../../models/academic-program-details';
@@ -12,13 +12,14 @@ import { InactiveTeachersService } from '../../../services/statistics-services/i
 import { Column } from '../../../shared/reports-table/reports-table.component';
 import * as moment from 'moment';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-principal',
   templateUrl: './home-principal.component.html',
   styleUrls: ['./home-principal.component.scss', '../home.component.scss']
 })
-export class HomePrincipalComponent implements OnInit {
+export class HomePrincipalComponent implements OnInit, OnDestroy {
   @Input() userDetails: UserDetails;
   graphSubtitle: string;
 
@@ -35,7 +36,9 @@ export class HomePrincipalComponent implements OnInit {
   schoolStudentsAtRiskTable: Column[] = [];
 
   forceRequest: boolean = true;
+  academicYearSubscription: Subscription;
 
+  chartHolderElement: HTMLElement;
   studentsEvolutionList: any;
   studentsChartView: any[];
   colorSchemeRed = {
@@ -59,7 +62,7 @@ export class HomePrincipalComponent implements OnInit {
 
   ngOnInit(): void {
     this.studentsChartView = handleChartWidthHeight();
-    this.currentAcademicYearService.getData().subscribe(response => {
+    this.academicYearSubscription = this.currentAcademicYearService.getData().subscribe(response => {
       const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
 
       if (now > moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
@@ -205,6 +208,21 @@ export class HomePrincipalComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   resizeChart(event) {
     this.studentsChartView = handleChartWidthHeight();
+  }
+
+  addScrollListener(): void {
+    this.chartHolderElement = document.getElementsByClassName('chart-holder')[0] as HTMLElement;
+    document.body.addEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.addEventListener('scroll', removeChartTooltip);
+  }
+
+  removeScrollListener(): void {
+    document.body.removeEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.removeEventListener('scroll', removeChartTooltip);
+  }
+
+  ngOnDestroy(): void {
+    this.academicYearSubscription.unsubscribe();
   }
 
 }

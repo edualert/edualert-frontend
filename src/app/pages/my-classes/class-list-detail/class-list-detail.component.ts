@@ -1,4 +1,4 @@
-import {Component, ElementRef, Injector, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { Component, ElementRef, Injector, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Params } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ClassDetails, Subject } from '../../../models/class-details';
@@ -14,8 +14,9 @@ import { ListPage } from '../../list-page/list-page';
 import { IdText } from '../../../models/id-text';
 import BaseRequestParameters from '../../list-page/base-request-parameters';
 import { ViewUserModalComponent } from '../../manage-users/view-user-modal/view-user-modal.component';
-import {AcademicYearCalendarService} from '../../../services/academic-year-calendar.service';
-import {AcademicYearCalendar} from '../../../models/academic-year-calendar';
+import { AcademicYearCalendarService } from '../../../services/academic-year-calendar.service';
+import { AcademicYearCalendar } from '../../../models/academic-year-calendar';
+import { setScrollableContainerHeight } from '../../../shared/utils';
 
 class RequestParams extends BaseRequestParameters {
   readonly ordering: string;
@@ -56,11 +57,14 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
   urlParams = {'ordering': this.defaultSortingCriterion?.id};
 
   // The Own Pupils tab (only for class master) will always have id 0
-  readonly classPupilsTab: string | number = 0;
+  readonly classPupilsTabId: string | number = 0;
+  readonly masteryTabId: string | number = 1;
   classMasterTab: string | number = -1;
 
   pupilCount: number;
   academicYearCalendar: AcademicYearCalendar;
+
+  loading: boolean;
 
   @ViewChild('addGradesBulkModal', {static: false}) addGradesBulkModal: AddGradesBulkModalComponent;
   @ViewChild('addAbsencesBulkModal', {static: false}) addAbsencesBulkModal: AddAbsencesBulkModalComponent;
@@ -116,42 +120,6 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     this.fetchCatalogData(this.activeTab.id, this.urlParams);
   };
 
-  private setScrollableContainerHeight(): void {
-    setTimeout(() => {
-      const scrollableContainer = this.elementRef.nativeElement.getElementsByClassName('scrollable-container')[0];
-      const toolbar = this.elementRef.nativeElement.getElementsByClassName('toolbar')[0];
-      const pageHeader = document.getElementById('page-header');
-
-      let navBar;
-      let pageHeaderMarginTop;
-      let navBarHeight;
-
-      if (pageHeader.clientWidth < 1024) {
-        navBar = document.getElementById('nav-bar');
-        pageHeaderMarginTop = parseInt(window.getComputedStyle(pageHeader).marginTop, 10);
-        navBarHeight = navBar.clientHeight;
-      }
-
-      const diff = window.outerHeight - window.innerHeight;
-      let browserInterfaceHeight;
-
-      if (diff) {
-        browserInterfaceHeight = diff - 70; // iOS browser interface height
-      } else {
-        browserInterfaceHeight = 50; // android browser interface height
-      }
-
-      if (scrollableContainer.clientHeight > (document.body.clientHeight - pageHeader.clientHeight - toolbar.clientHeight)) {
-        let scrollableContainerComputedHeight = scrollableContainer.clientHeight - toolbar.clientHeight;
-        if (pageHeader.clientWidth < 1024) {
-          scrollableContainerComputedHeight = scrollableContainerComputedHeight - pageHeaderMarginTop - navBarHeight - browserInterfaceHeight;
-        }
-        scrollableContainer.style.height = scrollableContainerComputedHeight + 'px';
-        document.body.style.overflow = 'unset';
-      }
-    }, 400);
-  }
-
   private fetchClassData(urlParams?): void {
     // Get the overall class details
     this.httpClient.get(`own-study-classes/${this.classId}/`).subscribe((response: ClassDetails) => {
@@ -181,7 +149,6 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
           this.fetchCatalogData(this.classDetails.taught_subjects[0].id, urlParams);
         }
       }
-      this.setScrollableContainerHeight();
     }, error => {
       if (error.status === 404) {
         this.router.navigateByUrl('').then();
@@ -193,7 +160,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     this.tabs = [];
 
     if (this.classDetails.is_class_master) {
-      this.tabs.push(new TableTab({name: 'Elevii Clasei', id: this.classPupilsTab, tableLayout: 'class_students'}));
+      this.tabs.push(new TableTab({name: 'Elevii Clasei', id: this.classPupilsTabId, tableLayout: 'class_students'}));
     }
     this.tabs = this.tabs.concat(
       this.classDetails.taught_subjects.map((subject: Subject) => {
@@ -216,7 +183,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
       this.tableData = response;
       this.pupilCount = response.length;
       this.subjectsDataList[0] = {studentListData: response, subjectId: 0, sortedBy: this.activeUrlParams.ordering};
-      this.setScrollableContainerHeight();
+      setScrollableContainerHeight();
     });
   }
 
@@ -230,16 +197,17 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
       this.tableData = response;
       this.pupilCount = response.length;
       this.subjectsDataList[subjectId] = {studentListData: response, subjectId, sortedBy: this.activeUrlParams.ordering};
-      this.setScrollableContainerHeight();
+      setScrollableContainerHeight();
     });
   }
 
   changeTab(tab: any) {
+    if (this.activeTab.id.toString() === tab || this.loading) {
+      return;
+    }
     this.activeTab = this.tabs[findIndex(this.tabs, {id: parseInt(tab, 10)})];
 
-    if (parseInt(tab, 10) === this.classPupilsTab && this.classDetails?.is_class_master) {
-      this.setScrollableContainerHeight();
-    }
+    this.loading = true;
     this.setDataForTab(tab);
     this.pupilCount = this.tableData?.length;
   }
@@ -249,7 +217,7 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     if (this.subjectsDataList[id] && this.activeUrlParams.ordering === this.subjectsDataList[id].sortedBy && !this.modifiedPupilData) {
       this.tableData = this.subjectsDataList[id].studentListData;
       this.pupilCount = this.tableData.length;
-      this.setScrollableContainerHeight();
+      setScrollableContainerHeight();
     } else {
       // Else, fetch it from the server and set it;
       if (this.classDetails.is_class_master && this.activeTab.tableLayout === 'class_students') {
@@ -259,10 +227,11 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
         this.fetchCatalogData(id, this.activeUrlParams);
       }
     }
+    this.loading = false;
   }
 
   provideButtonsList() {
-    if (this.classDetails?.is_class_master && this.classPupilsTab === this.activeTab.id) {
+    if (this.classDetails?.is_class_master && this.classPupilsTabId === this.activeTab.id) {
       return [{
         text: 'Trimite mesaj clasă',
         buttonCallbackFn: this.sendClassMessageList.bind(this)

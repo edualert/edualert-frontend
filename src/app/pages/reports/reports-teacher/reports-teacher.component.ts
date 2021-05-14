@@ -15,7 +15,7 @@ import { StudentAtRisk } from '../../../models/student-data-list';
 import { InactiveParent } from '../../../models/parent';
 import * as moment from 'moment';
 import { classMasterTabsMappingTypes, notClassMasterTabsMappingTypes } from '../reports-tabs';
-import { formatChartData, handleChartWidthHeight, shouldDisplayChart } from '../../../shared/utils';
+import { formatChartData, handleChartWidthHeight, removeChartTooltip, shouldDisplayChart } from '../../../shared/utils';
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 import { findIndex } from 'lodash';
 import { ScrollableList } from '../../list-page/scrollable-list';
@@ -97,6 +97,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
   colorSchemeRed = {
     domain: ['#CC0033']
   };
+  chartHolderElement: HTMLElement;
   generalChartView: any[];
   displayChart: boolean;
 
@@ -511,7 +512,7 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
   }
 
   ngOnInit(): void {
-    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight), 500);
+    window.setTimeout(() => this.generalChartView = handleChartWidthHeight(window.innerHeight, true), 500);
   }
 
   ngAfterViewInit(): void {
@@ -639,6 +640,17 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
 
   @HostListener('window:resize', ['$event'])
   resizeChart(event) {
-    this.generalChartView = handleChartWidthHeight(window.innerHeight);
+    this.generalChartView = handleChartWidthHeight(window.innerHeight, true);
+  }
+
+  addScrollListener(): void {
+    this.chartHolderElement = document.getElementsByClassName('chart-holder')[0] as HTMLElement;
+    document.body.addEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.addEventListener('scroll', removeChartTooltip);
+  }
+
+  removeScrollListener(): void {
+    document.body.removeEventListener('scroll', removeChartTooltip);
+    this.chartHolderElement.removeEventListener('scroll', removeChartTooltip);
   }
 }
