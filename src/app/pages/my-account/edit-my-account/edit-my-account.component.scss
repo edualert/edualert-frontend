@@ -110,9 +110,19 @@
   z-index: 1;
 }
 
+.error-toast {
+  display: none;
+}
+
 @media screen and (max-width: $mobile-screen-width-normal){
   .full-width {
     width: 100%!important;
+  }
+}
+
+@media (max-width: $mobile-screen-width-intermediate) {
+  .error-toast {
+    display: flex;
   }
 }
 

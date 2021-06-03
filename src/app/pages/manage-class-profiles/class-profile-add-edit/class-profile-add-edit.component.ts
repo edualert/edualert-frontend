@@ -266,7 +266,11 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
   }
 
   private setNewProgram(program: { id: number, name?: string, subjects: any, optional_subjects_weekly_hours: any }) {
+    const initialSelectedCoreSubject = this.academicProgram.core_subject;
     this.academicProgram = new AcademicProgramDetails(program);
+    if (initialSelectedCoreSubject) {
+      this.academicProgram.core_subject = initialSelectedCoreSubject;
+    }
     this.initialiseTabs(program.subjects);
     this.initialiseErrors();
   }

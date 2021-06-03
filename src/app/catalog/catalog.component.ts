@@ -262,6 +262,9 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private getDataForExpandedCell(identifier: CellIdentifier, dataRow): any {
+    if (!dataRow) {
+      return;
+    }
     switch (identifier) {
       case 'grades_sem_1': {
         dataRow.grades_sem1.wants_thesis = dataRow.wants_thesis;

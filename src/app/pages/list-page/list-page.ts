@@ -233,7 +233,8 @@ export class ListPage extends ScrollableList {
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: newParams,
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
+      replaceUrl: true
     });
   }
 

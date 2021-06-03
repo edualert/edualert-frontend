@@ -58,7 +58,6 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
 
   // The Own Pupils tab (only for class master) will always have id 0
   readonly classPupilsTabId: string | number = 0;
-  readonly masteryTabId: string | number = 1;
   classMasterTab: string | number = -1;
 
   pupilCount: number;
@@ -84,8 +83,6 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     this.initFilters({
       sortCriteria: null
     });
-
-    this.customUrlParamsChange({'ordering': this.defaultSortingCriterion?.id});
 
     this.activatedRoute.queryParams.subscribe((urlParams: Params) => {
       if (Object.keys(urlParams).length === 0) {
