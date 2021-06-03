@@ -75,11 +75,8 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
       genericAcademicPrograms: null,
       sortCriteria: null
     });
-    this.customUrlParamsChange({'academicYear': this.defaultAcademicYear?.id});
 
     this.scrollHandle = this.scrollHandle.bind(this);
-    this.initialRequestInProgress = true;
-    this.requestInProgress = true;
     this.requestDataFunc = this.requestData;
     this.initialBodyHeight = document.body.getBoundingClientRect().height;
 
@@ -94,7 +91,9 @@ export class StudentsSituationComponent extends ListPage implements OnInit, OnDe
       if (this.isDeletingFilters) {
         this.isDeletingFilters = false;
         this.setStudyClassGradesFilter();
-      } else {
+      } else if (!this.requestInProgress && !this.initialRequestInProgress) {
+        this.requestInProgress = true;
+        this.initialRequestInProgress = true;
         this.requestData(urlParams);
       }
     });

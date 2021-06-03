@@ -36,7 +36,7 @@ export class UserDetailsComponent implements OnInit {
   formatPhoneNumber = formatPhoneNumber;
   displayErrorToast: boolean = false;
   toastErrorMessage: string;
-  isUserInactive: boolean = false;
+  shouldDisplayDeleteButton: boolean = false;
 
   constructor(private accountService: AccountService,
               private router: Router,
@@ -73,7 +73,7 @@ export class UserDetailsComponent implements OnInit {
         this.userDetails = new UserDetails(response);
         this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
         if (response.last_online === null && response.is_active) {
-          this.isUserInactive = true;
+          this.shouldDisplayDeleteButton = this.checkDeleteButtonToDisplay(response);
         }
       }, error => {
         if (error.status === 404) {
@@ -81,6 +81,10 @@ export class UserDetailsComponent implements OnInit {
         }
       });
     });
+  }
+
+  checkDeleteButtonToDisplay(user: UserDetails): boolean {
+    return !!(user.last_online === null && user.is_active);
   }
 
   getLabelsString(): string {
@@ -106,6 +110,7 @@ export class UserDetailsComponent implements OnInit {
           this.httpClient.post('users/' + this.userDetails.id + '/deactivate/', {}).subscribe((response => {
             this.userDetails = new UserDetails(response);
             this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
+            this.shouldDisplayDeleteButton = this.checkDeleteButtonToDisplay(this.userDetails);
           }), (error) => {
             if (error.error.new_school_principal) {
               this.displayErrorToast = true;
@@ -119,6 +124,7 @@ export class UserDetailsComponent implements OnInit {
           this.httpClient.post('users/' + this.userDetails.id + '/activate/', {}).subscribe((response => {
               this.userDetails = new UserDetails(response);
               this.availableFields = UserDetailsComponent.constructAvailableFields(this.userDetails?.user_role);
+              this.shouldDisplayDeleteButton = this.checkDeleteButtonToDisplay(this.userDetails);
             })
           );
         }

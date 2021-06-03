@@ -100,7 +100,7 @@ export class StudentOwnSituationComponent extends ListPage implements OnInit, On
       this.studyClass = response.study_class;
       this.catalog = [];
       this.catalog = this.formatCatalog(response.catalogs_per_subjects);
-      this.rip = false;
+      setTimeout(() => this.rip = false, 500);
 
       // These lines till the end of this method are making the table's elms (table header & rows) to have the right position, no matter how long the req is taking
       const tableElm: HTMLElement = document.getElementsByClassName('scrollable-container')[0] as HTMLElement;

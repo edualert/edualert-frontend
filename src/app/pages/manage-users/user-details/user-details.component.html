@@ -26,7 +26,7 @@
           Activare
         </div>
         <div class="text-button" [routerLink]="['/manage-users/' + userDetails?.id + '/edit']">Editează</div>
-        <div *ngIf="isUserInactive"
+        <div *ngIf="shouldDisplayDeleteButton"
              class="text-button dark-text"
              (click)="openDeleteUserModal(userDetails, $event)">
           Șterge

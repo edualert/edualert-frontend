@@ -90,11 +90,18 @@ export class ViewUserModalComponent {
       }
     });
     this.modal.open();
+    this.checkScroll();
     return;
   }
 
+  checkScroll(): void {
+    setTimeout(() => {
+      const backShadow = document.querySelector('.background-shadow:not(.hidden)');
+      backShadow.getElementsByClassName('modal-body')[0].scrollTop = 0;
+    }, 10);
+  }
+
   cancel(): void {
-    document.getElementsByClassName('modal-body')[0].scrollTop = 0;
     this.modal.close();
     return;
   }
