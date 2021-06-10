@@ -95,6 +95,11 @@
         max-width: 450px;
       }
 
+      .tag {
+        margin-top: 1px;
+        margin-bottom: 1px;
+      }
+
       .user-status {
         position: relative;
         width: 200px;
@@ -208,6 +213,7 @@
         flex-direction: column;
 
         .tag {
+          margin-top: 0;
           margin-bottom: 3px;
 
           &:last-of-type {
@@ -270,14 +276,14 @@
             max-width: unset;
 
             .tag {
-              border-radius: 5px;
+              border-radius: $border-radius-tiny;
               margin-top: $margin-tiny;
             }
           }
 
           .user-status {
             width: 100%;
-            border-radius: 5px;
+            border-radius: $border-radius-tiny;
             margin-top: $margin-tiny;
             margin-bottom: $margin-tiny;
           }

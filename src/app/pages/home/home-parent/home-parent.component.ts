@@ -135,14 +135,14 @@ export class HomeParentComponent implements OnInit, OnDestroy {
       name: 'Nume materie',
       dataKey: 'subject_name',
       columnType: 'simple-cell',
-      minWidth: '150px'
+      minWidth: '40%'
     }));
     this.childSubjectsAtRiskTable.push(new Column({
       name: 'Medie anuală',
       dataKey: this.isSecondSemesterEnded ? 'avg_final' : 'avg_sem1',
       columnType: 'graded-cell',
       pivotPoint: 'avg_limit',
-      minWidth: '120px'
+      minWidth: '30%'
     }));
     this.childSubjectsAtRiskTable.push(new Column({
       name: 'Număr absențe nemotivate / an',
@@ -150,7 +150,7 @@ export class HomeParentComponent implements OnInit, OnDestroy {
       columnType: 'numbered-cell-dynamic-limit-with-third-of-hours',
       thirdOfHoursPivotPoint: this.isSecondSemesterEnded ? 'third_of_hours_count_annual' : 'third_of_hours_count_sem1',
       pivotPoint: this.isSecondSemesterEnded ? 22 : 11,
-      minWidth: '240px'
+      minWidth: '30%'
     }));
   }
 

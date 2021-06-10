@@ -23,6 +23,7 @@ import { DatepickerComponent } from '../../../shared/datepicker/datepicker.compo
 import * as moment from 'moment';
 import { InputValidator } from '../../../services/field-validation';
 import { UserDetailsBase } from '../../../models/user-details-base';
+import { ConfirmationModalComponent } from '../../../shared/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-add-edit-user-details',
@@ -39,6 +40,7 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
   @Output() hasModifiedDataOutput: EventEmitter<boolean> = new EventEmitter();
   @Output() subjectsAreEdited: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('datepicker', {'static': true}) datepicker: DatepickerComponent;
+  @ViewChild('appConfirmationModal', {static: false}) appConfirmationModal: ConfirmationModalComponent;
 
   account: UserDetails;
   userDetails: UserDetails;
@@ -77,6 +79,10 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
 
   get = get;
   yesterday: Date;
+
+  alertedLabelsStrings: string[] = ['Exmatriculat', 'Risc Abandon 1', 'Risc Abandon 2', 'Abandon', 'Repetent', 'Repetent Caz Boală',
+    'Înregistrat Proiect ORS - Grup Suport', 'Înregistrat Proiect ORS - Mentoring', 'Înregistrat Proiect ORS - Workshop',
+    'Înregistrat Proiect ORS - Summer Camp', 'Consiliere Psihologică'];
 
   constructor(
     accountService: AccountService,
@@ -295,9 +301,24 @@ export class AddEditUserDetailsComponent implements OnInit, OnChanges, OnDestroy
       _.remove(this.userDetails.labels, (el: IdText) => {
         return el.id === label.id;
       });
+    } else if (this.alertedLabelsStrings.includes(label.text)) {
+      this.openLabelAlertConfirmationModal(label);
     } else {
       this.userDetails.labels.push(label);
     }
+  }
+
+  openLabelAlertConfirmationModal(label): void {
+    const modalData = {
+      title: `Sunteți sigur că doriți să atribuiți eticheta '${label.text}'?`,
+      description: `Această acțiune va declanșa alerte despre eveniment.`,
+      cancelButtonText: 'NU',
+      confirmButtonText: 'DA',
+      confirmButtonCallback: () => {
+        this.userDetails.labels.push(label);
+      }
+    };
+    this.appConfirmationModal.open(modalData);
   }
 
   handleSubjectClicked(subject: IdName): void {
