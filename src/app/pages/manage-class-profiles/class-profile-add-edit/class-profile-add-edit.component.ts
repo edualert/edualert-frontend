@@ -403,7 +403,7 @@ export class ClassProfileAddEditComponent implements CanComponentDeactivate, OnD
       grade.optional_subjects.forEach((item, index) => {
         if ((this.errors[key].optional_subjects[index].subject_name ||
           this.errors[key].optional_subjects[index].weekly_hours_count) &&
-          this.yearGradeActiveTab !== key) {
+          ((this.yearGradeActiveTab === key && this.subjectActiveTab !== this.subjectsTabsList[1].id) || this.yearGradeActiveTab !== key)) {
           this.errorOnOtherTab = `Aveți o eroare la clasa a ${key}-a, materii opționale.`;
         }
       });
