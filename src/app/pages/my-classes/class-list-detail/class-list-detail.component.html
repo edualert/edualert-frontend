@@ -6,6 +6,12 @@
     </a>
     <h1 id="header-title">Clasa {{classDetails?.class_grade}} {{classDetails?.class_letter}}</h1>
     <h2 id="header-subtitle">{{ activeTab?.name }}</h2>
+    <div id="show-details-button"
+         [class.open]="isDetailsSectionOpen"
+         [class.disabled]="loading"
+         (click)="toggleDetailsSection()">
+      <div class="bold">Detalii</div>
+    </div>
     <div id="header-top-right-container">
       <div class="catalog-top-right desktop-only">
         <div class="column">
@@ -19,7 +25,7 @@
             {{classDetails?.class_master.full_name}}</div>
         </div>
       </div>
-      <div class="catalog-top-right mobile-only">
+      <div class="catalog-top-right mobile-only" *ngIf="isDetailsSectionOpen">
         <div class="column">
           <div class="gray-text label">{{classDetails?.academic_year}} - {{classDetails?.academic_year + 1}}</div>
           <div class="value bold">{{classDetails?.academic_program_name}}</div>
@@ -42,7 +48,7 @@
           [required]="true"
         ></app-dropdown>
       </div>
-      <hr>
+      <hr *ngIf="tabs.length > 1">
     </div>
     <div id="header-filter" class="mobile-only">
       <app-filter
@@ -68,7 +74,7 @@
         <app-toolbar [buttonsObjList]="provideButtonsList()"></app-toolbar>
       </app-filter>
     </div>
-    <div id="tabs-container">
+    <div id="tabs-container" *ngIf="tabs.length > 1">
       <app-tabs (tabHasBeenSelected)="changeTab($event)"
                 [activeTab]="activeTab?.id"
                 [tabsList]="tabs">

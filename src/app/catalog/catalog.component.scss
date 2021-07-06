@@ -7,6 +7,7 @@ $cell-height: 66px;
   max-width: calc(100vw - #{465px});
   overflow-anchor: none;
   overflow-x: auto;
+  transition: ease 0.1s;
 
   @media (max-width: $mobile-screen-width-normal) {
     max-width: calc(100vw - #{50px});

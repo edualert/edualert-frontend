@@ -15,10 +15,10 @@
 }
 
 .page-content {
-  max-height: calc(100vh - #{$reports-header-two-lines-tabs});
+  max-height: calc(var(--vh, 1vh) * 100 - #{$reports-header-two-lines-tabs});
 
   @media (max-width: $mobile-screen-width-normal) {
-    max-height: calc(100vh - #{$mobile-reports-header-two-lines-tabs} - #{$mobile-nav-bar-height});
+    height: calc(var(--vh, 1vh) * 100 - #{$mobile-reports-header-two-lines-tabs} - #{$mobile-nav-bar-height});
   }
 }
 

@@ -32,6 +32,8 @@ export class ModalComponent extends OpenCloseable implements AfterViewInit, OnDe
 
     this.cdr.detectChanges();
     // store the initial value of the viewport in a CSS variable and use it for mobile browsers
-    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    if (!document.documentElement.style.getPropertyValue('--vh')) {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
   }
 }

@@ -13,6 +13,9 @@
   padding-bottom: $margin-tiny;
   border-bottom: 1px solid $color-separator;
   width: auto;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 
   :last-of-type {
     margin-right: $margin-tiny;
@@ -40,11 +43,8 @@
 }
 
 .table {
-  width: 100%;
-
-  &.extended-width {
-    width: fit-content;
-  }
+  max-width: 100%;
+  min-width: fit-content;
 }
 
 .row {
@@ -122,6 +122,10 @@
 
   .table {
     max-height: 380px;
+  }
+
+  .scroll-container {
+    -webkit-perspective: 100px;
   }
 }
 

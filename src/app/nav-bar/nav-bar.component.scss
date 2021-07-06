@@ -230,6 +230,10 @@ $anim-time: 0.3s;
       .logout-section {
         opacity: 0;
       }
+
+      .text-button:before {
+        background-color: unset;
+      }
     }
 
     &.open {
