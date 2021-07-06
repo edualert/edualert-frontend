@@ -205,8 +205,8 @@ export function getCurrentSemesterStartDate(academicYearCalendar: AcademicYearCa
  * After using it on a component, in ngOnDestroy please remove the style attribute
  * from document.body in order to remove the 'unset' value from overflow property
  */
-export function setScrollableContainerHeight(): void {
-  setTimeout(() => {
+export function setScrollableContainerHeight(force?: boolean): void {
+  setTimeout( () => {
     const pageContent = document.getElementsByClassName('page-content')[0];
     const scrollableContainer = document.getElementsByClassName('scrollable-container')[0] as HTMLElement;
     const pageHeader = document.getElementById('page-header');
@@ -236,7 +236,7 @@ export function setScrollableContainerHeight(): void {
       browserInterfaceHeight = 30; // android browser interface height
     }
 
-    if (scrollableContainer.clientHeight > (body.clientHeight - pageHeader.clientHeight - toolbarHeight)) {
+    if (scrollableContainer.clientHeight > (body.clientHeight - pageHeader.clientHeight - toolbarHeight) || force) {
       if (pageHeader.clientWidth < 1024) {
         scrollableContainerComputedHeight = body.clientHeight - navBar.clientHeight - pageHeader.clientHeight - toolbarHeight - browserInterfaceHeight;
       } else {

@@ -21,6 +21,9 @@ export class HomeComponent implements OnInit {
     }, error => {
       this.requestInProgress = false;
     });
+    if (!document.documentElement.style.getPropertyValue('--vh')) {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
   }
 
   ngOnInit(): void {

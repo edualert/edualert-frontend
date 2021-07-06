@@ -8,7 +8,7 @@
 
     <div *ngIf="!withSearch; else searchInput"
          class="dropdown-button {{ errorMessage ? 'display-error' : ''}} {{ isOpen ? 'box-shadowed' : ''}}"
-         (click)="open()">
+         (click)="isOpen ? closeDropdown() : open()">
       <ng-container *ngIf="!withMultipleSelection; else withMultiple">
         <span *ngIf="appliedElement; else displayPlaceholder" class="overflow-handle">
             {{appliedElement[displayedProperty] || appliedElement}}
@@ -46,6 +46,7 @@
              [class.no-value]="!appliedElement"
              placeholder="{{ appliedElement ? (appliedElement[displayedProperty] || appliedElement) : placeholder }}"
              (focus)="open()" (ngModelChange)="searchChange($event)">
+      <div class="close-dropdown-button" *ngIf="isOpen" (click)="closeDropdown()"></div>
       <div class="error-message" *ngIf="errorMessage !== ''">{{ errorMessage }}</div>
     </ng-container>
 

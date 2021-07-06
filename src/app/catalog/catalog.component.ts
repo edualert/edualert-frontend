@@ -27,6 +27,7 @@ import { AcademicYearCalendarService } from '../services/academic-year-calendar.
 import { AcademicYearCalendar } from '../models/academic-year-calendar';
 import { HeaderService } from '../header/header.service';
 import * as moment from 'moment';
+import { CatalogDataService } from '../services/catalog-data.service';
 
 export type catalogLayout = 'class_master' | 'class_students' | string;
 
@@ -77,7 +78,8 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   initialScrollWidth: number;
 
   constructor(academicCalendarService: AcademicYearCalendarService,
-              private headerService: HeaderService) {
+              private headerService: HeaderService,
+              private catalogDataService: CatalogDataService) {
     academicCalendarService.getData(false).subscribe(response => {
       this.academicCalendar = new AcademicYearCalendar(response);
 
@@ -94,6 +96,11 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
           this.initialiseExpandableEditableCells(this.internalData, this.internalLayout);
         }
       }
+    });
+
+    catalogDataService.getData().subscribe(tableData => {
+      this.internalData = this.formatTableData(tableData);
+      this.refreshExpandedCellData();
     });
 
     this.bringExpandedCellToScreen = this.bringExpandedCellToScreen.bind(this);

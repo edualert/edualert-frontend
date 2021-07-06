@@ -230,6 +230,15 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
   }
 }
 
+.close-dropdown-button {
+  height: 28px;
+  width: 28px;
+  position: absolute;
+  cursor: pointer;
+  transform: translateX(-100%);
+  display: inline-block;
+}
+
 .big {
   input, .dropdown-button {
     &::placeholder {
@@ -321,6 +330,10 @@ $smallBouncyOut: cubic-bezier(0.47, 1.62, 0.55, 1.08);
         padding-bottom: 10px;
       }
     }
+  }
+
+  .close-dropdown-button {
+    top: 3px;
   }
 }
 

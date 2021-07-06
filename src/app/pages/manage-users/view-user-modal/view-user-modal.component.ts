@@ -51,6 +51,10 @@ export class ViewUserModalComponent {
     this.accountService.account.subscribe((account: UserDetails) => {
       this.accountRole = account.user_role;
     });
+
+    if (!document.documentElement.style.getPropertyValue('--vh')) {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
   }
 
   getLabelsString(): string {
@@ -78,9 +82,6 @@ export class ViewUserModalComponent {
     if (!userId) {
       return;
     }
-    if (!document.documentElement.style.getPropertyValue('--vh')) {
-      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-    }
 
     this.httpClient.get<UserDetails>('users/' + userId + '/?include_risk_alerts=true').subscribe(response => {
       this.user = new UserDetails(response);
@@ -88,9 +89,9 @@ export class ViewUserModalComponent {
       if (this.availableFields.labels) {
         this.labelsString = this.getLabelsString();
       }
+      this.modal.open();
+      this.checkScroll();
     });
-    this.modal.open();
-    this.checkScroll();
     return;
   }
 

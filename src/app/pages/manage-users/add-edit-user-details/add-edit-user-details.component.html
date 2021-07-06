@@ -280,7 +280,7 @@
       <div *ngFor="let item of subjects" class="custom-label flex-row-mobile">
         <div class="label width250">{{item.name}}</div>
         <div class="vertical">
-          <div class="radio-button" (click)="handleSubjectClicked(item)" [class.checked]="isSubjectChecked(item.id)"></div>
+          <div class="checkbox-button" (click)="handleSubjectClicked(item)" [class.checked]="isSubjectChecked(item.id)"></div>
         </div>
         <div class="label width250" *ngIf="loadingLabels">Loading...</div>
       </div>

@@ -14,7 +14,7 @@
 
 .page-content {
   animation: contentAppear 1.2s linear 1 backwards;
-  max-height: calc(100vh - #{$reports-header-two-lines-tabs});
+  max-height: calc(var(--vh, 1vh) * 100 - #{$reports-header-two-lines-tabs});
 }
 
 #tabs-container {
@@ -27,6 +27,6 @@
   }
 
   .page-content {
-    max-height: calc(100vh - #{$mobile-reports-header-two-lines-tabs} - #{$mobile-nav-bar-height});
+    height: calc(var(--vh, 1vh) * 100 - #{$mobile-reports-header-two-lines-tabs} - #{$mobile-nav-bar-height});
   }
 }

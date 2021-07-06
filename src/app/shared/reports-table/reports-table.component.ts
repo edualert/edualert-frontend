@@ -79,45 +79,6 @@ export class ReportsTableComponent {
   @Input() tableData: any;
   @Output() userHasBeenSelected = new EventEmitter<any>();
 
-  handleScroll() {
-    const tablesOnParentPage = document.getElementsByTagName('app-reports-table');
-    for (let j = 0; j < tablesOnParentPage.length; j++) {
-      const scrollcontainer = (tablesOnParentPage[j] as any).getElementsByClassName('scroll-container')[0];
-      const table = (tablesOnParentPage[j] as any).getElementsByClassName('table')[0];
-      const tablehead = (tablesOnParentPage[j] as any).getElementsByClassName('table-head')[0];
-      const firstElementInTableHeader = tablehead.getElementsByClassName('head')[0];
-      tablehead.style.transform = `translateY(${scrollcontainer.scrollTop}px)`;
-      (tablehead as HTMLElement).style.position = 'relative';
-      (tablehead as HTMLElement).style.zIndex = '4';
-      (tablehead as HTMLElement).style.backgroundColor = this.tableColumns[0].backgroundColor;
-      if (scrollcontainer.scrollLeft) {
-        table.classList.add('extended-width');
-
-        if (window.innerWidth > 768) {
-          firstElementInTableHeader.style.transform = `translateX(${scrollcontainer.scrollLeft}px)`;
-          firstElementInTableHeader.style.backgroundColor = this.tableColumns[0].backgroundColor;
-          firstElementInTableHeader.style.boxShadow = `5px 0 5px -5px #D2DCE8`;
-
-          for (let i = 0; i < table.getElementsByClassName('row').length; i++) {
-            const div = table.getElementsByClassName('row')[i];
-            (div.getElementsByClassName('row-data')[0] as HTMLElement).style.transform = `translateX(${scrollcontainer.scrollLeft}px)`;
-            (div.getElementsByClassName('row-data')[0] as HTMLElement).style.backgroundColor = this.tableColumns[0].backgroundColor;
-            (div.getElementsByClassName('row-data')[0] as HTMLElement).style.boxShadow = '5px 0 5px -5px #D2DCE8';
-          }
-        }
-      } else {
-        table.classList.remove('extended-width');
-        firstElementInTableHeader.style.transform = `translateX(0px)`;
-        firstElementInTableHeader.style.removeProperty('box-shadow');
-        for (let i = 0; i < table.getElementsByClassName('row').length; i++) {
-          const div = table.getElementsByClassName('row')[i];
-          (div.getElementsByClassName('row-data')[0] as HTMLElement).style.transform = `translateX(0px)`;
-          (div.getElementsByClassName('row-data')[0] as HTMLElement).style.removeProperty('box-shadow');
-        }
-      }
-    }
-  }
-
   getColorByEventType(data: ChildSchoolActivity) {
     const index = findIndex(CUSTOM_TEXTS_COLOR_CODES, {event: data.event_type});
 

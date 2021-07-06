@@ -1,4 +1,18 @@
 <form (submit)="formSubmit($event)" class="search-form">
-  <input type="text" [class.wide]="isWide" placeholder="Caută" class="search-input" [(ngModel)]="currentSearchString" name="search-input">
+  <input *ngIf="!isMobile"
+         type="text"
+         placeholder="Caută"
+         class="search-input"
+         [class.wide]="isWide"
+         name="search-input"
+         [(ngModel)]="currentSearchString">
+  <input *ngIf="isMobile"
+         type="text"
+         placeholder="Caută"
+         class="search-input"
+         [class.wide]="isWide"
+         name="search-input"
+         autocomplete="off"
+         [(ngModel)]="currentSearchString">
   <div class="search-button {{ currentSearchString?.length > 0 ? 'clear-button' : ''}}" (click)="clearInput()"></div>
 </form>

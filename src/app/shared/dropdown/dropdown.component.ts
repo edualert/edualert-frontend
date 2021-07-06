@@ -233,6 +233,11 @@ export class DropdownComponent implements OnDestroy, OnChanges {
     this.close();
   }
 
+  closeDropdown() {
+    this.close();
+    event.stopPropagation();
+  }
+
   searchChange(value: string) {
     this.searchString = value;
     this.highlightIndex = -1;
