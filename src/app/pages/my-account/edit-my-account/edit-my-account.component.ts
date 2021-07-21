@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import {AccountService} from '../../../services/account.service';
 import {Account} from '../../../models/account';
 import {userRoles} from '../../../models/user-roles';
@@ -163,8 +163,8 @@ export class EditMyAccountComponent implements OnInit {
     this.displayErrorToast = false;
   }
 
-  openPicker() {
-    this.datepicker.open();
+  openPicker(shouldListenAnimatedPage?: boolean) {
+    this.datepicker.open(shouldListenAnimatedPage);
   }
 
   changeDate(event: Date) {

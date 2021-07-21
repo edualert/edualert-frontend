@@ -149,7 +149,10 @@ export class HomeTeacherComponent implements OnInit, OnDestroy {
       backgroundColor: '#FFFFFF',
       name: 'Nume clasă',
       dataKey: 'class_full_name',
-      columnType: 'class-name',
+      columnType: 'link-button',
+      link: (value: StudyClassAtRisk) => {
+        return `/my-classes/${value.id}/class-detail`;
+      },
       minWidth: '150px'
     }));
     this.studyClassesAtRiskTable.push(new Column({

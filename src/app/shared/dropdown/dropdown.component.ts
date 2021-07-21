@@ -233,7 +233,7 @@ export class DropdownComponent implements OnDestroy, OnChanges {
     this.close();
   }
 
-  closeDropdown() {
+  closeDropdown(event) {
     this.close();
     event.stopPropagation();
   }
