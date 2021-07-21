@@ -20,7 +20,7 @@ export class StudyClassAtRisk extends StudyClassName {
     this.students_at_risk_count = object?.students_at_risk_count;
 
     if (this.class_grade && this.class_letter) {
-      this.class_full_name = `${this.class_grade} ${this.class_letter}`;
+      this.class_full_name = `Clasa ${this.class_grade} ${this.class_letter}`;
     }
   }
 

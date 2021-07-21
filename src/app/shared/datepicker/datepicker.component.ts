@@ -61,6 +61,7 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
     year: null,
     month: null
   };
+  animatedPageElm;
   readonly today: InternalDate = {
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
@@ -311,6 +312,9 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
   public close() {
     window.removeEventListener('keydown', this.escapeKeyClose);
     window.removeEventListener('click', this.outsideClickClose);
+    if (this.animatedPageElm) {
+      this.animatedPageElm.removeEventListener('click', this.outsideClickClose);
+    }
     if (this.isTranslated) {
       this.rootElement.nativeElement.style.transform = '';
       setTimeout(() => this.isOpen = false, 0);
@@ -321,7 +325,7 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
     document.body.style.cursor = '';
   }
 
-  public open() {
+  public open(shouldListenAnimatedPage?: boolean) {
     if (this.isOpen) {
       this.disableActions = false;
       return;
@@ -330,11 +334,15 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
     this.setInternalDatesAtOpen();
     this.initialiseCssVariables();
     this.isOpen = true;
-    document.body.style.cursor = 'pointer';
+    document.body.style.cursor = 'pointer'; // [Safari oddity] Needed to bubble up the event
 
     window.requestAnimationFrame(() => {
       window.addEventListener('keydown', this.escapeKeyClose);
       window.addEventListener('click', this.outsideClickClose);
+      if (shouldListenAnimatedPage) {
+        this.animatedPageElm = document.getElementsByClassName('animated-page')[0];
+        this.animatedPageElm.addEventListener('click', this.outsideClickClose); // [Safari oddity] event bubbling is excluding the '<body>' from the ancestors that should receive the event propagation
+      }
       this.bringDatepickerInsideScreenBoundaries();
     });
   }
@@ -384,5 +392,8 @@ export class DatepickerComponent implements OnInit, OnChanges, AfterViewInit, On
   ngOnDestroy(): void {
     window.removeEventListener('keydown', this.escapeKeyClose);
     window.removeEventListener('click', this.outsideClickClose);
+    if (this.animatedPageElm) {
+      this.animatedPageElm.removeEventListener('click', this.outsideClickClose);
+    }
   }
 }

@@ -19,6 +19,7 @@ import { formatChartData, handleChartWidthHeight, removeChartTooltip, shouldDisp
 import { CurrentAcademicYearService } from '../../../services/current-academic-year.service';
 import { findIndex } from 'lodash';
 import { ScrollableList } from '../../list-page/scrollable-list';
+import { StudyClassAtRisk } from '../../../models/study-class-name';
 
 @Component({
   selector: 'app-reports-teacher',
@@ -364,7 +365,10 @@ export class ReportsTeacherComponent extends ScrollableList implements OnInit, O
       backgroundColor: '#EDF0F5',
       name: 'Nume clasă',
       dataKey: 'class_full_name',
-      columnType: 'class-name',
+      columnType: 'link-button',
+      link: (value: StudyClassAtRisk) => {
+        return `/my-classes/${value.id}/class-detail`;
+      },
       minWidth: '150px'
     }));
     this.studyClassesAtRiskTable.push(new Column({

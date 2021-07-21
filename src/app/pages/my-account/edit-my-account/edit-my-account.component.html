@@ -170,7 +170,8 @@
       <div class="datepicker-input-wrapper value-container">
         <input
           class="date custom-date"
-          (click)="openPicker()"
+          type="button"
+          (click)="openPicker(true)"
           readOnly
           placeholder="Dată"
           value="{{ account?.birth_date ||  '' }}"

@@ -58,6 +58,12 @@ hr {
   justify-content: space-between;
 }
 
+.event-container {
+  width: 100%;
+  max-width: 630px;
+  min-width: 565px;
+}
+
 .label {
   margin-top: $margin-tiny;
   width: $fixed-width-column-small;
@@ -99,9 +105,17 @@ app-date-input {
 
 .detail-element-container {
   padding-bottom: $margin-default;
+
+  &.blue-text {
+    &:first-of-type {
+      margin-top: $margin-default;
+    }
+    padding-bottom: unset;
+  }
 }
 
-@media screen and (max-width: $mobile-screen-width-small) {
+
+@media (max-width: $mobile-screen-width-intermediate) {
 
   .page-content {
     padding-top: 0 !important;
@@ -161,4 +175,11 @@ app-date-input {
     }
   }
 
+  .dropdown-parent {
+    width: 100%;
+  }
+
+  .event-container {
+    min-width: unset;
+  }
 }
