@@ -6,6 +6,7 @@ import {HeaderModule} from '../../header/header.module';
 import {CatalogModule} from '../../catalog/catalog.module';
 import {RouterModule} from '@angular/router';
 import {ViewUserModalModule} from '../manage-users/view-user-modal/view-user-modal.module';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import {ViewUserModalModule} from '../manage-users/view-user-modal/view-user-mod
     HeaderModule,
     CatalogModule,
     RouterModule,
-    ViewUserModalModule
+    ViewUserModalModule,
+    SharedModule
   ],
   exports: [
     StudentCatalogComponent

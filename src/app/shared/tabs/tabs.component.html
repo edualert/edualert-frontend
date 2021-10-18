@@ -4,6 +4,7 @@
     <div *ngFor="let tab of tabsList"
          class="text-button"
          [ngClass]="activeTab === tab.id ? 'is-active' : 'inactive-tab'"
+         [class.loading]="loading"
          (click)="onTabClicked(tab.id)">{{tab.name}}</div>
   </div>
   <div #forthArrow (click)="arrowClicked('forth')" class="expand right"></div>

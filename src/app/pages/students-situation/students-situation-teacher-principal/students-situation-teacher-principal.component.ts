@@ -8,6 +8,7 @@ import {PupilStatisticsListOrs} from '../../../models/pupil-statistics-list';
 })
 export class StudentsSituationTeacherPrincipalComponent {
   @Input() students: PupilStatisticsListOrs[];
+  @Input() academicYearFilter: string;
   @Output() onLinkClick: EventEmitter<any> = new EventEmitter<any>();
   catalogLayout = 'students_situation_teacher_principal';
 }

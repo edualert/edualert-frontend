@@ -47,6 +47,8 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
 
   classDetails: ClassDetails;
   subjectsDataList: { [key: number]: { studentListData: any, subjectId: number, sortedBy?: string } } = {};
+  currentYear: string = moment().format('YYYY');
+  isClassFromCurrentAcademicYear: boolean = true;
 
   tabs: TableTab[];
   activeTab: any;
@@ -66,6 +68,11 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
 
   loading: boolean;
   isDetailsSectionOpen: boolean = false;
+
+  displayErrorToast: boolean = false;
+  toastErrorMessage: string;
+
+  isSecondSemesterEnded: boolean;
 
   @ViewChild('addGradesBulkModal', {static: false}) addGradesBulkModal: AddGradesBulkModalComponent;
   @ViewChild('addAbsencesBulkModal', {static: false}) addAbsencesBulkModal: AddAbsencesBulkModalComponent;
@@ -100,11 +107,18 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
 
     this.academicYearCalendarService.getData(false).subscribe(response => {
       this.academicYearCalendar = response;
+      const now = moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').valueOf();
+      this.isSecondSemesterEnded = now > moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf();
+    });
+
+    this.classId = this.activatedRoute.snapshot.params['id'];
+    this.httpClient.get(`own-study-classes/${this.classId}/`).subscribe((response: ClassDetails) => {
+      this.isClassFromCurrentAcademicYear = response.academic_year.toString() === this.currentYear;
     });
   }
 
   ngOnInit(): void {
-    this.classId = this.activatedRoute.snapshot.params['id'];
+    this.loading = true;
     this.tabs = [];
     if (this.initialSortCriteria === null) {
       this.initialSortCriteria = this.filterData.sortCriteria;
@@ -180,10 +194,11 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     const dataPath = 'own-study-classes/' + this.classId + '/pupils/';
     this.tableData = null;
     this.httpClient.get(dataPath, {params: httpParams}).subscribe((response: any[]) => {
+      setScrollableContainerHeight();
       this.tableData = response;
       this.pupilCount = response.length;
       this.subjectsDataList[0] = {studentListData: response, subjectId: 0, sortedBy: this.activeUrlParams.ordering};
-      setScrollableContainerHeight();
+      setTimeout(() => this.loading = false, 400);
     });
   }
 
@@ -195,10 +210,11 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     }
 
     this.httpClient.get(`own-study-classes/${this.classId}/subjects/${subjectId}/catalogs/`, {params: httpParams}).subscribe((response: any[]) => {
+      setScrollableContainerHeight();
       this.tableData = response;
       this.pupilCount = response.length;
       this.subjectsDataList[subjectId] = {studentListData: response, subjectId, sortedBy: this.activeUrlParams.ordering};
-      setScrollableContainerHeight();
+      setTimeout(() => this.loading = false, 400);
     });
   }
 
@@ -207,16 +223,17 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     if (this.activeTab.id.toString() === tab || this.loading) {
       return;
     }
+    this.loading = true;
     this.activeTab = this.tabs[findIndex(this.tabs, {id: parseInt(tab, 10)})];
 
-    this.loading = true;
     this.setDataForTab(tab);
     this.pupilCount = this.tableData?.length;
   }
 
   private setDataForTab(id, newRequest?: boolean) {
     // If we already have the data, set it.
-    if (this.subjectsDataList[id] && this.activeUrlParams.ordering === this.subjectsDataList[id].sortedBy && !(this.modifiedPupilData && ['class_students', 'class_master'].includes(this.activeTab.tableLayout)) && !newRequest) {
+    if (this.subjectsDataList[id] && this.activeUrlParams.ordering === this.subjectsDataList[id].sortedBy
+      && !(this.modifiedPupilData && ['class_students', 'class_master'].includes(this.activeTab.tableLayout)) && !newRequest) {
       // If we have the data but it was updated, fetch it from the server, else set it.
       if (this.modifiedTabsIds.includes(this.activeTab.id)) {
         this.fetchCatalogData(id, this.activeUrlParams);
@@ -225,17 +242,19 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
         this.tableData = this.subjectsDataList[id].studentListData;
         this.pupilCount = this.tableData.length;
         setScrollableContainerHeight();
+        this.loading = false;
       }
     } else {
       // Else, fetch it from the server and set it.
-      if (this.modifiedPupilData && ['class_students', 'class_master'].includes(this.activeTab.tableLayout)) {
+      if (['class_students', 'class_master'].includes(this.activeTab.tableLayout)) {
         this.fetchOwnPupilData(this.activeUrlParams);
-        this.modifiedPupilData = false;
+        if (this.modifiedPupilData) {
+          this.modifiedPupilData = false;
+        }
       } else {
         this.fetchCatalogData(id, this.activeUrlParams);
       }
     }
-    this.loading = false;
   }
 
   provideButtonsList() {
@@ -256,7 +275,8 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
       },
         {
           text: 'Adaugă absențe',
-          buttonCallbackFn: this.openAddBulkAbsencesModal.bind(this)
+          buttonCallbackFn: this.openAddBulkAbsencesModal.bind(this),
+          disabled: this.isSecondSemesterEnded || !this.isClassFromCurrentAcademicYear
         },
         {
           text: 'Exportă catalog',
@@ -270,12 +290,14 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
     },
       {
         text: 'Adaugă note',
-        buttonCallbackFn: this.openAddBulkGradesModal.bind(this)
+        buttonCallbackFn: this.openAddBulkGradesModal.bind(this),
+        disabled: this.isSecondSemesterEnded || !this.isClassFromCurrentAcademicYear
       }
       ,
       {
         text: 'Adaugă absențe',
-        buttonCallbackFn: this.openAddBulkAbsencesModal.bind(this)
+        buttonCallbackFn: this.openAddBulkAbsencesModal.bind(this),
+        disabled: this.isSecondSemesterEnded || !this.isClassFromCurrentAcademicYear
       }
       ,
       {
@@ -383,12 +405,30 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
       if (this.classDetails.is_class_master) {
         this.modifiedPupilData = true;
       }
+    }, (error) => {
+      this.displayErrorToast = true;
+      this.toastErrorMessage = error.error[Object.keys(error.error)[0]];
     });
   }
 
-  saveSingleGrade(value: { grade: { selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }, id: number, semester: string }) {
+  saveSingleGrade(value: {
+    grade:
+      {
+        selectedGrade: number,
+        selectedDate: Date,
+        id: number,
+        isThesis?: boolean,
+        isExaminationSection?: boolean,
+        gradeType?: string,
+        examinationType?: string,
+        selectedGrade2?: number,
+        semester?: number
+      },
+    id: number,
+    semester: string
+  }) {
     let request;
-    if (value.grade.id) {
+    if (value.grade.id && !value.grade.isExaminationSection) {
       request = this.httpClient.put(
         `grades/${value.grade.id}/`,
         {
@@ -397,6 +437,44 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
           grade_type: value.grade.isThesis ? 'THESIS' : 'REGULAR'
         }
       );
+    } else if (value.grade.isExaminationSection) {
+      if (value.grade.id) {
+        request = this.httpClient.put(
+          `examination-grades/${value.grade.id}/`,
+          {
+            grade1: value.grade.selectedGrade,
+            grade2: value.grade.selectedGrade2,
+            taken_at: moment(value.grade.selectedDate).format('DD-MM-YYYY'),
+            examination_type: value.grade.examinationType,
+            grade_type: value.grade.gradeType,
+            semester: value.grade.semester
+          }
+        );
+      } else {
+        let body;
+        if (value.grade.gradeType === 'DIFFERENCE') {
+          body = {
+            grade1: value.grade.selectedGrade,
+            grade2: value.grade.selectedGrade2,
+            taken_at: moment(value.grade.selectedDate).format('DD-MM-YYYY'),
+            examination_type: value.grade.examinationType,
+            grade_type: value.grade.gradeType,
+            semester: value.grade.semester
+          };
+        } else {
+          body = {
+            grade1: value.grade.selectedGrade,
+            grade2: value.grade.selectedGrade2,
+            taken_at: moment(value.grade.selectedDate).format('DD-MM-YYYY'),
+            examination_type: value.grade.examinationType,
+            grade_type: value.grade.gradeType
+          };
+        }
+        request = this.httpClient.post(
+          `catalogs/${value.id}/examination-grades/`,
+          body
+        );
+      }
     } else {
       request = this.httpClient.post(
         `catalogs/${value.id}/grades/`,
@@ -424,7 +502,13 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
   }
 
   deleteGrade(grade: any): void {
-    const request = this.httpClient.delete(`grades/${grade.id}/`);
+    let url: string;
+    if (grade?.grade1) {
+      url = `examination-grades/${grade.id}/`;
+    } else {
+      url = `grades/${grade.id}/`;
+    }
+    const request = this.httpClient.delete(url);
     this.modifyCatalog(request);
   }
 
@@ -454,6 +538,11 @@ export class ClassListDetailComponent extends ListPage implements OnInit, OnDest
   toggleDetailsSection(): void {
     this.isDetailsSectionOpen = !this.isDetailsSectionOpen;
     setScrollableContainerHeight(true);
+  }
+
+  hideErrorToast() {
+    this.toastErrorMessage = '';
+    this.displayErrorToast = false;
   }
 
 }

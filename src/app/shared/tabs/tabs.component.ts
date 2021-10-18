@@ -22,6 +22,7 @@ export class TabsComponent implements AfterViewInit, OnDestroy, AfterViewChecked
   @Input() activeTab: string;
   @Input() shouldScrollToActiveTab = false;
   @Input() noArrows: boolean = false;
+  @Input() loading: boolean = false;
   @Output() tabHasBeenSelected: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild('tabContainer') tabContainer;
   @ViewChild('backArrow') backArrow;

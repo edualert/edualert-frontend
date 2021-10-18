@@ -10,7 +10,6 @@ import {ClassListDetailComponent} from './class-list-detail/class-list-detail.co
 import {AddGradesBulkModalModule} from '../../catalog/modals/add-grades-bulk-modal/add-grades-bulk-modal.module';
 import {AddAbsencesBulkModalModule} from '../../catalog/modals/add-absences-bulk-modal/add-absences-bulk-modal.module';
 import {CatalogModule} from '../../catalog/catalog.module';
-import {ToolbarComponent} from './class-list-detail/toolbar/toolbar.component';
 import {SettingsModalModule} from '../../catalog/settings-modal/settings-modal.module';
 import {ViewUserModalModule} from '../manage-users/view-user-modal/view-user-modal.module';
 
@@ -18,8 +17,7 @@ import {ViewUserModalModule} from '../manage-users/view-user-modal/view-user-mod
 @NgModule({
   declarations: [
     MyClassesComponent,
-    ClassListDetailComponent,
-    ToolbarComponent
+    ClassListDetailComponent
   ],
   imports: [
     CommonModule,

@@ -14,6 +14,12 @@
       <ng-container *ngIf="!rip">{{studyClass?.class_grade}} {{studyClass?.class_letter}}</ng-container>
       <ng-container *ngIf="rip">...</ng-container>
     </h2>
+    <div id="show-details-button"
+         [class.open]="isDetailsSectionOpen"
+         [class.disabled]="loading"
+         (click)="toggleDetailsSection()">
+      <div class="bold">Detalii</div>
+    </div>
     <div id="labels-container">
       <div class="tags">
         <div class="label">Etichete</div>
@@ -32,7 +38,8 @@
       </div>
     </div>
     <div id="header-top-right-container">
-      <div class="catalog-top-right">
+      <div *ngIf="isDetailsSectionOpen"
+           class="catalog-top-right">
         <div class="column">
           <div class="gray-text label">{{student?.parents?.length === 1 ? 'Părinte' : 'Părinți'}}</div>
           <div class="value bold">
@@ -55,11 +62,18 @@
     <app-catalog
       [data]="catalog"
       [tableLayout]="layout"
+      [academicYearFilter]="classYear ? classYear : null"
       (addAbsenceToStudent)="addSingleAbsence($event)"
       (deleteAbsence)="deleteAbsence($event)"
       (authorizeAbsence)="authorizeAbsence($event)"
     ></app-catalog>
   </div>
+
+  <app-toolbar [buttonsObjList]="toolbarButtonsList"
+               [hasCount]="false"
+               [tagsSection]="true"
+               [tags]=student?.labels>
+  </app-toolbar>
 </div>
 
 <app-view-user-modal #appViewUserModal></app-view-user-modal>

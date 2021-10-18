@@ -34,6 +34,7 @@
       <div class="logout-section">
         <div class="user-name bold blue-text">{{account.full_name}}</div>
         <div class="user-role">{{userRoles[account.user_role]}}</div>
+        <div class="user-role" *ngIf="usersSchoolName">{{usersSchoolName}}</div>
         <a class="menu-link text-button logout" (click)="logout()">
           <div class="icon"></div>
           <div class="text">Deconectare</div>

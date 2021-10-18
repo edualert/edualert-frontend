@@ -247,3 +247,27 @@ export function setScrollableContainerHeight(force?: boolean): void {
     }
   }, 400);
 }
+
+export function moveScrollIfOnMobileIOS(targetElement, scrollHandle): boolean {
+  if (navigator.userAgent.includes('Apple') && navigator.userAgent.includes('Mobile')) {
+    (document.getElementsByTagName('body')[0] as HTMLElement).style.overflowX = 'unset';
+    (targetElement as HTMLElement).style.overflowX = 'hidden';
+    (targetElement as HTMLElement).style.maxHeight = `${window.innerHeight}px`;
+    targetElement.addEventListener('scroll', scrollHandle);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function revertScrollMoveIfOnMobileIOS(targetElement, scrollHandle): boolean {
+  if (navigator.userAgent.includes('Apple') && navigator.userAgent.includes('Mobile')) {
+    targetElement.removeEventListener('scroll', scrollHandle);
+    (document.getElementsByTagName('body')[0] as HTMLElement).style.overflowX = 'hidden';
+    (targetElement as HTMLElement).style.overflowX = 'unset';
+    (targetElement as HTMLElement).style.maxHeight = `unset`;
+    return true;
+  } else {
+    return false;
+  }
+}

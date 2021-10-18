@@ -1,15 +1,15 @@
-import {AfterViewInit, Component, Injector, OnDestroy, ViewChild} from '@angular/core';
-import {SchoolUnit} from '../../models/school-unit';
-import {ListPage} from '../list-page/list-page';
-import {HttpClient} from '@angular/common/http';
-import {NetworkingListResponse} from '../../models/networking-list-response';
-import {Params} from '@angular/router';
-import {capitalizeString} from '../../shared/utils';
-import {ConfirmationModalComponent} from '../../shared/confirmation-modal/confirmation-modal.component';
-import {findIndex} from 'lodash';
-import {IdName} from '../../models/id-name';
+import { AfterViewInit, Component, Injector, OnDestroy, ViewChild } from '@angular/core';
+import { SchoolUnit } from '../../models/school-unit';
+import { ListPage } from '../list-page/list-page';
+import { HttpClient } from '@angular/common/http';
+import { NetworkingListResponse } from '../../models/networking-list-response';
+import { Params } from '@angular/router';
+import { capitalizeString, moveScrollIfOnMobileIOS, revertScrollMoveIfOnMobileIOS } from '../../shared/utils';
+import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { findIndex } from 'lodash';
+import { IdName } from '../../models/id-name';
 import BaseRequestParameters from '../list-page/base-request-parameters';
-import {AddNewUserModalComponent} from '../manage-users/add-new-user-modal/add-new-user-modal.component';
+import { AddNewUserModalComponent } from '../manage-users/add-new-user-modal/add-new-user-modal.component';
 
 class RequestParams extends BaseRequestParameters {
   readonly search: string;
@@ -88,7 +88,7 @@ export class ManageSchoolsComponent extends ListPage implements AfterViewInit, O
     const modalData = {
       title: `Doriți să ${school.is_active ? 'dezactivați' : 'reactivați'} contul școlii ${school.name}?`,
       description: school.is_active ? 'Pentru această școală nu se vor mai putea introduce date în sistem și utilizatorii care aparțin școlii nu se vor mai putea autentifica în contul EduAlert.'
-      : 'Pentru această școală se vor putea introduce din nou date în sistem și utilizatorii care aparțin școlii se vor putea autentifica în contul EduAlert.',
+        : 'Pentru această școală se vor putea introduce din nou date în sistem și utilizatorii care aparțin școlii se vor putea autentifica în contul EduAlert.',
       cancelButtonText: 'NU',
       confirmButtonText: 'DA',
       confirmButtonCallback: () => {
@@ -118,11 +118,19 @@ export class ManageSchoolsComponent extends ListPage implements AfterViewInit, O
   }
 
   ngAfterViewInit(): void {
-    document.body.addEventListener('scroll', this.scrollHandle);
+    this.differentScrollableElm = document.getElementsByTagName('app-manage-schools')[0].getElementsByClassName('animated-page')[0];
+    this.isOnMobileIOS = moveScrollIfOnMobileIOS(this.differentScrollableElm, this.scrollHandle);
+    if (!this.isOnMobileIOS) {
+      document.body.addEventListener('scroll', this.scrollHandle);
+    }
   }
 
   ngOnDestroy(): void {
-    document.body.removeEventListener('scroll',  this.scrollHandle);
+    if (this.isOnMobileIOS) {
+      revertScrollMoveIfOnMobileIOS(this.differentScrollableElm, this.scrollHandle);
+    } else {
+      document.body.removeEventListener('scroll', this.scrollHandle);
+    }
   }
 
 }

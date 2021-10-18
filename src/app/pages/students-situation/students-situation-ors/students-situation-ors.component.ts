@@ -8,5 +8,6 @@ import {PupilStatisticsListOrs} from '../../../models/pupil-statistics-list';
 })
 export class StudentsSituationOrsComponent {
   @Input() students: PupilStatisticsListOrs[];
+  @Input() academicYearFilter: string;
   catalogLayout = 'students_situation_ors';
 }

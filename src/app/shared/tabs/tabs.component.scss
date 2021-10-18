@@ -38,6 +38,10 @@
   }
 }
 
+.loading {
+  pointer-events: none;
+}
+
 @media (max-width: $mobile-screen-width-normal) {
   .text-button {
     font-size: $font-size-normal;

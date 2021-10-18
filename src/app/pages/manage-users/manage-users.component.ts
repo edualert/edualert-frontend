@@ -12,6 +12,7 @@ import { AddUsersBulkService } from '../../services/add-users-bulk.service';
 import { FormBuilder } from '@angular/forms';
 import { AddUsersBulkComponent } from './add-users-bulk/add-users-bulk.component';
 import { ManageUsersService } from '../../services/manage-users.service';
+import { moveScrollIfOnMobileIOS, revertScrollMoveIfOnMobileIOS } from '../../shared/utils';
 
 
 @Component({
@@ -84,11 +85,19 @@ export class ManageUsersComponent extends ListPage implements AfterViewInit, OnD
   }
 
   ngAfterViewInit(): void {
-    document.body.addEventListener('scroll', this.scrollHandle);
+    this.differentScrollableElm = document.getElementsByTagName('app-manage')[0].getElementsByClassName('animated-page')[0];
+    this.isOnMobileIOS = moveScrollIfOnMobileIOS(this.differentScrollableElm, this.scrollHandle);
+    if (!this.isOnMobileIOS) {
+      document.body.addEventListener('scroll', this.scrollHandle);
+    }
   }
 
   ngOnDestroy(): void {
-    document.body.removeEventListener('scroll', this.scrollHandle);
+    if (this.isOnMobileIOS) {
+      revertScrollMoveIfOnMobileIOS(this.differentScrollableElm, this.scrollHandle);
+    } else {
+      document.body.removeEventListener('scroll', this.scrollHandle);
+    }
   }
 
   requestData(urlParams?: Params, clearUsersArray?: boolean): void {

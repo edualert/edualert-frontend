@@ -114,6 +114,12 @@ app-date-input {
   }
 }
 
+@media screen and (max-width: $mobile-screen-width-normal) {
+  .text-button {
+    margin: 0 $margin-small 0 0;
+  }
+}
+
 
 @media (max-width: $mobile-screen-width-intermediate) {
 
@@ -124,10 +130,6 @@ app-date-input {
   .button-container {
     flex-direction: row;
     align-items: flex-start;
-  }
-
-  .text-button {
-    margin: 0 $margin-small 0 0;
   }
 
   .row {

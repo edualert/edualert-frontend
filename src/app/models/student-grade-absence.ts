@@ -5,11 +5,15 @@ export class Grade {
   id: number;
   created: string;
   examination_type: string;
+  grade1: number;
+  grade2: number;
   minutesSinceCreation?: number; // local attribute, not from server;
 
   constructor(object: any) {
     if (object) {
       this.grade = object.grade;
+      this.grade1 = object.grade1;
+      this.grade2 = object.grade2;
       this.taken_at = object.taken_at;
       this.grade_type = object.grade_type;
       this.id = object.id;

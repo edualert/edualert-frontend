@@ -107,6 +107,13 @@ export class ViewUserModalComponent {
     return;
   }
 
+  onUserNameClick(userId: number): void {
+    if (this.modal.isOpen) {
+      this.modal.close();
+    }
+    this.router.navigate(['/manage-users/' + userId + '/view']);
+  }
+
   onClassNameClick() {
     if (this.accountRole === 'SCHOOL_PRINCIPAL') {
       if (this.activatedRoute.snapshot.url.length && this.activatedRoute.snapshot.url[0].path.includes('manage-classes')) {

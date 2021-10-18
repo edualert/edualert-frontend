@@ -1,7 +1,37 @@
+@import '../../../assets/styles/base';
+
 .container.grade .date-container .datepicker-container.centered-datepicker {
   transform: translate(-74%);
 }
 
 .dropdown-container {
   margin-bottom: -2px;
+}
+
+.list-item, .single-grade {
+  display: flex;
+  align-items: center;
+
+  & + .list-item {
+    margin-top: $margin-tiny;
+  }
+}
+
+.examination-grades {
+  .label {
+    min-width: 64px;
+  }
+}
+
+.right-container {
+  margin-left: $margin-default;
+
+  .label {
+    min-width: 25px;
+  }
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
 }

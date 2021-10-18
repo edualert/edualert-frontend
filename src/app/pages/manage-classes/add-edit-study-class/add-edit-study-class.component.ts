@@ -449,7 +449,7 @@ export class AddEditStudyClassComponent implements OnInit {
     if (this.isEdit && index <= this.initialStudentNumber) {
       if (this.shouldPATCH && !this.studyClass.new_students && this.studyClass.new_students?.length === 0) {
         this.initialStudentNumber--;
-      } else if (!this.shouldPATCH || index < this.initialStudentNumber) {
+      } else if (!this.shouldPATCH && index < this.initialStudentNumber) {
         this.initialStudentNumber--;
       }
     }
@@ -481,7 +481,7 @@ export class AddEditStudyClassComponent implements OnInit {
     }
 
     if (this.studyClassErrors.students.indexOf(this.studyClass.students[index])) {
-      this.studyClassErrors.students.splice(this.studyClassErrors.students.indexOf(this.studyClass.students[index]), 1);
+      this.studyClassErrors.students.splice(index, 1);
     }
   }
 
@@ -499,6 +499,7 @@ export class AddEditStudyClassComponent implements OnInit {
 
   getAvailableTeachersForSubject() {
     this.studyClass.teachers_class_through.forEach((subject: TeacherClassThrough) => {
+      this.availableTeachersForSubjects[subject.subject_name] = [];
       if (subject.is_mandatory) {
         this.availableSchoolTeachers.forEach(teacher => {
           if (teacher.taught_subjects.includes(subject.subject_id)) {

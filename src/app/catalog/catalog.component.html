@@ -61,6 +61,9 @@
           [isEditable]="editableCells[expandedCell.rowIndex][expandedCell.colIndex]"
           [tableLayoutAsIdentifier]="tableLayout"
           [academicYearCalendar]="academicCalendar"
+          [shouldDisplaySecondExaminationSection]="shouldDisplaySecondExaminationSection"
+          [shouldDisplayDifferencesSection]="shouldDisplayDifferencesSection"
+          [eventMinDate] = eventMinDate
           (addGrade)="addGrade($event, rowIndex, expandedCell?.identifier)"
           (addAbsence)="addAbsence($event, rowIndex, expandedCell?.identifier)"
           (deleteGrade)="deleteGrade.emit($event)"

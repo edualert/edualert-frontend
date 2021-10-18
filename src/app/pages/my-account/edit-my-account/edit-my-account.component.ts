@@ -177,4 +177,8 @@ export class EditMyAccountComponent implements OnInit {
     this.yesterday.setDate(this.yesterday.getDate() - 1);
   }
 
+  clearBirthDateField() {
+    this.hasModifiedData = true;
+    this.account.birth_date = null;
+  }
 }

@@ -114,6 +114,21 @@
   display: none;
 }
 
+.datepicker-input-wrapper {
+  display: flex;
+}
+
+#date-picker {
+  width: 125px;
+  padding-left: $margin-xsmall;
+  padding-right: 35px;
+}
+
+.detail-element-container .clear-field-button {
+  margin-bottom: $margin-xsmall;
+  margin-top: unset;
+}
+
 @media screen and (max-width: $mobile-screen-width-normal){
   .full-width {
     width: 100%!important;

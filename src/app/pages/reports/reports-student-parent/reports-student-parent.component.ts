@@ -244,7 +244,7 @@ export class ReportsStudentParentComponent implements OnInit, OnChanges, OnDestr
         generate: this.generateStudentActivityTable
       },
       student_subjects_at_risk: {
-        request: this.childSubjectsAtRiskService.getData(this.forceRequestOnTables['student_subjects_at_risk'] ? this.forceRequestOnTables['student_school_activity'] : true, childId),
+        request: this.childSubjectsAtRiskService.getData(this.forceRequestOnTables['student_subjects_at_risk'] ? this.forceRequestOnTables['student_subjects_at_risk'] : true, childId),
         generate: this.generateStudentSubjectsAtRiskTable
       },
       student_absences_evolution: {

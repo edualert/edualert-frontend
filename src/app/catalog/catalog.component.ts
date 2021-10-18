@@ -28,6 +28,7 @@ import { AcademicYearCalendar } from '../models/academic-year-calendar';
 import { HeaderService } from '../header/header.service';
 import * as moment from 'moment';
 import { CatalogDataService } from '../services/catalog-data.service';
+import { ActivatedRoute } from '@angular/router';
 
 export type catalogLayout = 'class_master' | 'class_students' | string;
 
@@ -56,6 +57,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() tableLayout: 'class_master' | 'class_students' | 'student_catalog' | 'students_situation_ors' | 'students_situation_teacher_principal' | string;
   @Input() isClassMaster: boolean = false;
   @Input() activeTabId: any;
+  @Input() academicYearFilter: string;
 
   @Output() addGradeToStudent: EventEmitter<any> = new EventEmitter<any>();
   @Output() addAbsenceToStudent: EventEmitter<any> = new EventEmitter<any>();
@@ -74,11 +76,20 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   academicCalendar: AcademicYearCalendar;
   expandableCells: boolean[][];
   editableCells: boolean[][];
+
+  shouldDisplaySecondExaminationSection: boolean = false;
+  shouldDisplayDifferencesSection: boolean = false;
+
+  isExpanded: boolean = false;
+
   currentSemester: number;
   initialScrollWidth: number;
 
+  eventMinDate: Date;
+
   constructor(academicCalendarService: AcademicYearCalendarService,
               private headerService: HeaderService,
+              private activatedRoute: ActivatedRoute,
               private catalogDataService: CatalogDataService) {
     academicCalendarService.getData(false).subscribe(response => {
       this.academicCalendar = new AcademicYearCalendar(response);
@@ -89,6 +100,20 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
       } else if (now <= moment(response.second_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
         this.currentSemester = 2;
       }
+
+      response.events.forEach(event => {
+        if (['CORIGENTE', 'DIFERENTE'].includes(event.event_type)) {
+          if (now >= moment(event.starts_at, 'DD-MM-YYYY').valueOf()
+            && now <= moment(event.ends_at, 'DD-MM-YYYY').valueOf()) {
+            this.eventMinDate = new Date(moment(event.starts_at, 'DD-MM-YYYY').valueOf());
+            if (event.event_type === 'CORIGENTE') {
+              this.shouldDisplaySecondExaminationSection = true;
+            } else {
+              this.shouldDisplayDifferencesSection = true;
+            }
+          }
+        }
+      });
 
       if (!this.internalLayout) {
         this.internalLayout = this.getLayout(this.tableLayout);
@@ -130,6 +155,12 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.internalLayout = this.getLayout(changes.tableLayout.currentValue);
     }
 
+    if (['student_own_situation', 'students_situation_ors', 'students_situation_teacher_principal'].includes(this.tableLayout)
+      && changes.academicYearFilter && this.academicCalendar
+      && !([changes.academicYearFilter.currentValue, changes.academicYearFilter.previousValue].includes(this.academicCalendar))) {
+      this.internalLayout = this.getLayout(this.tableLayout);
+    }
+
     if ((changes.tableLayout || changes.data) && (this.internalData && this.internalLayout)) {
       this.initialiseExpandableEditableCells(this.internalData, this.internalLayout);
     }
@@ -138,6 +169,9 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   private getLayout(layout: catalogLayout): CatalogLayout {
     switch (layout) {
       case 'class_master':
+        if (this.academicYearFilter && this.academicCalendar.academic_year !== parseInt(this.academicYearFilter, 10)) {
+          return classMasterySecondSemesterEnded;
+        }
         switch (this.currentSemester) {
           case 1:
             return classMasteryFirstSemester;
@@ -147,6 +181,9 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
             return classMasterySecondSemesterEnded;
         }
       case 'class_students':
+        if (this.academicYearFilter && this.academicCalendar.academic_year !== parseInt(this.academicYearFilter, 10)) {
+          return classPupilsSecondSemesterEnded;
+        }
         switch (this.currentSemester) {
           case 1:
             return classPupilsFirstSemester;
@@ -156,6 +193,9 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
             return classPupilsSecondSemesterEnded;
         }
       case 'student_catalog':
+        if (this.academicYearFilter && this.academicCalendar.academic_year !== parseInt(this.academicYearFilter, 10)) {
+          return studentCatalogSecondSemesterEnded;
+        }
         switch (this.currentSemester) {
           case 1:
             return studentCatalogFirstSemester;
@@ -165,6 +205,10 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
             return studentCatalogSecondSemesterEnded;
         }
       case 'student_own_situation':
+        if (this.academicCalendar.academic_year && this.activatedRoute.snapshot.queryParams?.academicYear
+          && this.academicCalendar.academic_year !== parseInt(this.activatedRoute.snapshot.queryParams?.academicYear, 10)) {
+          return studentOwnSituationSecondSemesterEnded;
+        }
         switch (this.currentSemester) {
           case 1:
             return studentOwnSituationFirstSemester;
@@ -174,6 +218,9 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
             return studentOwnSituationSecondSemesterEnded;
         }
       case 'students_situation_ors':
+        if (this.academicCalendar.academic_year && this.academicCalendar.academic_year !== parseInt(this.activatedRoute.snapshot.queryParams?.academicYear, 10)) {
+          return studentsSituationOrsSecondSemesterEnded;
+        }
         switch (this.currentSemester) {
           case 2:
             return studentsSituationOrsSecondSemester;
@@ -181,6 +228,9 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
             return studentsSituationOrsSecondSemesterEnded;
         }
       case 'students_situation_teacher_principal':
+        if (this.academicCalendar.academic_year && this.academicCalendar.academic_year !== parseInt(this.activatedRoute.snapshot.queryParams?.academicYear, 10)) {
+          return studentsSituationTeacherPrincipalSecondSemesterEnded;
+        }
         switch (this.currentSemester) {
           case 2:
             return studentsSituationTeacherPrincipalSecondSemester;
@@ -188,6 +238,9 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
             return studentsSituationTeacherPrincipalSecondSemesterEnded;
         }
       default:
+        if (this.academicYearFilter && this.academicCalendar.academic_year !== parseInt(this.academicYearFilter, 10)) {
+          return ownClassSubjectSecondSemesterEnded;
+        }
         switch (this.currentSemester) {
           case 1:
             return ownClassSubjectFirstSemester;
@@ -240,7 +293,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
         this.expandableCells[i][j] = null;
         this.editableCells[i][j] = null;
         if (layoutColumn.expandableDecider) {
-          this.expandableCells[i][j] = layoutColumn.expandableDecider(this.academicCalendar, row);
+          this.expandableCells[i][j] = layoutColumn.expandableDecider(this.academicCalendar, row) || this.shouldDisplayDifferencesSection;
         }
         if (layoutColumn.editableDecider) {
           this.editableCells[i][j] = layoutColumn.editableDecider(this.academicCalendar, row);
@@ -250,14 +303,20 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   expandCell(rowIndex, colIndex): void {
+    if (this.isExpanded) {
+      this.closeExpand();
+      return;
+    }
     const identifier = this.internalLayout.dataRow[colIndex].identifier;
     const data = this.getDataForExpandedCell(identifier, this.internalData[rowIndex]);
     data['wants_thesis'] = this.internalData[rowIndex]?.hasOwnProperty('wants_thesis') ? this.internalData[rowIndex].wants_thesis : null;
     data['is_exempted'] = this.internalData[rowIndex]?.hasOwnProperty('is_exempted') ? this.internalData[rowIndex].is_exempted : null;
+    data['second_examination_grades'] = this.internalData[rowIndex]?.hasOwnProperty('second_examination_grades') ? this.internalData[rowIndex].second_examination_grades : null;
     this.expandedCell = new ExpandedCell({rowIndex, colIndex, identifier, data});
     window.requestAnimationFrame(() => {
       this.bringExpandedCellToScreen();
     });
+    this.isExpanded = true;
   }
 
   private refreshExpandedCellData(): void {
@@ -275,18 +334,23 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
     switch (identifier) {
       case 'grades_sem_1': {
         dataRow.grades_sem1.wants_thesis = dataRow.wants_thesis;
-        dataRow.grades_sem2.is_exempted = dataRow.is_exempted;
+        dataRow.grades_sem1.is_exempted = dataRow.is_exempted;
+        dataRow.grades_sem1.difference_grades = dataRow.difference_grades_sem1;
+        dataRow.grades_sem2.second_examination_grades = dataRow.second_examination_grades;
         return dataRow.grades_sem1;
       }
       case 'grades_sem_2': {
         dataRow.grades_sem2.wants_thesis = dataRow.wants_thesis;
         dataRow.grades_sem2.is_exempted = dataRow.is_exempted;
+        dataRow.grades_sem2.difference_grades = dataRow.difference_grades_sem2;
+        dataRow.grades_sem2.second_examination_grades = dataRow.second_examination_grades;
         return dataRow.grades_sem2;
       }
       case 'grade_annual': {
         return {
           avg_annual: dataRow.avg_annual,
-          avg_after_2nd_examination: dataRow.avg_after_2nd_examination
+          avg_after_2nd_examination: dataRow.avg_after_2nd_examination,
+          avg_limit: dataRow.avg_limit
         };
       }
       case 'abs_sem_1': {
@@ -304,7 +368,20 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
   }
 
-  addGrade(grade: { selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }, rowIndex: number, cellIdentifier: string): void {
+  addGrade(
+    grade: {
+      selectedGrade: number,
+      selectedDate: Date,
+      id: number,
+      isThesis?: boolean,
+      isExaminationSection?: boolean,
+      gradeType?: string,
+      examinationType?: string,
+      selectedGrade2?: number,
+      semester?: number
+    },
+    rowIndex: number,
+    cellIdentifier: string): void {
     this.addGradeToStudent.emit({
       grade: grade,
       id: this.internalData[rowIndex].id,
@@ -322,6 +399,7 @@ export class CatalogComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   closeExpand(): void {
     this.expandedCell = null;
+    this.isExpanded = false;
   }
 
   ngOnDestroy(): void {

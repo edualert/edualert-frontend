@@ -74,7 +74,10 @@
     </div>
   </app-header>
   <div class="page-content">
-    <app-catalog [tableLayout]="'student_own_situation'" [data]="catalog"></app-catalog>
+    <app-catalog [tableLayout]="'student_own_situation'"
+                 [data]="catalog"
+                 [academicYearFilter]=academicYearToDisplay>
+    </app-catalog>
   </div>
 </div>
 

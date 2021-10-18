@@ -3,32 +3,83 @@
     <div class="title">{{existingId ? 'Editează notă' : 'Adaugă notă'}}</div>
     <hr>
     <div class="select-container">
-      <div class="label">Notă</div>
-      <div class="dropdown-container">
-        <app-dropdown
-          [list]="grades"
-          [required]="true"
-          [appliedElement]="selectedGrade"
-          (elementHasBeenSelected)="selectGrade($event)"
-          [placeholder]="'-'"
-          [errorMessage]="gradeError ? ' ': ''"
-          (click)="gradeError=false"
-        ></app-dropdown>
+      <div class="single-grade" *ngIf="!isExaminationSection">
+        <div class="label">Notă</div>
+        <div class="dropdown-container">
+          <app-dropdown
+            [list]="grades"
+            [required]="true"
+            [appliedElement]="selectedGrade"
+            (elementHasBeenSelected)="selectGrade($event)"
+            [placeholder]="'-'"
+            [errorMessage]="fieldErrors.selectedGrade ? ' ': ''"
+            (click)="fieldErrors.selectedGrade=''"
+          ></app-dropdown>
+        </div>
       </div>
-      <div class="label">Dată</div>
-      <div class="date-container">
-        <input class="date"
-               type="button"
-               (click)="openDatepicker()"
-               [value]="displayDate(selectedDate)">
-        <div class="datepicker-container">
-          <app-datepicker #datepicker
-                          [dateValue]="selectedDate"
-                          [maxDateValue]="today"
-                          [minDateValue]="currentSemesterStartDate"
-                          [color]="'#0077DB'"
-                          (dateChanged)="selectDate($event)"
-          ></app-datepicker>
+      <div class="examination-grades" *ngIf="isExaminationSection">
+        <div class="list-item">
+          <div class="label">Notă prof. I</div>
+          <div class="dropdown-container">
+            <app-dropdown
+              [list]="grades"
+              [required]="true"
+              [appliedElement]="selectedGrade"
+              (elementHasBeenSelected)="selectGrade($event)"
+              [placeholder]="'-'"
+              [errorMessage]="fieldErrors.selectedGrade ? ' ': ''"
+              (click)="fieldErrors.selectedGrade=''"
+            ></app-dropdown>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="label">Notă prof. II</div>
+          <div class="dropdown-container">
+            <app-dropdown
+              [list]="grades"
+              [required]="true"
+              [appliedElement]="selectedGrade2"
+              (elementHasBeenSelected)="selectGrade($event, true)"
+              [placeholder]="'-'"
+              [errorMessage]="fieldErrors.selectedGrade2 ? ' ': ''"
+              (click)="fieldErrors.selectedGrade2=''"
+            ></app-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="right-container">
+        <div class="list-item" *ngIf="isExaminationSection && ['DIFFERENCE', 'SECOND_EXAMINATION'].includes(gradeType)">
+          <div class="label">Tip</div>
+          <div class="dropdown-container" [class.disabled]="isEditing">
+            <app-dropdown
+              [list]="examinationTypes"
+              [displayedProperty]="'text'"
+              [required]="true"
+              [appliedElement]="selectedExaminationType"
+              (elementHasBeenSelected)="selectExaminationType($event.element)"
+              [placeholder]="'-'"
+              [errorMessage]="fieldErrors.selectedExaminationType ? ' ': ''"
+              (click)="fieldErrors.selectedExaminationType=''"
+            ></app-dropdown>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="label">Dată</div>
+          <div class="date-container">
+            <input class="date"
+                   type="button"
+                   (click)="openDatepicker()"
+                   [value]="displayDate(selectedDate)">
+            <div class="datepicker-container">
+              <app-datepicker #datepicker
+                              [dateValue]="selectedDate"
+                              [maxDateValue]="today"
+                              [minDateValue]="datePickerMinDateValue"
+                              [color]="'#0077DB'"
+                              (dateChanged)="selectDate($event)"
+              ></app-datepicker>
+            </div>
+          </div>
         </div>
       </div>
     </div>

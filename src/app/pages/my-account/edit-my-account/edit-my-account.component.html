@@ -169,6 +169,7 @@
 
       <div class="datepicker-input-wrapper value-container">
         <input
+          id="date-picker"
           class="date custom-date"
           type="button"
           (click)="openPicker(true)"
@@ -186,6 +187,7 @@
           >
           </app-datepicker>
         </div>
+        <div class="clear-field-button action-button" (click)="clearBirthDateField()"></div>
       </div>
     </div>
     <hr class="margin-list">

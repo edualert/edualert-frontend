@@ -90,11 +90,20 @@
     margin-left: $margin-small;
     background-color: darken($color-separator, 5%);
 
+    &.second {
+      margin-left: $margin-tiny;
+    }
   }
 
   .text-button {
     margin-left: $margin-small;
     user-select: none;
+  }
+
+  .grade-label {
+    font-size: $font-size-small;
+    color: $color-text-normal;
+    font-weight: $font-weight-medium;
   }
 }
 
@@ -119,6 +128,20 @@
     .grade {
       font-size: $font-size-bigish;
       font-weight: $font-weight-bold;
+
+      &.second {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-left: $margin-tiny;
+
+        .grade-details {
+          font-size: $font-size-small;
+          color: $color-text-light;
+          margin-left: $margin-tiny;
+          font-weight: $font-weight-regular;
+        }
+      }
     }
 
     .date {
@@ -138,6 +161,19 @@
 .absences-summary:not(.absences-annual) {
   border-top: 1px solid lighten($color-separator, 5%);
   padding-top: $margin-default;
+}
+
+.action-buttons-container {
+  display: flex;
+}
+
+.annual-average {
+  background-color: $color-blue;
+  color: white;
+
+  &.red-background {
+    background-color: $color-red;
+  }
 }
 
 .mobile-only {
@@ -184,7 +220,7 @@
     display: initial;
   }
 
-  .absences-summary .mobile-only {
+  .absences-summary .mobile-only, .grades-annual .mobile-only {
 
     .elements + .elements {
       border-top: 1px solid lighten($color-separator, 5%);
@@ -200,6 +236,15 @@
 
     .element-cell {
       display: inline-block;
+    }
+  }
+
+  .action-buttons-container {
+    flex-direction: column;
+
+    .text-button {
+      margin-bottom: $margin-xsmall;
+      margin-top: $margin-xsmall;
     }
   }
 }
