@@ -3,9 +3,11 @@
   <!-- GRADES LIST --------------------------------------------->
   <div *ngSwitchCase="identifier === 'grades_sem_1' || identifier === 'grades_sem_2' ? identifier : null"
        class="expanded-container grades-list">
-    <app-single-grade-overlay *ngIf="isEditable"
-                              [currentSemesterStartDate]="currentSemesterStartDate"
+    <app-single-grade-overlay *ngIf="isEditable || isExaminationSection"
+                              [datePickerMinDateValue]="isExaminationSection ? eventMinDate : currentSemesterStartDate"
                               [tableLayoutAsIdentifier]="tableLayoutAsIdentifier"
+                              [isExaminationSection]="isExaminationSection"
+                              [gradeType]="gradeType"
                               (save)="gradeSubmitted($event)"
                               #singleGradeModal
     ></app-single-grade-overlay>
@@ -38,7 +40,7 @@
       <div class="label">Notă teză</div>
 
       <!--- Added in order to make the display flex-row spacing work -->
-      <div *ngIf="!data?.thesis" style="width: 10px; height: 10px; pointer-events: none"></div>
+      <div *ngIf="!data?.thesis" style="width: 10px; height: 40px; pointer-events: none"></div>
 
       <div class="elements" *ngIf="data?.thesis">
         <div class="element-cell grade-cell">
@@ -56,6 +58,80 @@
       </div>
     </div>
 
+    <div class="horizontal" *ngIf="(data.second_examination_grades?.length && identifier !== 'grades_sem_1') || shouldDisplaySecondExaminationSection">
+      <div class="label">Note corigență</div>
+      <!--- Added in order to make the display flex-row spacing work -->
+      <div *ngIf="!data.second_examination_grades?.length" style="width: 10px; height: 40px; pointer-events: none"></div>
+
+      <div class="elements" *ngIf="data.second_examination_grades?.length">
+        <div class="element-cell grade-cell" *ngFor="let grade of data.second_examination_grades">
+          <div class="grade-label">{{grade.examination_type === 'ORAL' ? 'Oral' : 'Scris'}}</div>
+          <hr class="second vertical">
+          <div class="second grade {{grade.grade1 <= 4 ? 'red-text' : 'blue-text'}}">
+            {{grade.grade1}}
+            <div class="grade-details">(Notă prof. I)</div>
+          </div>
+          <div class="second grade {{grade.grade2 <= 4 ? 'red-text' : 'blue-text'}}">
+            {{grade.grade2}}
+            <div class="grade-details">(Notă prof. II)</div>
+          </div>
+          <hr class="second vertical">
+          <div class="date">{{displayDate(grade.taken_at)}}</div>
+          <ng-container *ngIf="shouldDisplaySecondExaminationSection">
+            <div class="action-buttons-container">
+              <hr class="second vertical">
+              <span class="edit-button text-button"
+                    (click)="openGradeOverlay($event, false, grade, true, true)">Editează</span>
+              <div *ngIf="tableLayoutAsIdentifier !== 'class_master'"
+                   class="delete-button text-button dark-text"
+                   (click)="onGradeDelete(grade, true)">Șterge</div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="add-button-container thesis" *ngIf="shouldDisplaySecondExaminationSection && isEditable">
+        <div class="text-button blue-text add-button" (click)="openGradeOverlay($event, true, null, true)">Adaugă note corigență</div>
+      </div>
+    </div>
+
+    <div class="horizontal" *ngIf="data.difference_grades?.length || shouldDisplayDifferencesSection">
+      <div class="label">Note diferențe</div>
+      <!--- Added in order to make the display flex-row spacing work -->
+      <div *ngIf="!data.difference_grades?.length" style="width: 10px; height: 40px; pointer-events: none"></div>
+
+      <div class="elements" *ngIf="data.difference_grades?.length">
+        <div class="element-cell grade-cell" *ngFor="let grade of data.difference_grades">
+          <div class="grade-label">{{grade.examination_type === 'ORAL' ? 'Oral' : 'Scris'}}</div>
+          <hr class="second vertical">
+          <div class="second grade {{grade.grade1 <= 4 ? 'red-text' : 'blue-text'}}">
+            {{grade.grade1}}
+            <div class="grade-details">(Notă prof. I)</div>
+          </div>
+          <div class="second grade {{grade.grade2 <= 4 ? 'red-text' : 'blue-text'}}">
+            {{grade.grade2}}
+            <div class="grade-details">(Notă prof. II)</div>
+          </div>
+          <hr class="second vertical">
+          <div class="date">{{displayDate(grade.taken_at)}}</div>
+          <ng-container *ngIf="shouldDisplayDifferencesSection">
+            <div class="action-buttons-container">
+              <hr class="second vertical">
+              <span class="edit-button text-button"
+                    (click)="openGradeOverlay($event, false, grade, true, true)">Editează</span>
+              <div *ngIf="tableLayoutAsIdentifier !== 'class_master'"
+                   class="delete-button text-button dark-text"
+                   (click)="onGradeDelete(grade, true)">Șterge</div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="add-button-container thesis" *ngIf="shouldDisplayDifferencesSection && isEditable">
+        <div class="text-button blue-text add-button" (click)="openGradeOverlay($event, true, null, true)">Adaugă note diferență</div>
+      </div>
+    </div>
+
     <div class="horizontal" *ngIf="data?.avg">
       <div class="label">Medie</div>
       <div class="elements">
@@ -68,7 +144,36 @@
 
   <!-- GRADE ANNUAL --------------------------------------------->
   <div *ngSwitchCase="'grade_annual'" class="expanded-container grades-annual">
-
+    <ng-container *ngIf="data">
+      <div class="elements desktop-only">
+        <div class="label relative">Medie anuală înainte de corigență</div>
+        <div class="element-cell single-number annual-average {{ data.avg_annual >= (data.avg_limit ? data.avg_limit : 5) ? '' : 'red-background' }}">
+          {{data.avg_annual ? data.avg_annual : '-'}}
+        </div>
+        <div class="label relative">Medie anuală după corigență</div>
+        <div class="element-cell single-number annual-average {{ data.avg_after_2nd_examination >= (data.avg_limit ? data.avg_limit : 5) ? '' : 'red-background' }}">
+          {{data.avg_after_2nd_examination ? data.avg_after_2nd_examination : '-'}}
+        </div>
+      </div>
+      <div class="mobile-only">
+        <div class="elements">
+          <div class="absences-count">
+            <div class="label relative">Medie anuală înainte de corigență</div>
+            <div class="element-cell single-number annual-average {{ data.avg_annual >= (data.avg_limit ? data.avg_limit : 5) ? '' : 'red-background' }}">
+              {{data.avg_annual ? data.avg_annual : '-'}}
+            </div>
+          </div>
+        </div>
+        <div class="elements">
+          <div class="absences-count">
+            <div class="label relative">Medie anuală după corigență</div>
+            <div class="element-cell single-number annual-average {{ data.avg_after_2nd_examination >= (data.avg_limit ? data.avg_limit : 5) ? '' : 'red-background' }}">
+              {{data.avg_after_2nd_examination ? data.avg_after_2nd_examination : '-'}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
   </div>
 
   <!-- ABSENCES LIST --------------------------------------------->

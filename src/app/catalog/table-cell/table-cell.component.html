@@ -38,8 +38,8 @@
 
       <!--2 grades: before and after retry -->
       <div *ngIf="data?.length == 2 && data[1]">
-        <div class="bg-element big-bg-element annual first-avg {{data[0] >= pivotPoint ? 'blue-background' : 'red-background'}}">{{data[0]}}</div>
-        <div class="bg-element big-bg-element annual second-avg {{data[1] >= pivotPoint ? 'blue-background' : 'red-background'}}">{{data[1]}}</div>
+        <div class="bg-element big-bg-element annual first-avg {{data[0] >= pivotPoint ? 'blue-background' : 'red-background'}}">{{data[0] ? data[0] : '-'}}</div>
+        <div class="bg-element big-bg-element annual second-avg {{data[1] >= pivotPoint ? 'blue-background' : 'red-background'}}">{{data[1] ? data[1] : '-'}}</div>
       </div>
 
     </div>

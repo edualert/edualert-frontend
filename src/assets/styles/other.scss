@@ -99,8 +99,7 @@ a {
   text-decoration: none;
 }
 
-.animated-page {
-
+#page-header {
   @keyframes headerAppear {
     0% {
       opacity: 0;
@@ -113,9 +112,7 @@ a {
 
   }
 
-  #page-header {
-    animation: headerAppear 0.4s linear 1 backwards;
-  }
+  animation: headerAppear 0.4s linear 1 both;
 }
 
 .page-content {
@@ -134,7 +131,7 @@ a {
     }
 
   }
-  animation: contentAppear .7s linear 1 backwards;
+  animation: contentAppear .7s linear 1 backwards 0.3s;
 
 
   padding: $margin-default 80px;

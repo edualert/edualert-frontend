@@ -1,5 +1,13 @@
 <div class="animated-page">
   <app-header>
+    <div id="error-alert">
+      <div class="error-toast" *ngIf="displayErrorToast">
+        <div class="request-error">
+          {{ toastErrorMessage }}
+        </div>
+        <div class="close-error" (click)="hideErrorToast()"></div>
+      </div>
+    </div>
     <a id="header-back-button" [routerLink]="['/my-classes']">
       <div class="arrow left"></div>
       <div class="blue-text bold">Clasele mele</div>
@@ -51,33 +59,31 @@
       <hr *ngIf="tabs.length > 1">
     </div>
     <div id="header-filter" class="mobile-only">
-      <app-filter
-        labelName="Acțiuni"
-        [noCount]="false">
-        <ng-container id="list-count-mobile">
-          <div *ngIf="tableData; else loadingListMobile" class="list-count-mobile">
-            {{pupilCount}} utilizatori afișați din {{pupilCount}}
+      <app-toolbar [buttonsObjList]="provideButtonsList()"
+                   [countedElements]="pupilCount">
+        <div id="custom-content">
+          <span class="mobile-title">Sortează</span>
+          <div class="dropdown-parent">
+            <app-dropdown
+              [list]="filterData.sortCriteria"
+              [displayedProperty]="'text'"
+              (elementHasBeenSelected)="changeSortingCriterion($event.element)"
+              [appliedElement]="filterParams.sortCriterion"
+              [placeholder]="'Sortează'"
+              [required]="true"
+            ></app-dropdown>
           </div>
-        </ng-container>
-        <span class="mobile-title">Sortează</span>
-        <div class="dropdown-parent">
-          <app-dropdown
-            [list]="filterData.sortCriteria"
-            [displayedProperty]="'text'"
-            (elementHasBeenSelected)="changeSortingCriterion($event.element)"
-            [appliedElement]="filterParams.sortCriterion"
-            [placeholder]="'Sortează'"
-            [required]="true"
-          ></app-dropdown>
+          <hr class="toolbar-hr-mobile">
         </div>
-        <hr class="toolbar-hr-mobile">
-        <app-toolbar [buttonsObjList]="provideButtonsList()"></app-toolbar>
-      </app-filter>
+      </app-toolbar>
     </div>
-    <div id="tabs-container" *ngIf="tabs.length > 1">
+    <div *ngIf="tabs.length > 1"
+         id="tabs-container"
+         [class.disabled]="!tableData || loading">
       <app-tabs (tabHasBeenSelected)="changeTab($event)"
                 [activeTab]="activeTab?.id"
-                [tabsList]="tabs">
+                [tabsList]="tabs"
+                [loading]="!tableData">
       </app-tabs>
     </div>
   </app-header>
@@ -88,6 +94,7 @@
           [data]="tableData"
           [tableLayout]="activeTab?.tableLayout"
           [activeTabId]="activeTab?.id"
+          [academicYearFilter]="classDetails?.academic_year"
           (onLinkClick)="onLinkClick($event)"
         ></app-catalog>
       </ng-container>
@@ -95,6 +102,7 @@
         <div *ngSwitchCase="subject.id">
           <app-catalog [data]="tableData"
                        [isClassMaster]="classDetails?.is_class_master"
+                       [academicYearFilter]="classDetails?.academic_year"
                        [tableLayout]="activeTab?.tableLayout"
                        (addGradeToStudent)="saveSingleGrade($event)"
                        (addAbsenceToStudent)="addSingleAbsence($event)"
@@ -110,11 +118,14 @@
 </div>
 <div class="animated-page desktop-only">
   <div class="toolbar-container">
-    <app-toolbar [buttonsObjList]="provideButtonsList()" >
-      <ng-container id="count-container" *ngIf="tableData else loadingList">
-        {{pupilCount}} elevi afișați din {{pupilCount}}
-      </ng-container>
-    </app-toolbar>
+    <ng-container *ngIf="!loading">
+      <app-toolbar [buttonsObjList]="provideButtonsList()"
+                   [countedElements]="pupilCount">
+        <ng-container id="count-container" *ngIf="tableData else loadingList">
+          {{pupilCount}} elevi afișați din {{pupilCount}}
+        </ng-container>
+      </app-toolbar>
+    </ng-container>
   </div>
 </div>
 

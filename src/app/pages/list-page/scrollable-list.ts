@@ -17,6 +17,8 @@ export class ScrollableList {
   scrollPositions;
   infiniteScrollTabIds: string[] = [];
   tabTopActive: string;
+  differentScrollableElm: any;
+  isOnMobileIOS: boolean;
 
   constructor() {
     this.keepOldList = this.hasOwnProperty('keepOldList') ? this['keepOldList'] : null;
@@ -54,6 +56,9 @@ export class ScrollableList {
       if (this.isOnReportsPage) {
         this.scrollPositions[this.activeTab] = document.body.scrollTop;
         scrollTop = this.scrollPositions[this.activeTab];
+      } else if (this.isOnMobileIOS) {
+        scrollTop = this.differentScrollableElm.scrollTop;
+        scrollHeight = this.differentScrollableElm.scrollHeight;
       } else {
         scrollTop = document.body.scrollTop;
       }

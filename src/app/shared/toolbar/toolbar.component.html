@@ -1,0 +1,49 @@
+<div class="web">
+  <div class="toolbar">
+    <div class="buttons">
+      <ng-container *ngFor="let button of buttonsObjList">
+        <div (click)="button.buttonCallbackFn()"
+             class="text-button bold white {{['Exportă catalog'].includes(button.text) || button.disabled ? 'disabled' : ''}}"
+        >{{button.text}}
+        </div>
+      </ng-container>
+    </div>
+    <div class="count-container" *ngIf="hasCount">
+      {{countedElements ? countedElements + ' elevi afișați din ' + countedElements : 'Se încarcă datele...'}}
+    </div>
+  </div>
+</div>
+
+<div class="mobile">
+  <div class="toolbar" [class.open]="isOpen" [class.no-count]="!hasCount">
+    <div class="label" (click)="toggleIsOpen($event)">
+      <span>{{isOpen ? "Închide" : "Acțiuni"}}</span>
+      <div class="count-container" *ngIf="hasCount">
+        {{countedElements ? countedElements + ' elevi afișați din ' + countedElements : 'Se încarcă datele...'}}
+      </div>
+    </div>
+    <div class="content-wrapper" *ngIf="isOpen">
+      <div class="tags" *ngIf="tagsSection">
+        <span class="title">Etichete</span>
+        <div class="tags-container">
+          <div class="tag"
+               *ngFor="let tag of tags"
+               [class.yellow-text]="tag.text==='Risc Abandon 1'"
+               [class.red-text]="tag.text==='Risc Abandon 2'">
+            {{tag.text}}
+          </div>
+          <span class="no-tags" *ngIf="!tags || !tags?.length">-</span>
+        </div>
+      </div>
+      <ng-content select="#custom-content"></ng-content>
+      <div class="buttons">
+        <ng-container *ngFor="let button of buttonsObjList">
+          <div (click)="button.buttonCallbackFn()"
+               class="text-button bold white {{['Exportă catalog'].includes(button.text) || button.disabled ? 'disabled' : ''}}"
+          >{{button.text}}
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,12 +1,12 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {CellIdentifier} from '../../models/catalog-layouts';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { CellIdentifier } from '../../models/catalog-layouts';
 import * as moment from 'moment';
-import {SingleGradeOverlayComponent} from '../single-grade-overlay/single-grade-overlay.component';
-import {SingleAbsenceOverlayComponent} from '../single-absence-overlay/single-absence-overlay.component';
-import {Absence, Grade} from '../../models/student-grade-absence';
-import {ConfirmationModalComponent} from '../../shared/confirmation-modal/confirmation-modal.component';
-import {AcademicYearCalendar} from '../../models/academic-year-calendar';
-import {getCurrentSemesterStartDate} from '../../shared/utils';
+import { SingleGradeOverlayComponent } from '../single-grade-overlay/single-grade-overlay.component';
+import { SingleAbsenceOverlayComponent } from '../single-absence-overlay/single-absence-overlay.component';
+import { Absence, Grade } from '../../models/student-grade-absence';
+import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { AcademicYearCalendar } from '../../models/academic-year-calendar';
+import { getCurrentSemesterStartDate } from '../../shared/utils';
 
 @Component({
   selector: 'app-expanded-cell',
@@ -22,6 +22,9 @@ export class ExpandedCellComponent implements OnInit {
   @Input() tableLayoutAsIdentifier: string;
   @Input() loggedUserRole: string;
   @Input() academicYearCalendar: AcademicYearCalendar;
+  @Input() shouldDisplaySecondExaminationSection?: boolean = false;
+  @Input() shouldDisplayDifferencesSection?: boolean = false;
+  @Input() eventMinDate: Date;
   @Output() addGrade: EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number }> = new EventEmitter<{ selectedGrade: number, selectedDate: Date, id: number }>();
   @Output() addAbsence: EventEmitter<any> = new EventEmitter<any>();
   @Output() deleteGrade: EventEmitter<Grade> = new EventEmitter<Grade>();
@@ -33,6 +36,8 @@ export class ExpandedCellComponent implements OnInit {
 
   isOnViewPupilDataPage: boolean = false;
   currentSemesterStartDate: Date;
+  isExaminationSection: boolean = true;
+  gradeType: string;
 
 
   constructor(private root: ElementRef) {
@@ -52,6 +57,14 @@ export class ExpandedCellComponent implements OnInit {
     if (['abs_sem_1', 'abs_sem_2'].includes(this.identifier)) {
       this.data = this.data.map((absence: Absence) => ({...absence, minutesSinceCreation: this.getMinutesDiff(absence.created)}));
     }
+
+    if (this.data.grades?.length) {
+      this.shouldDisplayDifferencesSection = false;
+    }
+
+    if (this.identifier === 'grades_sem_1' || this.data.avg >= 5) {
+      this.shouldDisplaySecondExaminationSection = false;
+    }
   }
 
   displayDate(dateString: string): string {
@@ -70,7 +83,28 @@ export class ExpandedCellComponent implements OnInit {
     return absencesList.filter(absence => !absence.is_founded).length;
   }
 
-  gradeSubmitted(data: { selectedGrade: number, selectedDate: Date, id: number, isThesis?: boolean }): void {
+  gradeSubmitted(
+    data: {
+      selectedGrade: number,
+      selectedDate: Date,
+      id: number,
+      isThesis?: boolean,
+      isExaminationSection?: boolean,
+      gradeType?: string,
+      examinationType?: string,
+      selectedGrade2?: number,
+      semester?: number
+    }): void {
+    if (this.gradeType && this.gradeType === 'DIFFERENCE') {
+      switch (this.identifier) {
+        case 'grades_sem_1':
+          data.semester = 1;
+          break;
+        case 'grades_sem_2':
+          data.semester = 2;
+          break;
+      }
+    }
     this.addGrade.emit(data);
     this.singleGradeModal.close();
   }
@@ -80,10 +114,24 @@ export class ExpandedCellComponent implements OnInit {
     this.singleAbsenceModal.close();
   }
 
-  onGradeDelete(grade: Grade) {
+  onGradeDelete(grade: Grade, shouldCheckType?: boolean) {
+    let description: string;
+    if (shouldCheckType) {
+      this.gradeTypeDecider();
+      switch (this.gradeType) {
+        case 'SECOND_EXAMINATION':
+          description = `Doriți să ștergeți notele de corigență ${grade.grade1} și ${grade.grade2} din data de ${this.displayLongDate(grade.taken_at)}?`;
+          break;
+        case 'DIFFERENCE':
+          description = `Doriți să ștergeți notele de diferență ${grade.grade1} și ${grade.grade2} din data de ${this.displayLongDate(grade.taken_at)}?`;
+          break;
+      }
+    } else {
+      description = `Doriți să ștergeți nota ${grade.grade} din data de ${this.displayLongDate(grade.taken_at)}?`;
+    }
     this.confirmationModal.open({
       title: 'Ștergeți nota?',
-      description: `Doriți să ștergeți nota ${grade.grade} din data de ${this.displayLongDate(grade.taken_at)}?`,
+      description: description,
       confirmButtonCallback: () => {
         this.deleteGrade.emit(grade);
       }
@@ -110,9 +158,23 @@ export class ExpandedCellComponent implements OnInit {
     });
   }
 
-  openGradeOverlay(event: Event, isThesis: boolean, grade?: any): void {
+  openGradeOverlay(event: Event, isThesis: boolean, grade?: any, isExaminationSection?: boolean, isEditing?: boolean): void {
+    if (isExaminationSection) {
+      this.isExaminationSection = isExaminationSection;
+      this.gradeTypeDecider();
+    } else {
+      this.isExaminationSection = false;
+    }
     this.currentSemesterStartDate = getCurrentSemesterStartDate(this.academicYearCalendar);
-    this.singleGradeModal.open(event.target, this.root.nativeElement, grade, isThesis);
+    this.singleGradeModal.open(event.target, this.root.nativeElement, grade, isThesis, isEditing);
+  }
+
+  gradeTypeDecider() {
+    if (this.shouldDisplaySecondExaminationSection) {
+      this.gradeType = 'SECOND_EXAMINATION';
+    } else {
+      this.gradeType = 'DIFFERENCE';
+    }
   }
 
   openAbsenceOverlay(event: Event, absence?: any): void {

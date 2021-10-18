@@ -181,7 +181,8 @@ export const ownClassSubjectSecondSemesterEnded = new CatalogLayout({ // TAUGHT 
       type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.grades_sem2?.grades?.length
     },
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit'},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit',
+      expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.avg_after_2nd_examination},
     {
       type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'abs_count_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.abs_sem1?.length,
@@ -320,7 +321,8 @@ export const classMasterySecondSemesterEnded = new CatalogLayout({   // DIRIGENT
     {
       type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 'avg_limit',
     },
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit'},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit',
+      expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.avg_after_2nd_examination},
     {
       type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'abs_count_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.abs_sem1?.length,
@@ -445,7 +447,8 @@ export const classPupilsSecondSemesterEnded = new CatalogLayout({   // ELEVII CL
     {type: 'name-cell', identifier: 'name', dataKey: 'student'},
     {type: 'sem-avg', identifier: 'grades_sem_1', dataKey: 'avg_sem1', pivotPoint: 5},
     {type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 5},
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 5},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 5,
+      expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.avg_after_2nd_examination},
     {type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'abs_count_sem1', pivotPoint: 11},
     {type: 'absences-count', identifier: 'abs_sem_2', dataKey: 'abs_count_sem2', pivotPoint: 11},
     {
@@ -571,7 +574,8 @@ export const studentCatalogSecondSemesterEnded = new CatalogLayout({ // Toate ma
       type: 'sem-avg', identifier: 'grades_sem_2', dataKey: 'avg_sem2', pivotPoint: 'avg_limit',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.grades_sem2?.grades?.length
     },
-    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit'},
+    {type: 'annual-avg', identifier: 'grade_annual', dataKey: 'avg_annual', pivotPoint: 'avg_limit',
+      expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.avg_after_2nd_examination},
     {
       type: 'absences-count', identifier: 'abs_sem_1', dataKey: 'abs_count_sem1', pivotPoint: 11, exceptionRuleKey: 'third_of_hours_count_sem1',
       expandableDecider: (yearStructure: AcademicYearCalendar, rowData: any) => rowData?.abs_sem1?.length

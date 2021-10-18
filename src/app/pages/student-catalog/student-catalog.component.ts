@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import * as moment from 'moment';
 import { ViewUserModalComponent } from '../manage-users/view-user-modal/view-user-modal.component';
 import { setScrollableContainerHeight } from '../../shared/utils';
+import { ClassDetails } from '../../models/class-details';
 
 @Component({
   selector: 'app-student-catalog',
@@ -13,6 +14,7 @@ import { setScrollableContainerHeight } from '../../shared/utils';
   styleUrls: ['./student-catalog.component.scss']
 })
 export class StudentCatalogComponent implements OnInit, OnDestroy {
+  @ViewChild('appViewUserModal', {static: false}) appViewUserModal: ViewUserModalComponent;
   classId: string;
   studentId: string;
   student: {
@@ -31,7 +33,18 @@ export class StudentCatalogComponent implements OnInit, OnDestroy {
   backLink: string;
   layout = 'student_catalog';
   rip: boolean;
-  @ViewChild('appViewUserModal', {static: false}) appViewUserModal: ViewUserModalComponent;
+  toolbarButtonsList = [
+    {
+      text: 'Trimite mesaj',
+      buttonCallbackFn: this.sendMessage.bind(this)
+    },
+    {
+      text: 'Exportă catalog'
+    }
+  ];
+  isDetailsSectionOpen: boolean = false;
+  loading: boolean;
+  classYear: number;
 
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -50,6 +63,7 @@ export class StudentCatalogComponent implements OnInit, OnDestroy {
 
   private getCatalogData() {
     this.rip = true;
+    this.getClassDetails();
     this.httpClient.get(`own-study-classes/${this.classId}/pupils/${this.studentId}/`).subscribe((response: any) => {
       this.student = {
         full_name: response.full_name,
@@ -65,6 +79,12 @@ export class StudentCatalogComponent implements OnInit, OnDestroy {
       if (error.status === 404) {
         this.router.navigateByUrl('').then();
       }
+    });
+  }
+
+  private getClassDetails(): void {
+    this.httpClient.get(`own-study-classes/${this.classId}/`).subscribe((response: ClassDetails) => {
+      this.classYear = response.academic_year;
     });
   }
 
@@ -124,6 +144,15 @@ export class StudentCatalogComponent implements OnInit, OnDestroy {
 
   openUserModal(event, id) {
     this.appViewUserModal.open(id);
+  }
+
+  sendMessage() {
+    this.router.navigateByUrl(`/messages/create?userId=${this.studentId}&userName=${this.student.full_name}`);
+  }
+
+  toggleDetailsSection(): void {
+    this.isDetailsSectionOpen = !this.isDetailsSectionOpen;
+    setScrollableContainerHeight(true);
   }
 
   ngOnDestroy(): void {

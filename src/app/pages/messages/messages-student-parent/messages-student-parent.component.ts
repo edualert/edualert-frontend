@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Params } from '@angular/router';
 import { ReceivedMessage } from '../../../models/message';
 import { NetworkingListResponse } from '../../../models/networking-list-response';
+import { moveScrollIfOnMobileIOS, revertScrollMoveIfOnMobileIOS } from '../../../shared/utils';
 
 
 @Component({
@@ -47,11 +48,19 @@ export class MessagesStudentParentComponent extends MessagesComponent implements
   }
 
   ngAfterViewInit(): void {
-    document.body.addEventListener('scroll', this.scrollHandle);
+    this.differentScrollableElm = document.getElementsByTagName('app-messages')[0].getElementsByClassName('animated-page')[0];
+    this.isOnMobileIOS = moveScrollIfOnMobileIOS(this.differentScrollableElm, this.scrollHandle);
+    if (!this.isOnMobileIOS) {
+      document.body.addEventListener('scroll', this.scrollHandle);
+    }
   }
 
   ngOnDestroy(): void {
-    document.body.removeEventListener('scroll', this.scrollHandle);
+    if (this.isOnMobileIOS) {
+      revertScrollMoveIfOnMobileIOS(this.differentScrollableElm, this.scrollHandle);
+    } else {
+      document.body.removeEventListener('scroll', this.scrollHandle);
+    }
   }
 
 }

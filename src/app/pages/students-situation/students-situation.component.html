@@ -86,16 +86,19 @@
         <app-students-situation-ors
           *ngSwitchCase="'ADMINISTRATOR'"
           [students]="students"
+          [academicYearFilter]="academicYearToRequest"
         ></app-students-situation-ors>
         <app-students-situation-teacher-principal
           *ngSwitchCase="'TEACHER'"
           (onLinkClick)="onLinkClick($event)"
           [students]="students"
+          [academicYearFilter]="academicYearToRequest"
         ></app-students-situation-teacher-principal>
         <app-students-situation-teacher-principal
           *ngSwitchCase="'SCHOOL_PRINCIPAL'"
           (onLinkClick)="onLinkClick($event)"
           [students]="students"
+          [academicYearFilter]="academicYearToRequest"
         ></app-students-situation-teacher-principal>
       </ng-container>
     </div>

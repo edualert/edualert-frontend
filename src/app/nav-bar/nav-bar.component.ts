@@ -11,6 +11,7 @@ import { IdFullname } from '../models/id-fullname';
 import { findIndex } from 'lodash';
 import { CurrentAcademicYearService } from '../services/current-academic-year.service';
 import * as moment from 'moment';
+import { SchoolNamesService } from '../services/school-names.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -20,6 +21,7 @@ import * as moment from 'moment';
 export class NavBarComponent {
   @Input() size: NavBarSize;
   account: UserDetails;
+  usersSchoolName: string;
   isOpen: boolean;
   readonly userRoles: object = userRoles;
   menuLinks = globalMenuLinks;
@@ -30,7 +32,8 @@ export class NavBarComponent {
   constructor(private accountService: AccountService,
               private router: Router,
               private authService: AuthService,
-              private currentAcademicYear: CurrentAcademicYearService) {
+              private currentAcademicYear: CurrentAcademicYearService,
+              private schoolNamesService: SchoolNamesService) {
     router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         this.isOpen = false;
@@ -48,7 +51,17 @@ export class NavBarComponent {
         currentAcademicYear.getData().subscribe(response => {
           if (this.currentDate <= moment(response.first_semester.ends_at, 'DD-MM-YYYY').valueOf()) {
             const studentsSituationIndex = findIndex(this.menuLinks[account.user_role], {path: 'students-situation'});
-            this.menuLinks[account.user_role].splice(studentsSituationIndex, 1);
+            if (studentsSituationIndex !== -1) {
+              this.menuLinks[account.user_role].splice(studentsSituationIndex, 1);
+            }
+          }
+        });
+      }
+
+      if (account.school_unit && ['TEACHER', 'PARENT', 'STUDENT'].includes(account.user_role)) {
+        schoolNamesService.getCustomData(false, true).subscribe(response => {
+          if (response && account.school_unit) {
+            this.usersSchoolName = response[response.findIndex(school => school.id === account.school_unit)].name;
           }
         });
       }

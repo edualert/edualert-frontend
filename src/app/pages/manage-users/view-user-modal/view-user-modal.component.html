@@ -2,7 +2,14 @@
   <div id="modal-header" class="modal-header">
     <div class="detail-element-container header blue-text margin-top-small">
       <div class="label-container fixed-width">Nume</div>
-      <div class="value-container bold">{{ user?.full_name }}</div>
+      <div *ngIf="['ADMINISTRATOR', 'SCHOOL_PRINCIPAL'].includes(accountRole) else simpleText"
+           class="value-container bold arrow-right"
+           (click)="onUserNameClick(user?.id)">
+        {{ user?.full_name }}</div>
+      <ng-template #simpleText>
+        <div class="value-container bold">
+          {{ user?.full_name }}</div>
+      </ng-template>
     </div>
     <div class="close-button" (click)="cancel()"></div>
   </div>
